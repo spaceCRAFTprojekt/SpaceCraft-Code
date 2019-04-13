@@ -21,6 +21,7 @@ History:
                         Es gibt 5 "Serialisierungs-Blöcke": die Liste der Player, der Space, die
                         Liste der Planeten, die Liste der Schiffe, die Liste der Blöcke
  11.04.2019 v0.0.6 LG * Timer
+ 12.04.2019 v0.1.0 LG * Zusammenführung mit v0.0.7_AK
 
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
