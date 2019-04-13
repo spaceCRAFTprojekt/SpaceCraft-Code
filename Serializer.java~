@@ -9,7 +9,7 @@ import java.io.IOException;
  * einen wahrscheinlicheren über, nicht aber umgekehrt. Sind z. B. alle Luftmoleküle zu Anfang in einer Ecke eines Zimmers, so verteilen sie sich
  * gleichmäßig in diesem Zimmer: die Entropie nimmt zu. Es ist jedoch praktisch ausgeschlossen, dass umgekehrt die gleichmäßig verteilten Moleküle
  * sich einmal alle in einer Zimmerecke ansammeln." ~ Linus beim Programmieren
- * 
+
  * Denk mal bitte drüber nach Linus!
  * 
  * Ich (unknown) glaube, dass die Klasse dafür verantwortlich ist, dass man den alten Spielstand laden kann. Wir haben (bis Linus sich Gedanken gemacht hat) 

@@ -15,7 +15,7 @@ import java.io.IOException;
  * Eine virtuelle Umgebung aus Blöcken
  * 
  * @Benny: Bitte bedenke, dass die Sandboxes mit dem Serializer gespeichert werden können müssen (teutsche Sprache, swerer Schprache) und du Änderungen
- * auch dort hinzufügen musst. Wie immer ist Linus dein Ansprechpatner
+ * a
  */
 public abstract class Sandbox implements Serializable
 {
