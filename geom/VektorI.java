@@ -1,7 +1,7 @@
 package geom;
 import java.lang.Math;
 import java.io.Serializable;
-
+import java.awt.event.MouseEvent;
 /**
  * Simple Integer Vektor
  * Bei Veränderung Bitte in der readme Datei erwähnen!!!
@@ -16,6 +16,10 @@ public class VektorI implements Serializable
     {
         this.x = x;
         this.y = y;
+    }
+    
+    public VektorI(MouseEvent e){
+        this(e.getX(), e.getY());
     }
 
     public void set(VektorI v){

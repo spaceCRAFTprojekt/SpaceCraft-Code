@@ -20,7 +20,7 @@ public class Frame extends JFrame{
         super("SpaceCraft: "+name);
         this.screenSize = screenSize;
         this.p = p;
-        setLayout(null);
+        panel.setLayout(null);
         setSize(screenSize.x,screenSize.y);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

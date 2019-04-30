@@ -39,7 +39,7 @@ public class Player implements Serializable
         
         makeFrame();
         currentMass = space.getSpawnMass();
-        this.playerS=new PlayerS(this,new VektorD(0,0), space.getMass(1));//currentMass);
+        this.playerS=new PlayerS(this,new VektorD(0,0), currentMass);
         this.playerC=new PlayerC(this, currentMass.getSandbox(), new VektorD(50,50),frame);
     }
     
@@ -186,6 +186,27 @@ public class Player implements Serializable
     }
     
     /**
+     * gibt den Vektor der größe des Bildschirms zurück
+     */
+    public VektorI getScreenSize(){
+        return frame.getScreenSize();
+    }
+    
+    /**
+     * gibt die Masse, bei der sich der Spieler gerade befindet zurück
+     */
+    public Mass getCurrentMass(){
+        return currentMass;
+    }
+    
+    /**
+     * ...
+     */
+    public Frame getFrame(){
+        return frame;
+    }
+    
+    /**
      * Spiel (für diesen Spieler) beenden!
      */
     public void exit(){
@@ -198,8 +219,8 @@ public class Player implements Serializable
      */
     public void paint(Graphics g, VektorI screenSize){
         if (g!=null){
-            if (inCraft)playerC.paint(g, screenSize);
-            else playerS.paint(g, screenSize);
+            if (inCraft && playerC != null)playerC.paint(g, screenSize);
+            else if (playerS != null) playerS.paint(g, screenSize);
         }
     }
     public void repaint(){
