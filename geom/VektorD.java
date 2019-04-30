@@ -19,6 +19,11 @@ public class VektorD implements Serializable
         this.y = y;
     }
 
+    public void set(VektorD v){
+        this.x = v.x;
+        this.y = v.y;
+    }
+    
     /**
      * Vektoraddition
      */

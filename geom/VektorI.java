@@ -18,6 +18,11 @@ public class VektorI implements Serializable
         this.y = y;
     }
 
+    public void set(VektorI v){
+        this.x = v.x;
+        this.y = v.y;
+    }
+    
     /**
      * Vektoraddition
      */

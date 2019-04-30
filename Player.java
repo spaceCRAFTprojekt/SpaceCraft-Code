@@ -26,7 +26,7 @@ public class Player implements Serializable
     private PlayerS playerS;
     private PlayerC playerC;
     private boolean notActive = false; // wenn zum Beispiel ein Inventar oder das escape Menu offen ist
-    
+    private Mass currentMass;
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
@@ -36,9 +36,11 @@ public class Player implements Serializable
         this.space = space;
         this.name = name;
         //der Spawnpunkt muss nochmal überdacht werden
-        this.playerS=new PlayerS(this,new VektorL(0,0));
+        
         makeFrame();
-        this.playerC=new PlayerC(this, space.getSpawnPlanet(), new VektorD(50,50),frame);
+        currentMass = space.getSpawnMass();
+        this.playerS=new PlayerS(this,new VektorD(0,0), space.getMass(1));//currentMass);
+        this.playerC=new PlayerC(this, currentMass.getSandbox(), new VektorD(50,50),frame);
     }
     
     private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier
@@ -46,6 +48,7 @@ public class Player implements Serializable
         Listener l=new Listener(this);
         this.frame.addKeyListener(l);
         this.frame.addMouseListener(l);
+        this.frame.addMouseMotionListener(l);
         this.frame.addWindowListener(l);
         this.frame.addMouseWheelListener(l);
     }
@@ -168,7 +171,7 @@ public class Player implements Serializable
      */
     public void mouseEvent(MouseEvent e, char type) {
         if (inCraft)playerC.mouseEvent(e,type);
-        //else playerS.mouseEvent(e,type);
+        else playerS.mouseEvent(e,type);
     }
     
     public void windowEvent(WindowEvent e, char type){

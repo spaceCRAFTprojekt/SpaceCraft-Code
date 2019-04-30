@@ -25,6 +25,7 @@ History:
  13.04.2019 v0.1.1 AK * Kleine Änderungen und Kommentare für Linus (soweit ich es verstanden hab)
  18.04.2019 v0.1.2 LG * Settings, verwirrende Space-Berechnungen, Korrektur an Vektor(D/L/I).subtract
  30.04.2019 v0.1.3 AK * Suche des Fehlers in Craft; Mouse Events PlayerS Zeug (verschieben der Ansicht))
-
+ 30.04.2019 v.01.4_AK * PlayerS Ansicht; Änderungen in Listener; geom Vektor.set(Vektor v); Settings 
+                        CurrentPlanet im Player
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

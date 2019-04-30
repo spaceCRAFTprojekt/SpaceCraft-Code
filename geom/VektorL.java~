@@ -3,52 +3,51 @@ import java.lang.Math;
 import java.io.Serializable;
 
 /**
- * Simple Integer Vektor
+ * Simple Long Vektor
  * Bei Veränderung Bitte in der readme Datei erwähnen!!!
- * 0.0.2: SDivision ergänzt
  */
-public class VektorI implements Serializable
+public class VektorL implements Serializable
 {
-    public int x;
-    public int y;
+    public long x;
+    public long y;
 
-    public VektorI(int x, int y)
+    public VektorL(long x, long y)
     {
         this.x = x;
         this.y = y;
     }
-
-    public void set(Vektor v){
+    
+    public vset(VektorL v){
         this.x = v.x;
         this.y = v.y;
     }
-    
+
     /**
      * Vektoraddition
      */
-    public VektorI add(VektorI v)
+    public VektorL add(VektorL v)
     {
-        return new VektorI(v.x+x,v.y+y);
+        return new VektorL(v.x+x,v.y+y);
     }
     
-    public VektorI subtract(VektorI v){
-        return new VektorI(x-v.x,y-v.y);
+    public VektorL subtract(VektorL v){
+        return new VektorL(x-v.x,y-v.y);
     }
     
     /**
      * SMultiplikation
      */
-    public VektorI multiply(double s)
+    public VektorD multiply(double s)
     {
-        return new VektorI((int)(s*x),(int)(s*y));
+        return new VektorD(s*x,s*y);
     }
     
     /**
      * SDivision
      */
-    public VektorI divide(double s)
+    public VektorD divide(double s)
     {
-        return new VektorI((int)(x/s),(int)(y/s));
+        return new VektorD(x/s,y/s);
     }
     
     /**
@@ -73,6 +72,6 @@ public class VektorI implements Serializable
      */
     public String toString()
     {
-        return "VektorI["+x+";"+y+"]";
+        return "VektorL["+x+";"+y+"]";
     }
 }

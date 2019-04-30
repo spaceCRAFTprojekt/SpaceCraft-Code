@@ -46,7 +46,7 @@ public class Listener implements MouseListener, KeyListener, WindowListener, Mou
     public void mouseDragged(MouseEvent e){
         p.mouseEvent(e,'d');
     }
-    public void mouseMoved(MouseEvent e){}
+    public void
 
     public void mouseEntered(MouseEvent e) {}  // "Nichts ist besser als Nicht" ~ DSDS Teilnehmer
     public void mouseExited(MouseEvent e) {}

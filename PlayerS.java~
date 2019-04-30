@@ -20,7 +20,7 @@ public class PlayerS implements Serializable
     {
         this.player = player;
         this.posToMass=pos;
-        this.focussedMass = focussedMass;
+        this.focussedMass = focussendMass;
     }
     
     public PlayerS(Player player, VektorD pos)

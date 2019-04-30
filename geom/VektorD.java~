@@ -1,5 +1,6 @@
 package geom;
 import java.lang.Math;
+import java.io.Serializable;
 
 /**
  * Simple Integer Vektor
@@ -7,7 +8,7 @@ import java.lang.Math;
  * 0.0.1: erstellt
  * 0.0.2: SDivision und toIntFloor/Ceil ergänzt
  */
-public class VektorD
+public class VektorD implements Serializable
 {
     public double x;
     public double y;
@@ -18,12 +19,21 @@ public class VektorD
         this.y = y;
     }
 
+    public void set(Vektor v){
+        this.x = v.x;
+        this.y = v.y;
+    }
+    
     /**
      * Vektoraddition
      */
     public VektorD add(VektorD v)
     {
         return new VektorD(v.x+x,v.y+y);
+    }
+    
+    public VektorD subtract(VektorD v){
+        return new VektorD(x-v.x,y-v.y);
     }
     
     /**
@@ -39,7 +49,7 @@ public class VektorD
      */
     public VektorD divide(double s)
     {
-        return new VektorD((x/s),(/s));
+        return new VektorD((x/s),(y/s));
     }
     
     /**
@@ -55,7 +65,11 @@ public class VektorD
      */
     public VektorI toInt()
     {
-        return new VektorI((int)x,(int)y);
+        return new VektorI((int) Math.round(x),(int) Math.round(y));
+    }
+    
+    public VektorL toLong(){
+        return new VektorL(Math.round(x),Math.round(y));
     }
     
     /**
