@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 /**
  * ein Spieler in der Space Ansicht
+ * te
  */
 public class PlayerS implements Serializable
 {
@@ -20,7 +21,7 @@ public class PlayerS implements Serializable
     {
         this.player = player;
         this.posToMass=pos;
-        this.focussedMass = focussendMass;
+        this.focussedMass = focussedMass;
     }
     
     public PlayerS(Player player, VektorD pos)

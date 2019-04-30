@@ -1,7 +1,7 @@
 import geom.*;
 import java.io.Serializable;
 public class KOrbit implements OrbitI, Serializable{
-    //static final double G=Space.G;
+    static final double G=Space.G;
     public int t0;
     public int t1;
     public VektorL pos0;

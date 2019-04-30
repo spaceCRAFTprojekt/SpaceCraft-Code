@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 /**
  * ein Spieler in der Space Ansicht
+ * test
  */
 public class PlayerS implements Serializable
 {
