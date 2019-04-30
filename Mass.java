@@ -1,22 +1,23 @@
 import geom.*;
 import java.util.Timer;
+import java.util.ArrayList;
 import java.io.Serializable;
-/**
- * @author (your name here)
- * @version (version number or date here)
- */
 public abstract class Mass implements Serializable
 {
     protected Sandbox sb;
-    protected Orbit o;
     protected double m;
     protected VektorL pos;
+    protected VektorD vel;
+    protected Orbit o;
     protected transient Timer spaceTimer;
 
-    public Mass(double m, VektorL pos, Orbit o, Timer spaceTimer){
+    public Mass(double m, VektorL pos, VektorD vel, Timer spaceTimer){
         this.m = m;
         this.pos = pos;
-        this.o = o;
+        this.vel = vel;
+        ArrayList<VektorL> poss=new ArrayList<VektorL>();
+        poss.add(pos);
+        this.o=new Orbit(poss,0,0);
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
     }
@@ -39,6 +40,26 @@ public abstract class Mass implements Serializable
         return pos;
     }
     
+    public VektorD getVel(){
+        return vel;
+    }
+    
+    public void setPos(VektorL pos){
+        this.pos=pos;
+    }
+    
+    public void setVel(VektorD vel){
+        this.vel=vel;
+    }
+    
+    public Orbit getOrbit(){
+        return o;
+    }
+    
+    public void setOrbit(Orbit no){
+        o=no;
+    }
+    
     public void setSpaceTimer(Timer spaceTimer){
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
@@ -49,6 +70,6 @@ public abstract class Mass implements Serializable
     
     public static Mass sum(Mass m1, Mass m2){
         double mNew=m1.getMass()+m2.getMass();
-        return new PlanetS(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),null,"",0,0,0,null);
+        return new PlanetS(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)).toLong(),null,"",0,0,0,null);
     }
 }

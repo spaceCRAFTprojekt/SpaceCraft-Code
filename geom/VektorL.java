@@ -26,23 +26,23 @@ public class VektorL implements Serializable
     }
     
     public VektorL subtract(VektorL v){
-        return new VektorL(v.x-x,v.y-y);
+        return new VektorL(x-v.x,y-v.y);
     }
     
     /**
      * SMultiplikation
      */
-    public VektorL multiply(double s)
+    public VektorD multiply(double s)
     {
-        return new VektorL((int)(s*x),(int)(s*y));
+        return new VektorD(s*x,s*y);
     }
     
     /**
      * SDivision
      */
-    public VektorL divide(double s)
+    public VektorD divide(double s)
     {
-        return new VektorL((int)(x/s),(int)(y/s));
+        return new VektorD(x/s,y/s);
     }
     
     /**
@@ -67,7 +67,6 @@ public class VektorL implements Serializable
      */
     public String toString()
     {
-        return "VektorI["+x+";"+y+"]";
+        return "VektorL["+x+";"+y+"]";
     }
 }
-

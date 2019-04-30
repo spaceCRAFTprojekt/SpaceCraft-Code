@@ -28,7 +28,7 @@ public class VektorD implements Serializable
     }
     
     public VektorD subtract(VektorD v){
-        return new VektorD(v.x-x,v.y-y);
+        return new VektorD(x-v.x,y-v.y);
     }
     
     /**
@@ -60,7 +60,11 @@ public class VektorD implements Serializable
      */
     public VektorI toInt()
     {
-        return new VektorI((int)x,(int)y);
+        return new VektorI((int) Math.round(x),(int) Math.round(y));
+    }
+    
+    public VektorL toLong(){
+        return new VektorL(Math.round(x),Math.round(y));
     }
     
     /**

@@ -27,7 +27,7 @@ public class VektorI implements Serializable
     }
     
     public VektorI subtract(VektorI v){
-        return new VektorI(v.x-x,v.y-y);
+        return new VektorI(x-v.x,y-v.y);
     }
     
     /**

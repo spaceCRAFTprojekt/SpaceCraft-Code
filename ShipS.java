@@ -8,7 +8,7 @@ import java.io.ObjectStreamException;
  */
 public class ShipS extends Mass implements Serializable
 {
-    private ArrayList<OrbitChange> OrbitChanges = new ArrayList<OrbitChange>();
+    public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>(); //werden nie gelöscht, nicht gut
     
     /**
      * Erstellt einen neuen Raumschiffs
@@ -16,9 +16,9 @@ public class ShipS extends Mass implements Serializable
      * - Masse
      * - Position
      */
-    public ShipS(double m, VektorL pos, Timer spaceTimer)
+    public ShipS(double m, VektorL pos, VektorD vel, Timer spaceTimer)
     {
-        super(m,pos,null,spaceTimer); // steht still => kein Orbit
+        super(m,pos,vel,spaceTimer);
     }
     
     public Object readResolve() throws ObjectStreamException{

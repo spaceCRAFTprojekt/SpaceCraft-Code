@@ -170,7 +170,7 @@ public class Player implements Serializable
      * Spiel (für diesen Spieler) beenden!
      */
     public void exit(){
-        main.removePlayer(this.);
+        main.removePlayer(this);
         frame.dispose();
     }
     
@@ -184,7 +184,11 @@ public class Player implements Serializable
         }
         catch(Exception e){}
     }
+    /**
+     * wird kom
+     */
     public void repaint(){
         if(frame!=null)frame.repaint();
+        
     }
 }

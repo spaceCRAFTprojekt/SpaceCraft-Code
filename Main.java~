@@ -37,7 +37,7 @@ public class Main implements Serializable
      * boolean useOldData: true = "alten" Spielstand laden
      *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
      */
-    public static Main newMain(boolean useOldData){
+    public staticMain newMain(boolean useOldData){
         if (useOldData && new File(folder+File.separator+blocksfilename+fileEnding).exists() &&
                           new File(folder+File.separator+spacefilename+fileEnding).exists() &&
                           new File(folder+File.separator+playersfilename+fileEnding).exists() &&

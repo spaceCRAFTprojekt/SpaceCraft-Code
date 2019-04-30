@@ -23,6 +23,8 @@ History:
  11.04.2019 v0.0.6 LG * Timer
  12.04.2019 v0.1.0 LG * Zusammenführung mit v0.0.7_AK !Auf keinen Fall verwenden!
  13.04.2019 v0.1.1 AK * Kleine Änderungen und Kommentare für Linus (soweit ich es verstanden hab)
+ 18.04.2019 v0.1.2 LG * Settings, verwirrende Space-Berechnungen, Korrektur an Vektor(D/L/I).subtract
+ 30.04.2019 v0.1.3 AK * Suche des Fehlers in Craft; Mouse Events PlayerS Zeug (verschieben der Ansicht))
 
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

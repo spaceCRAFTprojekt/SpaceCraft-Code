@@ -16,8 +16,10 @@ public class PlayerC implements Serializable
     public static long PLAYERC_TIMER_PERIOD=30;
     private transient Timer timer;
     
+    // überarbeiten @Benny
     static VektorI fieldOfView = new VektorI(29,19);  // Anzahl an Blöcken, die man als Spieler um sich herum sieht
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
+    
     private Player player;
     private Sandbox sandbox;
     private VektorD pos;
@@ -70,13 +72,13 @@ public class PlayerC implements Serializable
         if (type == 'p'){
             //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
             switch(Character.toLowerCase(e.getKeyChar())){
-                case 'w': pos.y=pos.y - 1; // up
+                case 'w': pos.y=pos.y - 0.3; // up
                     break;
-                case 's': pos.y=pos.y + 1; // down
+                case 's': pos.y=pos.y + 0.3; // down
                     break;
-                case 'a': pos.x=pos.x - 1; // left
+                case 'a': pos.x=pos.x - 0.3; // left
                     break;
-                case 'd': pos.x=pos.x + 1; // right
+                case 'd': pos.x=pos.x + 0.; // right
                     break;
             }
             System.out.println(pos.toString());
@@ -105,7 +107,7 @@ public class PlayerC implements Serializable
      */
     public void paint(Graphics g, VektorI screenSize){
         sandbox.paint(g, screenSize, pos, blockBreite);
-        g.drawImage(texture, (screenSize.x-20)/2, (screenSize.y-32)/2,40, 64, null);
+        g.drawImage(texture, (screenSize.x-20)/2, (screenSize.y-32)/2,80, 128, null);  // Die letzten Zahlen sollten 40 und 64 sein!!!
     }
     
     public void repaint(){

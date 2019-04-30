@@ -4,7 +4,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowEvent;
-public class Listener implements MouseListener, KeyListener, WindowListener{
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
+public class Listener implements MouseListener, KeyListener, WindowListener, MouseWheelListener{
     Player p;
     public Listener(Player p){
         this.p=p;
@@ -41,6 +43,10 @@ public class Listener implements MouseListener, KeyListener, WindowListener{
     
     public void windowClosing(WindowEvent e){
         p.windowEvent(e,'c');
+    }
+    
+    public void mouseWheelMoved(MouseWheelEvent e){
+        p.mouseWheelMoved(e);
     }
     
     public void windowActivated(WindowEvent e){}

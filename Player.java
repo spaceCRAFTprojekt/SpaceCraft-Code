@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.MouseWheelEvent;
 import javax.swing.JButton;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
@@ -17,7 +18,7 @@ import java.io.ObjectOutputStream;
  */
 public class Player implements Serializable
 {
-    private transient Main main; //Referenz auf den Server, wird nicht gespeichert (logischerweise)
+    private transient Main main; //Referenz auf den "Server", wird nicht gespeichert (logischerweise)
     private String name;
     private transient Space space; // mein privater Weltraum xD
     private boolean inCraft = true;
@@ -25,6 +26,7 @@ public class Player implements Serializable
     private PlayerS playerS;
     private PlayerC playerC;
     private boolean notActive = false; // wenn zum Beispiel ein Inventar oder das escape Menu offen ist
+    
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
@@ -34,9 +36,9 @@ public class Player implements Serializable
         this.space = space;
         this.name = name;
         //der Spawnpunkt muss nochmal überdacht werden
-        this.playerS=new PlayerS(this);
+        this.playerS=new PlayerS(this,new VektorL(0,0));
         makeFrame();
-        this.playerC=new PlayerC(this, space.getSpawnPlanet(), new VektorD(100,50),frame);
+        this.playerC=new PlayerC(this, space.getSpawnPlanet(), new VektorD(50,50),frame);
     }
     
     private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier
@@ -45,6 +47,11 @@ public class Player implements Serializable
         this.frame.addKeyListener(l);
         this.frame.addMouseListener(l);
         this.frame.addWindowListener(l);
+        this.frame.addMouseWheelListener(l);
+    }
+    
+    public Space getSpace(){
+        return space;
     }
     
     public void setSpace(Space s){ //nur für nach der Deserialisierung, damit alle Spieler den selben Space erhalten
@@ -85,7 +92,7 @@ public class Player implements Serializable
     */
     public void toCraft()
     {
-        if (inCraft)return; // wenn der Spieler schon in der Space Ansicht ist, dann wird nichts getan
+        if (inCraft)return; // wenn der Spieler schon in der Craft Ansicht ist, dann wird nichts getan
         inCraft = true;
         repaint();
     }
@@ -138,8 +145,17 @@ public class Player implements Serializable
                 break;
             default:
                 if (inCraft)playerC.keyEvent(e,type);
-                //else playerS.keyEvent(e,type);
+                else playerS.keyEvent(e,type);
         }
+    }
+    
+    /**
+     * Mausrad"Event"
+     * @param:
+     * irgend ein EventObjekt; Keine Ahnung was das kann
+     */
+    public void mouseWheelMoved(MouseWheelEvent e){
+        if(!inCraft)playerS.mouseWheelMoved(e);
     }
     
     /**
@@ -178,11 +194,10 @@ public class Player implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
-        try{
-            if (inCraft && g!=null)playerC.paint(g, screenSize);
+        if (g!=null){
+            if (inCraft)playerC.paint(g, screenSize);
             else playerS.paint(g, screenSize);
         }
-        catch(Exception e){}
     }
     public void repaint(){
         if(frame!=null)frame.repaint();

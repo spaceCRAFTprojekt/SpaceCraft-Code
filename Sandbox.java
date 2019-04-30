@@ -105,7 +105,7 @@ public abstract class Sandbox implements Serializable
      * und zu verbessern. Man kann z.B. zur Zeit nur ganze Koordianten darstellen...
      */
     public VektorD getUpperLeftCorner(VektorD pos){
-        return pos.add( PlayerC.fieldOfView.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
+        return pos.add( Settings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
     }
     
     /**
@@ -129,11 +129,11 @@ public abstract class Sandbox implements Serializable
      */
     public void paint(Graphics g, VektorI screenSize, VektorD pos, int blockBreite){
         VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        VektorI bottomRightCorner = upperLeftCorner.add(PlayerC.fieldOfView);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+        VektorI bottomRightCorner = upperLeftCorner.add(Settings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
         
         ColorModel cm=ColorModel.getRGBdefault();
-        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(PlayerC.fieldOfView.x*blockBreite,PlayerC.fieldOfView.y*blockBreite),false,new Hashtable<String,Object>());
+        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(Settings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,Settings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
         int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         
@@ -165,7 +165,7 @@ public abstract class Sandbox implements Serializable
                     BufferedImage img=blockImages.get(block.getName());
                     int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
                     for (int i=0;i<blockBreite;i++){
-                        int index = ((y-upperLeftCorner.y)*blockBreite + i)*PlayerC.fieldOfView.x*blockBreite + (x-upperLeftCorner.x)*blockBreite;
+                        int index = ((y-upperLeftCorner.y)*blockBreite + i)*Settings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + (x-upperLeftCorner.x)*blockBreite;
                         System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
                     }
                 }

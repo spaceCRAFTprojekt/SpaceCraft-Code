@@ -23,9 +23,9 @@ public class PlanetS extends Mass implements Serializable
      * - Planetanziehungskraft
      * - Licht
      */
-    public PlanetS(double m, VektorL pos, Orbit o,String name, int radius, double gravity, int lightSource, Timer spaceTimer)
+    public PlanetS(double m, VektorL pos, VektorD vel, String name, int radius, double gravity, int lightSource, Timer spaceTimer)
     {
-        super(m,pos,o,spaceTimer);
+        super(m,pos,vel,spaceTimer);
         this.gravity = gravity;
         this.name = name;
         this.lightSource = lightSource;
@@ -44,6 +44,10 @@ public class PlanetS extends Mass implements Serializable
     public Sandbox getSandbox()
     {
         return planetC;
+    }
+    
+    public int getRadius(){
+        return radius;
     }
     
     @Override

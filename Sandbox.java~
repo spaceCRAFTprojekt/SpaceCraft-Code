@@ -15,7 +15,7 @@ import java.io.IOException;
  * Eine virtuelle Umgebung aus Blöcken
  * 
  * @Benny: Bitte bedenke, dass die Sandboxes mit dem Serializer gespeichert werden können müssen (teutsche Sprache, swerer Schprache) und du Änderungen
- * a
+ * auch dort hinzufügen musst. Wie immer ist Linus dein Ansprechpatner
  */
 public abstract class Sandbox implements Serializable
 {
@@ -96,13 +96,8 @@ public abstract class Sandbox implements Serializable
     }
     
     /**
-     * Gibt die obere rechte Ecke (int Blöcken) der Spieleransicht an
+     * Gibt die obere rechte Ecke (in Blöcken) der Spieleransicht an
      * @param: pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
-     * 
-     * @Benny:
-     * Das hat Linus programmiert. Die Bilder aller Blöcke werden zuerst zusammengeführt in ein großes Bild und dann nur dieses Bild "gezeichnet". 
-     * Das ist deutlich schneller als jedes Bild einzeln zu zeichen. Bitte setz dich mit Linus (König der Kommentare) in Verbindung um das zu verstehen
-     * und zu verbessern. Man kann z.B. zur Zeit nur ganze Koordianten darstellen...
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         return pos.add( PlayerC.fieldOfView.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
@@ -126,21 +121,28 @@ public abstract class Sandbox implements Serializable
      * @param: 
      * pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
      * blockBreite: Breite eines Blocks in Pixeln
+     *  
+     * @Benny:
+     * Das hat Linus programmiert. Die Bilder aller Blöcke werden zuerst zusammengeführt in ein großes Bild und dann nur dieses Bild "gezeichnet". 
+     * Das ist deutlich schneller als jedes Bild einzeln zu zeichen. Bitte setz dich mit Linus (König der Kommentare) in Verbindung um das zu verstehen
+     * und zu verbessern. Man kann z.B. zur Zeit nur ganze Koordianten darstellen...
      */
     public void paint(Graphics g, VektorI screenSize, VektorD pos, int blockBreite){
-        VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        VektorI bottomRightCorner = upperLeftCorner.add(PlayerC.fieldOfView);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+        VektorD upperLeftCorner = getUpperLeftCorner(pos);  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+        VektorD bottomRightCorner = upperLeftCorner.add(PlayerC.fieldOfView.toDouble());  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
         
         ColorModel cm=ColorModel.getRGBdefault();
-        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(PlayerC.fieldOfView.x*blockBreite,PlayerC.fieldOfView.y*blockBreite),false,new Hashtable<String,Object>());
+        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster((PlayerC.fieldOfView.x+1)*blockBreite,
+                                                                                   (PlayerC.fieldOfView.y+1)*blockBreite),
+                                                                               false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
         int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         
         Hashtable<String,BufferedImage> blockImages=new Hashtable<String,BufferedImage>(); //Skalierung
-        for (int x = upperLeftCorner.x; x<=bottomRightCorner.x; x++){
-            for (int y = upperLeftCorner.y; y<=bottomRightCorner.y; y++){
-                Block block=map[x][y];
+        for (int x = (int)upperLeftCorner.x; x<=bottomRightCorner.x+1; x++){   // (int)Double : abrunden des double Wertes!!! vgl. java.util.Math.floor(s)
+            for (int y = (int)upperLeftCorner.y; y<=bottomRightCorner.y+1; y++){  // +1: das Bild ist immer einen Block größer, damit halbe Koords dargestellt werden können
+                Block block=map[(int)x][(int)y];
                 if (block!=null && blockImages.get(block.getName())==null){
                     BufferedImage img=block.getImage();
                     Hashtable<String,Object> properties=new Hashtable<String,Object>();
@@ -158,20 +160,21 @@ public abstract class Sandbox implements Serializable
             }
         }
         
-        for (int x = upperLeftCorner.x; x<bottomRightCorner.x; x++){
-            for (int y = upperLeftCorner.y; y<bottomRightCorner.y; y++){
-                Block block = map[x][y];
+        for (int x = (int)upperLeftCorner.x; x<bottomRightCorner.x+1; x++){
+            for (int y = (int)upperLeftCorner.y; y<bottomRightCorner.y+1; y++){
+                Block block = map[(inx][(int)y];
                 if(block != null){
                     BufferedImage img=blockImages.get(block.getName());
                     int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
                     for (int i=0;i<blockBreite;i++){
-                        int index = ((y-upperLeftCorner.y)*blockBreite + i)*PlayerC.fieldOfView.x*blockBreite + (x-upperLeftCorner.x)*blockBreite;
+                        int index = (int)(((y-upperLeftCorner.y)*blockBreite + i)*PlayerC.fieldOfView.x*blockBreite + (x-upperLeftCorner.x)*(double)blockBreite);
                         System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
                     }
                 }
             }
         }
-        g.setColor(new Color(0,0,0,1));
-        g.drawImage(image,0,0,new Color(0,0,0,255),null);
+        g.setColor(Color.blue);
+        g.drawImage(image,(int)(((double)((int)upperLeftCorner.x)-upperLeftCorner.x) * (double)blockBreite),
+                          (int)(((double)((int)upperLeftCorner.y)-upperLeftCorner.y) * (double)blockBreite),new Color(0,0,0,255),null);
     }
 }
