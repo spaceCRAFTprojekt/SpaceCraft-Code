@@ -27,5 +27,8 @@ History:
  30.04.2019 v0.1.3 AK * Suche des Fehlers in Craft; Mouse Events PlayerS Zeug (verschieben der Ansicht))
  30.04.2019 v.01.4_AK * PlayerS Ansicht; Änderungen in Listener; geom Vektor.set(Vektor v); Settings 
                         CurrentPlanet im Player
+ 30.04.2019 v.01.5_AK * PlayerS Ansicht; focusMass fertig; Änderungen in Settings und Shortcuts. Versuch
+                        InfoPopups zu implementieren
+                        
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
