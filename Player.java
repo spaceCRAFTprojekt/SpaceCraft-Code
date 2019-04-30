@@ -34,7 +34,7 @@ public class Player implements Serializable
         this.space = space;
         this.name = name;
         //der Spawnpunkt muss nochmal überdacht werden
-        this.playerS=new PlayerS(this);
+        this.playerS=new PlayerS(this,new VektorD(0,0));
         makeFrame();
         this.playerC=new PlayerC(this, space.getSpawnPlanet(), new VektorD(100,50),frame);
     }
@@ -45,6 +45,10 @@ public class Player implements Serializable
         this.frame.addKeyListener(l);
         this.frame.addMouseListener(l);
         this.frame.addWindowListener(l);
+    }
+    
+    public Space getSpace(){
+        return space;
     }
     
     public void setSpace(Space s){ //nur für nach der Deserialisierung, damit alle Spieler den selben Space erhalten
@@ -178,11 +182,10 @@ public class Player implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
-        try{
-            if (inCraft && g!=null)playerC.paint(g, screenSize);
+        if (g!=null){
+            if (inCraft)playerC.paint(g, screenSize);
             else playerS.paint(g, screenSize);
         }
-        catch(Exception e){}
     }
     public void repaint(){
         if(frame!=null)frame.repaint();

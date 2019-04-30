@@ -18,7 +18,7 @@ import java.io.IOException;
 public class Serializer{
     public static void serialize(Main main){
         try{
-            FileOutputStream fos=new FileOutputStream(Main.folder+File.separator+"main.ser");
+            FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+"main.ser");
             //nur eine (fast) leere Datei wird dorthin geschrieben, lässt sich das nicht vermeiden?
             ObjectOutputStream oos=new ObjectOutputStream(fos);
             oos.writeObject(main);
@@ -29,7 +29,7 @@ public class Serializer{
     }
     
     public static Main deserialize() throws IOException,ClassNotFoundException{
-        FileInputStream fis=new FileInputStream(Main.folder+File.separator+"main.ser");
+        FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+"main.ser");
         ObjectInputStream ois=new ObjectInputStream(fis);
         Main main = (Main) ois.readObject();
         return main;

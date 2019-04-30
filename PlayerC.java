@@ -13,10 +13,8 @@ import java.io.ObjectStreamException;
  */
 public class PlayerC implements Serializable
 {
-    public static long PLAYERC_TIMER_PERIOD=30;
     private transient Timer timer;
     
-    static VektorI fieldOfView = new VektorI(29,19);  // Anzahl an Blöcken, die man als Spieler um sich herum sieht
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
     private Player player;
     private Sandbox sandbox;
@@ -41,7 +39,7 @@ public class PlayerC implements Serializable
             public void run(){
                 repaint();
             }
-        },0,PLAYERC_TIMER_PERIOD);
+        },0,Settings.PLAYERC_TIMER_PERIOD);
     }
     
     Object readResolve() throws ObjectStreamException{

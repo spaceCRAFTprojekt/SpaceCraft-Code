@@ -20,8 +20,7 @@ import java.io.ObjectInputStream;
  */
 public class Main implements Serializable
 {
-    static String folder="."+File.separator+"gamesaves";
-    static String spacefilename="space";
+    static String spacefilename="space"; //sollteen die in Settings sein?
     static String playersfilename="players";
     static String shipCfilename="shipC";
     static String planetCfilename="planetC";
@@ -38,6 +37,7 @@ public class Main implements Serializable
      *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
      */
     public static Main newMain(boolean useOldData){
+        String folder=Settings.GAMESAVE_FOLDER;
         if (useOldData && new File(folder+File.separator+blocksfilename+fileEnding).exists() &&
                           new File(folder+File.separator+spacefilename+fileEnding).exists() &&
                           new File(folder+File.separator+playersfilename+fileEnding).exists() &&
@@ -48,25 +48,33 @@ public class Main implements Serializable
             }
             catch(Exception e){}
         }
+        for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
+            file.delete();
         return new Main();
     }
     
+    public static Main newMain(){
+        return newMain(false);
+    }
     
     /**
      * Konstruktor
      */
     private Main()
     {
-        System.out.println("SpaceCraft startet");
-        space = new Space();
+        System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+        space = new Space(10); //10-fache Beschleunigung im Space
         newPlayer("Singleplayer");
     }
     
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
+     * Instruktionen zur Serialisierung, siehe Readme.
+     * LG
      */
     private Object writeReplace() throws ObjectStreamException{
+        String folder=Settings.GAMESAVE_FOLDER;
         new File(folder).mkdirs();
         
         HashMap<Integer,Block> blocks=Blocks.blocks; //Blöcke
@@ -133,8 +141,11 @@ public class Main implements Serializable
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
+     * Setup-Funktion, aufgerufen nach der Deserialisierung.
+     * LG
      */
     public Object readResolve() throws ObjectStreamException{
+        String folder=Settings.GAMESAVE_FOLDER;
         if (!new File(folder).isDirectory()){
             System.out.println("Folder "+folder+" does not exist.");
             return null;
@@ -268,11 +279,13 @@ public class Main implements Serializable
         Player p=new Player(name, space);
         p.setMain(this);
         players.add(p);
+        p.toSpace();
         return "Spieler " + name + " erfolgreich erstellt";
     }
     
     /**
      * Löscht einen vorhanden Spieler; Beendet das Spiel wenn kein Spieler mehr da ist
+     * Sollte den Spieler auch noch irgendwo speichern, oder?
      */
     public void removePlayer(String name){
         Player p = getPlayer(name);
@@ -284,6 +297,7 @@ public class Main implements Serializable
     
     /**
      * Löscht einen vorhanden Spieler; Beendet das Spiel wenn kein Spieler mehr da ist
+     * Sollte den Spieler auch noch irgendwo speichern, oder?
      */
     public void removePlayer(Player p){
         players.remove(p);
@@ -296,7 +310,7 @@ public class Main implements Serializable
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
     public void close(){
-        System.out.println("close()");
+        System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
         Serializer.serialize(this);
         System.exit(0);
     }

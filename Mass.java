@@ -1,22 +1,23 @@
 import geom.*;
 import java.util.Timer;
+import java.util.ArrayList;
 import java.io.Serializable;
-/**
- * @author (your name here)
- * @version (version number or date here)
- */
 public abstract class Mass implements Serializable
 {
     protected Sandbox sb;
-    protected Orbit o;
     protected double m;
-    protected VektorL pos;
+    protected VektorD pos;
+    protected VektorD vel;
+    protected Orbit o;
     protected transient Timer spaceTimer;
 
-    public Mass(double m, VektorL pos, Orbit o, Timer spaceTimer){
+    public Mass(double m, VektorD pos, VektorD vel, Timer spaceTimer){
         this.m = m;
         this.pos = pos;
-        this.o = o;
+        this.vel = vel;
+        ArrayList<VektorD> poss=new ArrayList<VektorD>();
+        poss.add(pos);
+        this.o=new Orbit(poss,0,0);
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
     }
@@ -35,8 +36,28 @@ public abstract class Mass implements Serializable
         return m;
     }
     
-    public VektorL getPos(){
+    public VektorD getPos(){
         return pos;
+    }
+    
+    public VektorD getVel(){
+        return vel;
+    }
+    
+    public void setPos(VektorD pos){
+        this.pos=pos;
+    }
+    
+    public void setVel(VektorD vel){
+        this.vel=vel;
+    }
+    
+    public Orbit getOrbit(){
+        return o;
+    }
+    
+    public void setOrbit(Orbit no){
+        o=no;
     }
     
     public void setSpaceTimer(Timer spaceTimer){

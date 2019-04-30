@@ -29,7 +29,7 @@ public class EscapeMenu extends JFrame {
         this.p = p;
         this.setTitle("Pause");
         this.setSize(225,270);
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); // warum geht das nicht??
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
                 public void WindowClosing(WindowEvent e) {
                     closeMenu();
@@ -87,7 +87,6 @@ public class EscapeMenu extends JFrame {
             
         // Bringt diese "Platte" = Pane auf das Fenster (JFrame) 
         this.add(contentPane);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }

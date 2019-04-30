@@ -1,33 +1,16 @@
+import geom.*;
 import java.io.Serializable;
 /**
- * Write a description of class OrbitChange here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * Eine Kraft, die für eine bestimmte Zeit wirkt.
  */
 public class OrbitChange implements Serializable
 {
-    // instance variables - replace the example below with your own
-    private int x;
-
-    /**
-     * Constructor for objects of class OrbitChange
-     */
-    public OrbitChange()
-    {
-        // initialise instance variables
-        x = 0;
-    }
-
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
-     */
-    public int sampleMethod(int y)
-    {
-        // put your code here
-        return x + y;
+    VektorD F;
+    long t0; //inGame-Zeiten
+    long t1;
+    public OrbitChange(VektorD F, long t0, long t1){
+        this.F=F;
+        this.t0=t0;
+        this.t1=t1;
     }
 }
