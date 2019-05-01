@@ -17,16 +17,25 @@ public class VektorI implements Serializable
         this.x = x;
         this.y = y;
     }
-    
+
     public VektorI(MouseEvent e){
         this(e.getX(), e.getY());
+    }
+
+    public VektorI(int dir){
+        switch(dir){
+            case 0: x = 0; y = 1; break;
+            case 1: x = 1; y = 0; break;
+            case 2: x = 0; y =-1; break;
+            case 3: x =-1; y = 0; break;
+        }
     }
 
     public void set(VektorI v){
         this.x = v.x;
         this.y = v.y;
     }
-    
+
     /**
      * Vektoraddition
      */
@@ -34,11 +43,11 @@ public class VektorI implements Serializable
     {
         return new VektorI(v.x+x,v.y+y);
     }
-    
+
     public VektorI subtract(VektorI v){
         return new VektorI(x-v.x,y-v.y);
     }
-    
+
     /**
      * SMultiplikation
      */
@@ -46,7 +55,7 @@ public class VektorI implements Serializable
     {
         return new VektorI((int)(s*x),(int)(s*y));
     }
-    
+
     /**
      * SDivision
      */
@@ -54,7 +63,7 @@ public class VektorI implements Serializable
     {
         return new VektorI((int)(x/s),(int)(y/s));
     }
-    
+
     /**
      * Betrag des Vektors
      */
@@ -62,7 +71,7 @@ public class VektorI implements Serializable
     {
         return Math.hypot(x,y);
     }
-    
+
     /**
      * Gibt einen Double-Vektor zurück
      */
@@ -70,7 +79,7 @@ public class VektorI implements Serializable
     {
         return new VektorD((double)x,(double)y);
     }
-    
+
     /**
      * Gibt einen String zurück, der den Vektor beschreibt:
      * VektorI[x;y]

@@ -29,6 +29,6 @@ History:
                         CurrentPlanet im Player
  30.04.2019 v.01.5_AK * PlayerS Ansicht; focusMass fertig; Änderungen in Settings und Shortcuts. Versuch
                         InfoPopups zu implementieren
-                        
+ 31.04.2019 v.01.5_AK * Änderungen bei Blöcken. Versuch Pistons zu implementieren
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

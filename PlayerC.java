@@ -14,7 +14,7 @@ import java.io.ObjectStreamException;
 public class PlayerC implements Serializable
 {
     private transient Timer timer;
-    
+
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
     private Player player;
     private Sandbox sandbox;
@@ -29,26 +29,26 @@ public class PlayerC implements Serializable
         this.timer=new Timer();
         timerSetup();
     }
-    
+
     private void makeTexture(){
         texture = ImageTools.get('C',"player_texture");
     }
-    
+
     private void timerSetup(){
         timer.schedule(new TimerTask(){
-            public void run(){
-                repaint();
-            }
-        },0,Settings.PLAYERC_TIMER_PERIOD);
+                public void run(){
+                    repaint();
+                }
+            },0,Settings.PLAYERC_TIMER_PERIOD);
     }
-    
+
     Object readResolve() throws ObjectStreamException{
         this.makeTexture();
         this.timer=new Timer();
         this.timerSetup();
         return this;
     }
-    
+
     /**
      * Setze Spieler in einer andere Sandbox
      */
@@ -56,7 +56,7 @@ public class PlayerC implements Serializable
         this.sandbox = sandbox;
         this.pos = pos;
     }
-    
+
     /**
      * Tastatur event
      * @param:
@@ -69,35 +69,41 @@ public class PlayerC implements Serializable
             //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
             switch(Character.toLowerCase(e.getKeyChar())){
                 case 'w': pos.y=pos.y - 1; // up
-                    break;
+                break;
                 case 's': pos.y=pos.y + 1; // down
-                    break;
+                break;
                 case 'a': pos.x=pos.x - 1; // left
-                    break;
+                break;
                 case 'd': pos.x=pos.x + 1; // right
-                    break;
+                break;
             }
             System.out.println(pos.toString());
         }
     }
-    
+
     /**
      * Maus Event
      * @param:
      *  char type: 'p': pressed
      *             'r': released
      *             'c': clicked
+     *             'd': dragged
      * entered und exited wurde nicht implementiert, weil es dafür bisher keine Verwendung gab
      */
     public void mouseEvent(MouseEvent e, char type) {
         if (type == 'c'){
-            VektorI clickPos = new VektorI(e.getX(), e.getY());
-            VektorI sPos = sandbox.getPosToPlayer(clickPos, pos, blockBreite);
-            System.out.println("Tried to block at "+sPos.toString());
-            sandbox.placeBlock(Blocks.blocks.get(2), sPos);
+            VektorI clickPos = new VektorI(e);
+                VektorI sPos = sandbox.getPosToPlayer(clickPos, pos, blockBreite);
+            if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
+                //System.out.println("Tried to break block at "+sPos.toString());
+                sandbox.breakBlock(sPos, player);
+            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
+                //System.out.println("Tried to place block at "+sPos.toString());
+                sandbox.rightclickBlock(Blocks.blocks.get(2), sPos, player);
+            }
         }
     }
-    
+
     /**
      * Grafik ausgeben
      */
@@ -105,7 +111,7 @@ public class PlayerC implements Serializable
         sandbox.paint(g, screenSize, pos, blockBreite);
         g.drawImage(texture, (screenSize.x-20)/2, (screenSize.y-32)/2,40, 64, null);
     }
-    
+
     public void repaint(){
         player.repaint();
     }

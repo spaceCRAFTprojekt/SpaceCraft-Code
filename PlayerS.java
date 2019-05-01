@@ -16,7 +16,7 @@ public class PlayerS implements Serializable
     private VektorD posToMass;
     private double scale=1; //eine Einheit im Space => scale Pixel auf dem Frame
     private Mass focussedMass;
-    private VektorI lastDragPosition = null;
+    private transient VektorI lastDragPosition = null;
     
     private JPopupMenu popupmenu;
     
@@ -64,7 +64,6 @@ public class PlayerS implements Serializable
      *             'r': released
      *             'c': clicked
      *             'd': dragged
-     * entered und exited wurde nicht implementiert, weil es dafür bisher keine Verwendung gab
      */
     public void mouseEvent(MouseEvent e, char type) {
         switch(type){

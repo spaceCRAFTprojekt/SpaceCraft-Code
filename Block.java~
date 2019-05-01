@@ -67,7 +67,7 @@ public class Block implements Serializable
     }
     
     public boolean onBreak(Player p){
-        return true;
+        r
     }
     
     public void onTimer(){

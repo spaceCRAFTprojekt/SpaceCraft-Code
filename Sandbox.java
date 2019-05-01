@@ -81,18 +81,49 @@ public abstract class Sandbox implements Serializable
     }
     
     /**
-     * Setzt einen Block in die Welt
+     * Rechtsklick auf einen Block in der Welt
+     * @param: ausgewählter Block im inv
      */
-    public boolean placeBlock(Block block, VektorI pos){
+    public void rightclickBlock(Block block, VektorI pos, Player p){
         try{
             if (map[pos.x][pos.y] == null){
-                map[pos.x][pos.y]=block; 
-                System.out.println("Block at "+pos.toString()+" placed!");
+                map[pos.x][pos.y]=new Blocks_Piston(this, pos ,0);//block; 
+                System.out.println("Block at "+pos.toString()+" placed by "+p.getName()+"!");
+            }else{
+                map[pos.x][pos.y].onRightclick();
+                System.out.println("Block at "+pos.toString()+" rightclicked by "+p.getName()+"!");
+            }
+        }catch(Exception e){ return; }
+    }
+    
+    /**
+     * Baut einen Block in die Welt ab
+     */
+    public boolean breakBlock(VektorI pos, Player p){
+        try{
+            if (map[pos.x][pos.y] != null){
+                if(!map[pos.x][pos.y].onBreak(p)){
+                    return false;
+                }
+                map[pos.x][pos.y] = null;
+                System.out.println("Block at "+pos.toString()+" breaked by "+p.getName()+"!");
                 return true;
             }else{
                 return false;
             }
         }catch(Exception e){ return false; }
+    }
+    
+    public void setBlock(VektorI pos, Block block){
+        try{
+            map[pos.x][pos.y] = block;
+        }catch(Exception e){ return; }
+    }
+    
+    public Block getBlock(VektorI pos){
+        try{
+            return map[pos.x][pos.y];
+        }catch(Exception e){ return null; }
     }
     
     /**

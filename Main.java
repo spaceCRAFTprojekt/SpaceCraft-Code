@@ -84,7 +84,7 @@ public class Main implements Serializable
             ObjectOutputStream bloO=new ObjectOutputStream(blo);
             for (int i=0;i<blocks.size();i++){
                 bloO.writeObject(blocks.get(i).getName());
-                bloO.writeObject(blocks.get(i).getImageString());
+                //bloO.writeObject(blocks.get(i).getImageString());
             }
         }
         catch(Exception e){
