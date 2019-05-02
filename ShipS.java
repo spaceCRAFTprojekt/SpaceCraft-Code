@@ -16,7 +16,7 @@ public class ShipS extends Mass implements Serializable
      * - Masse
      * - Position
      */
-    public ShipS(double m, VektorL pos, VektorD vel, Timer spaceTimer)
+    public ShipS(double m, VektorD pos, VektorD vel, Timer spaceTimer)
     {
         super(m,pos,vel,spaceTimer);
     }

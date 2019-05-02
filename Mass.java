@@ -6,16 +6,16 @@ public abstract class Mass implements Serializable
 {
     protected Sandbox sb;
     protected double m;
-    protected VektorL pos;
+    protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
     protected VektorD vel;
     protected Orbit o;
     protected transient Timer spaceTimer;
 
-    public Mass(double m, VektorL pos, VektorD vel, Timer spaceTimer){
+    public Mass(double m, VektorD pos, VektorD vel, Timer spaceTimer){
         this.m = m;
         this.pos = pos;
         this.vel = vel;
-        ArrayList<VektorL> poss=new ArrayList<VektorL>();
+        ArrayList<VektorD> poss=new ArrayList<VektorD>();
         poss.add(pos);
         this.o=new Orbit(poss,0,0);
         this.spaceTimer=spaceTimer;
@@ -36,7 +36,7 @@ public abstract class Mass implements Serializable
         return m;
     }
     
-    public VektorL getPos(){
+    public VektorD getPos(){
         return pos;
     }
     
@@ -44,7 +44,7 @@ public abstract class Mass implements Serializable
         return vel;
     }
     
-    public void setPos(VektorL pos){
+    public void setPos(VektorD pos){
         this.pos=pos;
     }
     
@@ -70,6 +70,6 @@ public abstract class Mass implements Serializable
     
     public static Mass sum(Mass m1, Mass m2){
         double mNew=m1.getMass()+m2.getMass();
-        return new PlanetS(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)).toLong(),null,"",0,0,0,null);
+        return new PlanetS(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),null,"",0,0,0,null);
     }
 }
