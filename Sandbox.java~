@@ -107,6 +107,21 @@ public abstract class Sandbox implements Serializable
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
     }
+    
+    /**
+     * Linksklick auf einen Block in der Welt
+     */
+    public void leftclickBlock(VektorI pos, Player p){
+        try{
+            if (map[pos.x][pos.y] == null){
+                return;  // evtl. an Player weitergeben
+            }else{
+                breakBlock(pos);
+                System.out.println("Block at "+pos.toString()+" leftclicked by "+p.getName()+"!");
+            }
+        }catch(Exception e){ //block außerhalb der Map 
+        }
+    }
 
     public void placeBlock(Block block, VektorI pos, Player p){
         try{
@@ -134,7 +149,7 @@ public abstract class Sandbox implements Serializable
     public void breakBlock(VektorI pos, Player p){
         if (map[pos.x][pos.y] == null) return;
         try{
-            if (((SBlock)map[pos.x][pos.y]).onL(this, pos, p)){
+            if (((SBlock)map[pos.x][pos.y]).onB(this, pos, p)){
                 breakBlock(pos);
                 System.out.println("Block at "+pos.toString()+" breaked by "+p.getName()+"!");
             }

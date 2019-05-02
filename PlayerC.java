@@ -96,7 +96,7 @@ public class PlayerC implements Serializable
                 VektorI sPos = sandbox.getPosToPlayer(clickPos, pos, blockBreite);
             if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
-                sandbox.breakBlock(sPos, player);
+                sandbox.leftclickBlock(sPos, player);
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
                 sandbox.rightclickBlock(sPos, player);
