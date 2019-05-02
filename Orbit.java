@@ -7,16 +7,16 @@ import java.io.Serializable;
  * selben Zeit in Space (da es ein Mehrkörperproblem ist).
  */
 public class Orbit implements Serializable{
-    public ArrayList<VektorL> pos;
+    public ArrayList<VektorD> pos;
     public long t0;
     public long t1;
-    public Orbit(ArrayList<VektorL> pos, long t0, long t1){
+    public Orbit(ArrayList<VektorD> pos, long t0, long t1){
         this.pos=pos;
         //Zeiten im Spiel, nicht reale Zeiten
         this.t0=t0; //dieser Orbit ist gültig von t0 bis t1
         this.t1=t1;
     }
-    public VektorL getPos(long t){
+    public VektorD getPos(long t){
         if (t0>t || t1<=t){
             return null;
         }

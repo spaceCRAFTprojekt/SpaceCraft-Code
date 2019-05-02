@@ -63,8 +63,9 @@ public class Main implements Serializable
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        space = new Space(10); //10-fache Beschleunigung im Space
+        space = new Space(100); //10-fache Beschleunigung im Space
         newPlayer("Singleplayer");
+        getPlayer("Singleplayer").toSpace();
     }
     
     /**
