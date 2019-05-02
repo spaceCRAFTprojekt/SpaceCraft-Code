@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import geom.*;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
@@ -11,10 +12,7 @@ public class Block implements Serializable
     
     private transient BufferedImage img;
     private transient String name;
-    int dir = -1;
-    //   0     -1, wenn die Richtung egal ist, oder an die Map angepasst werden soll
-    // 3   1
-    //   2
+    
     /**
      * ...
      */
@@ -31,7 +29,7 @@ public class Block implements Serializable
     }
     
     /**
-     * Gibt die Farbe des Blocks zurück
+     * Gibt die Textur des Blocks zurück
      */
     public BufferedImage getImage()
     {
@@ -56,22 +54,6 @@ public class Block implements Serializable
     
     public int getID(){
         return id;
-    }
-    
-    public void onRightclick(){
-        
-    }
-    
-    public void onLeftClick(){
-        
-    }
-    
-    public boolean onBreak(Player p){
-        r
-    }
-    
-    public void onTimer(){
-        
     }
     
     public String toString(){

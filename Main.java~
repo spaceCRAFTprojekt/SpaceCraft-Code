@@ -57,14 +57,19 @@ public class Main implements Serializable
         return newMain(false);
     }
     
+    public static void main(String[]Args){
+        return newMain(false);
+    }
+    
     /**
      * Konstruktor
      */
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        space = new Space(10); //10-fache Beschleunigung im Space
+        space = new Space(100); //10-fache Beschleunigung im Space
         newPlayer("Singleplayer");
+        getPlayer("Singleplayer").toSpace();
     }
     
     /**
@@ -84,7 +89,7 @@ public class Main implements Serializable
             ObjectOutputStream bloO=new ObjectOutputStream(blo);
             for (int i=0;i<blocks.size();i++){
                 bloO.writeObject(blocks.get(i).getName());
-                /bloO.writeObject(blocks.get(i).getImageString());
+                //bloO.writeObject(blocks.get(i).getImageString());
             }
         }
         catch(Exception e){

@@ -1,0 +1,18 @@
+
+/**
+ * für alle Blöcke, die mehr als eine dekorative Funktion haben
+ * z.B.:
+ *  Kisten
+ *  Pistons
+ *  Cables
+ */
+public abstract class SpecialBlock extends Block
+{
+    /**
+     * ...
+     */
+    public SBlock(String name, String imageString)
+    {
+        super(name, imageString);
+    }
+}

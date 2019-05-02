@@ -57,6 +57,10 @@ public class Main implements Serializable
         return newMain(false);
     }
     
+    public static void main(String[]Args){
+        newMain(false);
+    }
+    
     /**
      * Konstruktor
      */

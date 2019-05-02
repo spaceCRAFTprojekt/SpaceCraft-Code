@@ -8,7 +8,7 @@ public class Blocks_Piston extends Block implements Serializable
     private transient BufferedImage imgOff;
     private boolean state;
     private transient Sandbox sb;
-    private transient VektorI pos;
+    private VektorI pos;
     public Blocks_Piston(Sandbox sb ,VektorI pos, int dir){
         super("Piston", "blocks_piston_off");
         this.imgOff = getImage();
@@ -42,6 +42,6 @@ public class Blocks_Piston extends Block implements Serializable
         if(sb.getBlock(pos2).getName() == "Piston Front"){
             sb.setBlock(pos2, null);
         }
-        r
+        return true;
     }
 }
