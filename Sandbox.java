@@ -134,11 +134,9 @@ public abstract class Sandbox implements Serializable
     public void breakBlock(VektorI pos, Player p){
         if (map[pos.x][pos.y] == null) return;
         try{
-            if (((SBlock)map[pos.x][pos.y]).onLeftclick(this, pos, p)){
+            if (((SBlock)map[pos.x][pos.y]).onPlace(this, pos, p)){
                 breakBlock(pos);
-                
                 System.out.println("Block at "+pos.toString()+" breaked by "+p.getName()+"!");
-                return true;
             }
         }catch(Exception e){}
     }

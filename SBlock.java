@@ -23,7 +23,7 @@ public abstract class SBlock extends Block
      * VektorI pos: Position des Blocks in dieser Sandbox
      * Player p: Spieler
      */
-    public abstract void onRightclick(Sandbox sb, VektorI pos, Player p);
+    public void onRightclick(Sandbox sb, VektorI pos, Player p){};
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block gelinksklickt wird
@@ -32,7 +32,7 @@ public abstract class SBlock extends Block
      * VektorI pos: Position des Blocks in dieser Sandbox
      * Player p: Spieler
      */
-    public abstract void onLeftclick(Sandbox sb, VektorI pos, Player p);
+    public void onLeftclick(Sandbox sb, VektorI pos, Player p){};
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler gesetzt wird

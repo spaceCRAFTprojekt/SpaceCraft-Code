@@ -99,7 +99,7 @@ public class PlayerC implements Serializable
                 sandbox.breakBlock(sPos, player);
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
-                sandbox.rightclickBlock(ne, sPos, player);
+                sandbox.rightclickBlock(), sPos, player);
             }
         }
     }
