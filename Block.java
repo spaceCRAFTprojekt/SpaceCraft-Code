@@ -18,8 +18,13 @@ public class Block implements Serializable
      */
     public Block(String name, String imageString)
     {
-        this.id=Blocks.blocks.size();
+        this(name);
         this.img = ImageTools.get('C', imageString);
+    }
+    
+    public Block(String name)
+    {
+        this.id=Blocks.blocks.size();
         this.name = name;
         Blocks.blocks.put(id,this);
     }

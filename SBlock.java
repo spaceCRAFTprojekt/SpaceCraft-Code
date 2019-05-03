@@ -16,6 +16,11 @@ public abstract class SBlock extends Block
         super(name, imageString);
     }
     
+    public SBlock(String name)
+    {
+        super(name);
+    }
+    
     /**
      * EVENT: wird aufgerufen, wenn ein Block gerechtsklickt wird
      * @param:

@@ -4,21 +4,30 @@ import java.io.Serializable;
 import java.io.ObjectStreamException;
 public class Blocks_Piston extends SBlock
 {
-    private transient BufferedImage imgOn;
-    private transient BufferedImage imgOff;
+    private static BufferedImage imgOn = ImageTools.get('C', "blocks_piston_on");;
+    private static BufferedImage imgOff = ImageTools.get('C', "blocks_piston_off");
     private boolean state;
     private Sandbox sb;
     private VektorI pos;
     public Blocks_Piston(){
-        super("Piston", "blocks_piston_off");
-        this.imgOff = getImage();
-        //this.dir = dir;
-        //this.sb = sb;
-        //this.pos = pos;
-        this.imgOn = ImageTools.get('C', "blocks_piston_on");
-        state = false;
+        super("Piston");
     }
     
+    public void onConstruct(){
+       Metadata meta = new Metadata(){
+           public int dir = 0;
+           public boolean state = false;
+       };
+    }
+    
+    /**
+     * Gibt die Textur des Blocks zurück
+     */
+    public BufferedImage getImage(Sandbox sb, VektorI pos)
+    {
+        Metadata meta = sb.getMetadata(pos);
+        return nu;
+    }
     
     public void onRightclick(){
         /*
@@ -42,7 +51,7 @@ public class Blocks_Piston extends SBlock
         VektorI pos2 = pos.add(new VektorI(dir).multiply(-1));
         if(sb.getBlock(pos2).getName() == "Piston Front"){
             sb.setBlock(pos2, null);
-        }
+        }*/
         return true;
     }
     
