@@ -8,4 +8,6 @@ public abstract class Settings{
     static long SPACE_TIMER_PERIOD=1000; //in Millisekunden
     static double SPACE_CALC_PERIOD_INGAME=0.1; //in Sekunden, so oft werden die Bahnen mit dem newtonschen Gravitationsgesetz berechnet
     static VektorI PLAYERC_FIELD_OF_VIEW = new VektorI(29,19);  // Anzahl an Blöcken, die man als Spieler (in Craft) um sich herum sieht
+    static int CRAFT_PISTON_PUSH_LIMIT = 4;  // Anzahl der Blöcke, die ein Piston nach vorne bewegen kann
+    static int MENU_FONT_SIZE = 12;
 }

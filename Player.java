@@ -139,7 +139,7 @@ public class Player implements Serializable
             case Shortcuts.open_escape_menu: 
                 if (type != 'p') break;
                 new EscapeMenu(this);
-                deactivate();
+                deactivate();   
                 break;
             case Shortcuts.change_space_craft:
                 if (type != 'p') break;

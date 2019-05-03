@@ -16,6 +16,7 @@ public abstract class Blocks
         new Block("dirt", "blocks_dirt"); 
         new Block("grass", "blocks_grass"); 
         new Blocks_Piston();
+        new Blocks_Note();
     }
     /**
      * gibt den Block mit der id zuück

@@ -200,7 +200,7 @@ public class Player implements Serializable
     }
     
     /**
-     * .
+     * ...
      */
     public Frame getFrame(){
         return frame;

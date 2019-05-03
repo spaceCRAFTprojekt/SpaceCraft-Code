@@ -38,12 +38,14 @@ public abstract class Sandbox implements Serializable
      */
     public Sandbox(VektorI size, Timer spaceTimer){
         map = new Block[size.x][size.y];
+        meta = new Meta[size.x][size.y];
         this.spaceTimer=spaceTimer;
         this.spaceTimerSetup();
     }
 
     public Sandbox(Block[][] map, ArrayList<Sandbox> subsandboxes, Timer spaceTimer){
         this.map=map;
+        
         this.subsandboxes=subsandboxes;
         this.spaceTimer=spaceTimer;
         this.spaceTimerSetup();
@@ -127,7 +129,7 @@ public abstract class Sandbox implements Serializable
             if (map[pos.x][pos.y] == null){
                 return;  // evtl. an Player weitergeben
             }else{
-                breakBlock(pos);
+                breakBlock(pos, p);
                 System.out.println("Block at "+pos.toString()+" leftclicked by "+p.getName()+"!");
             }
         }catch(Exception e){ //block außerhalb der Map 
@@ -191,7 +193,7 @@ public abstract class Sandbox implements Serializable
                 breakBlock(pos);
                 System.out.println("Block at "+pos.toString()+" breaked by "+p.getName()+"!");
             }
-        }catch(Exception e){}
+        }catch(Exception e){breakBlock(pos);}
     }
 
     /**

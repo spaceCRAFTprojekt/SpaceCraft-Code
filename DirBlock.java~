@@ -23,10 +23,10 @@ public class DirBlock extends SBlock
      * Sandbox sb: Sandbox, in der der Block ist
      * VektorI pos: Position des Blocks in dieser Sandbox
      */
-    public static void onConstruct(Sandbox sb, VektorI pos){
+    public void onConstruct(Sandbox sb, VektorI pos){
         Meta meta = new Meta();
         meta.put("dir" , 0);
-        sb.setMeta(pos, new Meta());
+        sb.setMeta(pos, met);
     }
     
     public static int getDir(Sandbox sb, VektorI pos){
