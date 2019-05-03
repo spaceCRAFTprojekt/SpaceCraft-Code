@@ -32,5 +32,6 @@ History:
  31.04.2019 v0.1.5_AK * Änderungen bei Blöcken. Versuch Pistons zu implementieren
  02.05.2019 v0.1.6_LG * Bugfix beim Stürzen in einen Planeten (aber noch keine Impulsaddition!), Zusammenführung mit v0.1.3_LG
  02.05.2019 v0.1.7_AK * Matadaten added; SBlock added; left/rightClick events in Craft erneuert
+ 03.05.2019 v0.1.7_AK * Blocks Framework fertig; Pistons implementiert; Änderung von Metadata in Meta 
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

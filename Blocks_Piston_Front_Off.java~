@@ -2,11 +2,10 @@ import geom.*;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-public class Blocks_PistonFront extends SBlock
+public class Blocks_Piston_Front_Off extends SBlock
 {
-    public Blocks_Piston_Front(){
+    public Blocks_Piston_Front_Off(){
         super("Piston Front", "blocks_pistonFront");
-        
     }
     
     
@@ -15,7 +14,7 @@ public class Blocks_PistonFront extends SBlock
     }
     
     public void onConstruct(int dir){
-       
+        
     }
     
 

@@ -23,7 +23,7 @@ import java.io.IOException;
 public abstract class Sandbox implements Serializable
 {
     public transient Block[][]map;
-    public transient Metadata[][]metadata;
+    public transient Meta[][]meta;
     // Sandboxen können Sandboxen enthalten (Kompositum). z.B.: Schiff auf Planet
     protected transient ArrayList<Sandbox> subsandboxes = new ArrayList<Sandbox>(); //Namensänderung, war früher "sandboxes"
     protected transient Timer spaceTimer; //nur eine Referenz
@@ -94,12 +94,18 @@ public abstract class Sandbox implements Serializable
     /***********************************************************************************************************************************************************
 
     /**
-     * Rechtsklick auf einen Block in der Welt
+     * Rechtsklick auf einen Block in der Welt:
+     *  wenn an der Stelle kein Block => plaziert Block
+     *  wenn an der Stelle ein Block => führt (wenn möglich) das onRightclick Event im Block aus
+     *  
+     *  @param:
+     *  * VektorI pos: Position des Blocks
+     *  * Player p: Spieler der rechtsklickt
      */
     public void rightclickBlock(VektorI pos, Player p){
         try{
             if (map[pos.x][pos.y] == null){
-                placeBlock(Blocks.get(2), pos, p);
+                placeBlock(Blocks.get(3), pos, p);
             }else{
                 ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, p);
                 System.out.println("Block at "+pos.toString()+" rightclicked by "+p.getName()+"!");
@@ -107,9 +113,14 @@ public abstract class Sandbox implements Serializable
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
     }
-    
+
     /**
      * Linksklick auf einen Block in der Welt
+     *  wenn an der Stelle ein Block => baut den Block ab
+     *  
+     *  @param:
+     *  * VektorI pos: Position des Blocks
+     *  * Player p: Spieler der linksklickt
      */
     public void leftclickBlock(VektorI pos, Player p){
         try{
@@ -123,6 +134,14 @@ public abstract class Sandbox implements Serializable
         }
     }
 
+    /**
+     * Spieler platziert einen Block, aber nur wenn das onPlace Event true zurückgibt
+     * 
+     * @param:
+     *  * Block block: Block der plaziert werden soll
+     *  * VektorI pos: Position des Blocks
+     *  * Player p: Spieler der den Block plaziert
+     */
     public void placeBlock(Block block, VektorI pos, Player p){
         try{
             if(!((SBlock)block).onPlace(this, pos, p))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
@@ -130,21 +149,40 @@ public abstract class Sandbox implements Serializable
         setBlock(block, pos);
         System.out.println("Block at "+pos.toString()+" placed by "+p.getName()+"!");
     }
-    
+
+    /**
+     * Ein Block wird ausnahmelos gesetzt. Die Metadaten werden aber überschrieben und das onConstruct Event aufgerufen
+     * 
+     * @param:
+     *  * Block block: Block der gesetzt werden soll
+     *  * VektorI pos: Position des Blocks
+     */
     public void setBlock(Block block, VektorI pos){
         swapBlock(block, pos);
-        metadata[pos.x][pos.y] = null;
+        removeMeta(pos);
         try{
             ((SBlock)block).onConstruct(this, pos);  // ruft onConstruct auf, wenn es ein Special Block ist. 
         }catch(Exception e){} // => kein SpecialBlock
     }
 
+    /**
+     * Ein Block wird ausnahmelos gesetzt. 
+     * !!! Die Metadaten bleiben aber erhalten !!!
+     * das onConstruct Event wird NICHT aubgerufen  
+     * 
+     * @param:
+     *  * Block block: Block der gesetzt werden soll
+     *  * VektorI pos: Position des Blocks
+     */
     public void swapBlock(Block block, VektorI pos){
         map[pos.x][pos.y]= block; 
     }
-    
+
     /**
-     * Baut einen Block in die Welt ab
+     * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurückgibt und löscht die Metadaten
+     * @param:
+     *  * VektorI pos: Position des Blocks
+     *  * Player p: Spieler der den Block abbaut
      */
     public void breakBlock(VektorI pos, Player p){
         if (map[pos.x][pos.y] == null) return;
@@ -155,28 +193,55 @@ public abstract class Sandbox implements Serializable
             }
         }catch(Exception e){}
     }
-    
+
     /**
-     * Entfernt einen Block in der Welt
+     * Entfernt einen Block ausnahmelos in der Welt. Entfernt die Metadaten und ruft das onDestruct() Event auf.
+     * 
+     * @param:
+     *  * VektorI pos: Position des Blocks
      */
     public void breakBlock(VektorI pos){
         map[pos.x][pos.y] = null;
         try{
             ((SBlock)map[pos.x][pos.y]).onDestruct(this, pos);
         }catch(Exception e){}
-        metadata[pos.x][pos.y] = null;
+        removeMeta(pos);
     }
 
+    /**
+     * Gibt das Block-Object zurück
+     */
     public Block getBlock(VektorI pos){
         try{
             return map[pos.x][pos.y];
-        }catch(Exception e){ return null; }
+        }catch(Exception e){ return null; }  // Außerhalb des Map-Arrays
     }
-    
-    public Metadata getMetadata(VektorI pos){
+
+    /**
+     * gibt das Metadaten Object zurück
+     */
+    public Meta getMeta(VektorI pos){
         try{
-            return metadata[pos.x][pos.y];
-        }catch(Exception e){ return null; }
+            return this.meta[pos.x][pos.y];
+        }catch(Exception e){ return null; }  // Außerhalb des Map-Arrays
+    }
+
+    /**
+     * setzt das Metadaten Object
+     */
+    public void setMeta(VektorI pos, Meta meta){
+        try{
+            this.meta[pos.x][pos.y] = meta;
+        }catch(Exception e){ return; }  // Außerhalb des Map-Arrays
+    }
+
+    /**
+     * entfernt das Metadaten Object
+     */
+    public void removeMeta(VektorI pos){
+        try{
+            this.meta[pos.x][pos.y] = null;
+        }catch(Exception e){ return; }  // Außerhalb des Map-Arrays
     }
 
     /***********************************************************************************************************************************************************
