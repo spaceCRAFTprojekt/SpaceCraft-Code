@@ -159,16 +159,17 @@ public class Space implements Serializable
                                 }
                                 //das kleinere der beiden, das in [0;1] liegt, da t(0) mit dem Abstand vom derzeitigen Punkt zusammenhängt
                                 //(t0<0 => falsche Richtung, t0>1 => zu weit, als dass der Planet tatsächlich erreicht würde)
-                                if (t0!=-1){
+                                if (Math.signum(t1)!=Math.signum(t2)){ //im Planeten
+                                    poss[i].add(pos2);
+                                    vels[i].add(new VektorD(0,0));
+                                    hasCrash=true;
+                                }
+                                else if (t0!=-1){ //Crash in diesem Augenblick in den Planeten
                                     VektorD dx1=dx.multiply(t0);
                                     poss[i].add(pos2.add(dx1));
                                     vels[i].add(dx1.divide(Settings.SPACE_CALC_PERIOD_INGAME/t0));
                                     hasCrash=true;
                                     //System.out.println("crash into planet "+dx1.divide(Settings.SPACE_CALC_PERIOD_INGAME/t0)+" "+pos2.add(dx1));
-                                }
-                                else if (Math.signum(t1)!=Math.signum(t2)){ //im Planeten
-                                    poss[i].add(pos2);
-                                    vels[i].add(new VektorD(0,0));
                                 }
                             }
                         }
