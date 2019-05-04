@@ -53,10 +53,6 @@ public class Main implements Serializable
         return new Main();
     }
     
-    public static Main newMain(){
-        return newMain(false);
-    }
-    
     public static void main(String[]Args){
         newMain(false);
     }
@@ -117,7 +113,7 @@ public class Main implements Serializable
                 FileOutputStream sbo=new FileOutputStream(folder+File.separator+planetCfilename+i+fileEnding);
                 ObjectOutputStream sboO=new ObjectOutputStream(sbo);
                 sboO.writeObject(planetCs.get(i).map);
-                sboO.writeObject(shipCs.get(i).meta);
+                sboO.writeObject(planetCs.get(i).meta);
                 sboO.writeObject(planetCs.get(i).getSubsandboxes());
                 //sboO.writeObject(planetCs.get(i).getPlanetS());
             }

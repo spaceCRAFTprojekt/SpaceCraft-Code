@@ -126,18 +126,16 @@ public class PlayerS implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
-        
-        
         VektorD posToNull = getPosToNull();
         
         g.setColor(Color.BLACK);
         g.fillRect(0,0,screenSize.x,screenSize.y); // nice
         Space sp=player.getSpace();
-        int acuracy = 100;
+        int accuracy = 100;
         for (int i=0;i<sp.masses.size();i++){
             if (sp.masses.get(i)!=null){
-                for (int j=acuracy;j<sp.masses.get(i).o.pos.size();j=j+acuracy){  // ernsthaft?
-                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-acuracy).subtract(posToNull);
+                for (int j=accuracy;j<sp.masses.get(i).o.pos.size();j=j+accuracy){  // ernsthaft?
+                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-accuracy).subtract(posToNull);
                     posDiff1=posDiff1.multiply(scale);
                     VektorD posDiff2=sp.masses.get(i).o.pos.get(j).subtract(posToNull);
                     posDiff2=posDiff2.multiply(scale);
