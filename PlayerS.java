@@ -133,10 +133,11 @@ public class PlayerS implements Serializable
         g.setColor(Color.BLACK);
         g.fillRect(0,0,screenSize.x,screenSize.y); // nice
         Space sp=player.getSpace();
+        int acuracy = 100;
         for (int i=0;i<sp.masses.size();i++){
             if (sp.masses.get(i)!=null){
-                for (int j=1;j<sp.masses.get(i).o.pos.size();j++){  // ernsthaft?
-                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-1).subtract(posToNull);
+                for (int j=acuracy;j<sp.masses.get(i).o.pos.size();j=j+acuracy){  // ernsthaft?
+                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-acuracy).subtract(posToNull);
                     posDiff1=posDiff1.multiply(scale);
                     VektorD posDiff2=sp.masses.get(i).o.pos.get(j).subtract(posToNull);
                     posDiff2=posDiff2.multiply(scale);

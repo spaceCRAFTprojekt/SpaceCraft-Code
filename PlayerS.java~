@@ -14,9 +14,9 @@ public class PlayerS implements Serializable
 {
     private Player player;
     private VektorD posToMass;
-    private double scale=1; //eine Einheit im Space => scale Pixel auf dem Frame
+    private double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
     private Mass focussedMass;
-    private transientVektorI lastDragPosition = null;
+    private transient VektorI lastDragPosition = null;
     
     private JPopupMenu popupmenu;
     
@@ -95,7 +95,7 @@ public class PlayerS implements Serializable
             return posToMass;
         }
         else{
-            return posToMass.add(focussedMass.pos.toDouble());
+            return posToMass.add(focussedMass.pos);
         }
     }
     
@@ -103,7 +103,7 @@ public class PlayerS implements Serializable
         Space sp=player.getSpace();
         for (int i=0;i<sp.masses.size();i++){
             if (sp.masses.get(i)!=null){
-                VektorD posRel=sp.masses.get(i).getPos().toDouble().subtract(getPosToNull());
+                VektorD posRel=sp.masses.get(i).getPos().subtract(getPosToNull());
                 posRel=posRel.multiply(scale);
                 int r=2;
                 if (sp.masses.get(i) instanceof PlanetS){
@@ -133,17 +133,18 @@ public class PlayerS implements Serializable
         g.setColor(Color.BLACK);
         g.fillRect(0,0,screenSize.x,screenSize.y); // nice
         Space sp=player.getSpace();
+        int acuracy = 0;
         for (int i=0;i<sp.masses.size();i++){
             if (sp.masses.get(i)!=null){
-                for (int j=1;j<sp.masses.get(i).o.pos.size();j++){  // ernsthaft?
-                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-1).toDouble().subtract(posToNull);
+                for (int j=acuracy;j<sp.masses.get(i).o.pos.size();j=j+acuracy){  // ernsthaft?
+                    VektorD posDiff1=sp.masses.get(i).o.pos.get(j-acuracy).subtract(posToNull);
                     posDiff1=posDiff1.multiply(scale);
-                    VektorD posDiff2=sp.masses.get(i).o.pos.get(j).toDouble().subtract(posToNull);
+                    VektorD posDiff2=sp.masses.get(i).o.pos.get(j).subtract(posToNull);
                     posDiff2=posDiff2.multiply(scale);
                     g.setColor(Color.WHITE);
                     g.drawLine((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y),(int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y));
                 }
-                VektorD posDiff=sp.masses.get(i).getPos().toDouble().subtract(posToNull);
+                VektorD posDiff=sp.masses.get(i).getPos().subtract(posToNull);
                 posDiff=posDiff.multiply(scale);
                 int r=2;
                 if (sp.masses.get(i) instanceof PlanetS){

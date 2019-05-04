@@ -102,6 +102,7 @@ public class Main implements Serializable
                 FileOutputStream sbo=new FileOutputStream(folder+File.separator+shipCfilename+i+fileEnding);
                 ObjectOutputStream sboO=new ObjectOutputStream(sbo);
                 sboO.writeObject(shipCs.get(i).map);
+                sboO.writeObject(shipCs.get(i).meta);
                 sboO.writeObject(shipCs.get(i).getSubsandboxes());
                 //sboO.writeObject(shipCs.get(i).getShipS());
             }
@@ -116,6 +117,7 @@ public class Main implements Serializable
                 FileOutputStream sbo=new FileOutputStream(folder+File.separator+planetCfilename+i+fileEnding);
                 ObjectOutputStream sboO=new ObjectOutputStream(sbo);
                 sboO.writeObject(planetCs.get(i).map);
+                sboO.writeObject(shipCs.get(i).meta);
                 sboO.writeObject(planetCs.get(i).getSubsandboxes());
                 //sboO.writeObject(planetCs.get(i).getPlanetS());
             }
@@ -189,10 +191,11 @@ public class Main implements Serializable
                     FileInputStream sbi=new FileInputStream(folder+File.separator+shipCfilename+i+fileEnding);
                     ObjectInputStream sbiO=new ObjectInputStream(sbi);
                     Block[][] map=(Block[][]) sbiO.readObject();
+                    Meta[][] meta=(Meta[][]) sbiO.readObject();
                     ArrayList<Sandbox> subsandboxes=(ArrayList<Sandbox>) sbiO.readObject();
                     ShipS shipS=null; //siehe unten warum
                     Timer spaceTimer=null;
-                    new ShipC(map,subsandboxes,shipS,spaceTimer); //fügt sich automatisch in die ArrayList ein
+                    new ShipC(map,subsandboxes,shipS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein
                 }
                 else{
                     break;
@@ -209,10 +212,11 @@ public class Main implements Serializable
                     FileInputStream sbi=new FileInputStream(folder+File.separator+planetCfilename+i+fileEnding);
                     ObjectInputStream sbiO=new ObjectInputStream(sbi);
                     Block[][] map=(Block[][]) sbiO.readObject();
+                    Meta[][] meta=(Meta[][]) sbiO.readObject();
                     ArrayList<Sandbox> subsandboxes=(ArrayList<Sandbox>) sbiO.readObject();
                     PlanetS planetS=null; //Der PlanetS wird erst später (mit Space) hinzugefügt, um ein Problem mit einer zirkulären Referenz zu vermeiden.
                     Timer spaceTimer=null; //dito // ????
-                    new PlanetC(map,subsandboxes,planetS,spaceTimer); //fügt sich automatisch in die ArrayList ein
+                    new PlanetC(map,subsandboxes,planetS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein
                 }
                 else{
                     break;

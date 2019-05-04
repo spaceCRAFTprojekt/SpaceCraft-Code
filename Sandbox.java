@@ -23,7 +23,7 @@ import java.io.IOException;
 public abstract class Sandbox implements Serializable
 {
     public transient Block[][]map;
-    public transient Meta[][]meta;
+    public Meta[][]meta;
     // Sandboxen können Sandboxen enthalten (Kompositum). z.B.: Schiff auf Planet
     protected transient ArrayList<Sandbox> subsandboxes = new ArrayList<Sandbox>(); //Namensänderung, war früher "sandboxes"
     protected transient Timer spaceTimer; //nur eine Referenz
