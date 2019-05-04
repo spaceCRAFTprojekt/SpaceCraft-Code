@@ -34,5 +34,6 @@ History:
  02.05.2019 v0.1.7_AK * Matadaten added; SBlock added; left/rightClick events in Craft erneuert
  03.05.2019 v0.1.7_AK * Blocks Framework fertig; Pistons implementiert; Änderung von Metadata in Meta 
                         Framework für Menus und implementierung des Pause Menus. Versuch Note-Block
- 
+ 03.05.2019 v0.1.8_AK * NoteBlock geht
+                        
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

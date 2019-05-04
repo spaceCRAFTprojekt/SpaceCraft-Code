@@ -5,16 +5,15 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 /**
- * Vereinfachung für den Button
- * Gibt einen Button mit Listener zurück
+ * Vereinfachung für eine Textbox
  */
-public abstract class MenuButton extends JButton
+public class MenuTextbox
 {
     private Menu m;
     /**
-     * Constructor for objects of class MenuButton
+     * Constructor for objects of class MenuTextbox
      */
-    public MenuButton(Menu m, String text, VektorI pos, VektorI size)
+    public MenuTextbox(Menu m, String text, VektorI pos, VektorI size)
     {
         // Erstellt einen neuen Button
         super();
@@ -34,6 +33,4 @@ public abstract class MenuButton extends JButton
                 }
             });
     }
-
-    public abstract void onClick();
 }

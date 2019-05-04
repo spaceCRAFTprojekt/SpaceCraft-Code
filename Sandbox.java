@@ -107,7 +107,7 @@ public abstract class Sandbox implements Serializable
     public void rightclickBlock(VektorI pos, Player p){
         try{
             if (map[pos.x][pos.y] == null){
-                placeBlock(Blocks.get(3), pos, p);
+                placeBlock(Blocks.get(6), pos, p);
             }else{
                 ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, p);
                 System.out.println("Block at "+pos.toString()+" rightclicked by "+p.getName()+"!");

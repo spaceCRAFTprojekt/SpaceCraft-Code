@@ -22,7 +22,7 @@ public class InfoPopup extends JPanel
     public InfoPopup(){
         this.setSize(100,100);
         this.setLayout(null);
-        this.setLocation(400, 500);
+        this.setBounds(300,300,100,100);
         /*
         addWindowListener(new WindowAdapter() {
                 public void WindowClosing(WindowEvent e) {
@@ -34,7 +34,7 @@ public class InfoPopup extends JPanel
 
         // erstellt ein neues Label
         pause = new JLabel();
-        pause.setBounds(60,19,90,35);  // Position und Größe
+        pause.setBounds(60,19,30,30);  // Position und Größe
         pause.setBackground(new Color(214,217,223));
         pause.setForeground(new Color(0,0,0));
         pause.setEnabled(true);
