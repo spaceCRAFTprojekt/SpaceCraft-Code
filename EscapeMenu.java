@@ -8,10 +8,11 @@ public class EscapeMenu extends Menu {
     private JLabel pause;
     private JButton restart;
     private JButton logout;
-
+    private JButton exit;
+    
     //Constructor 
     public EscapeMenu(Player p){
-        super(p, "Pause", new VektorI(225, 270));
+        super(p, "Pause", new VektorI(225, 320));
         
         // erstellt ein neues Label
         pause = new MenuLabel(this, "Pause", new VektorI(60,30) ,new VektorI(90,30), 30);
@@ -24,10 +25,20 @@ public class EscapeMenu extends Menu {
         logout = new MenuButton(this, "Logout", new VektorI(30,170), new VektorI(150, 35)){
             public void onClick(){logout();}
         };
+        
+        logout = new MenuButton(this, "Exit", new VektorI(30,220), new VektorI(150, 35)){
+            public void onClick(){exit();}
+        };
     }
 
     public void logout(){
         this.getPlayer().logout();
+        dispose();
+    }
+    
+    public void exit(){
+        this.getPlayer().logout();
+        this.getPlayer().exit();
         dispose();
     }
 }

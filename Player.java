@@ -101,6 +101,11 @@ public class Player implements Serializable
         closeMenu();
         this.online = false;
         disposeFrame();
+        main.exitIfNoPlayers();
+    }
+    
+    public boolean isOnline(){
+        return online;
     }
     
     /**
@@ -163,6 +168,14 @@ public class Player implements Serializable
     public boolean isActive()
     {
         return openedMenu == null;
+    }
+    
+    /**
+     * schließt das gesamte Spiel
+     */
+    public void exit(){
+        logout();
+        main.exit();
     }
     
     /**

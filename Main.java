@@ -258,32 +258,19 @@ public class Main implements Serializable
     }
     
     /**
-     * Löscht einen vorhanden Spieler; Beendet das Spiel wenn kein Spieler mehr da ist
-     * Sollte den Spieler auch noch irgendwo speichern, oder?
+     * 
      */
-    public void removePlayer(String name){
-        Player p = getPlayer(name);
-        players.remove(p);
-        if (players.size()==0){
-            this.close();
+    public void exitIfNoPlayers(){
+        for(int i = 0; i<players.size();i++){
+            if(players.get(i).isOnline())return; // wenn ein Spieler online ist abbrechen
         }
-    }
-    
-    /**
-     * Löscht einen vorhanden Spieler; Beendet das Spiel wenn kein Spieler mehr da ist
-     * Sollte den Spieler auch noch irgendwo speichern, oder?
-     */
-    public void removePlayer(Player p){
-        players.remove(p);
-        if (players.size()==0){
-            this.close();
-        }
+        exit(); // sonst Spiel beenden
     }
     
     /**
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
-    public void close(){
+    public void exit(){
         System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
         Serializer.serialize(this);
         System.exit(0);

@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.Component;
 import java.awt.Image;
 import geom.*;
@@ -23,7 +25,11 @@ public class Frame extends JFrame{
         setLayout(null);
         setSize(screenSize.x,screenSize.y);
         setVisible(true);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+                public void WindowClosing(WindowEvent e) {
+                    p.logout();
+                }
+            });
         Image logo = ImageTools.get('a',"logo_s");
         if (logo!=null)setIconImage(logo);
         this.setFocusTraversalKeysEnabled(false);
