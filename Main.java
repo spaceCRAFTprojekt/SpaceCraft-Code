@@ -47,9 +47,10 @@ public class Main implements Serializable
             }
             catch(Exception e){}
         }
+        try{  // in v0.1.9_AK da war immer ne nullpointer
         for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
             file.delete();
-        
+        }catch(Exception e){};
         Main m = new Main();    
             
         return m;
