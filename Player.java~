@@ -21,23 +21,27 @@ public class Player implements Serializable
     private transient Main main; //Referenz auf den "Server", wird nicht gespeichert (logischerweise)
     private String name;
     private transient Space space; // mein privater Weltraum xD
+    private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     private boolean inCraft = true;
     private transient Frame frame;
     private PlayerS playerS;
     private PlayerC playerC;
-    private boolean notActive = false; // wenn zum Beispiel ein Inventar oder das escape Menu offen ist
+    private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
     private Mass currentMass;
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
+     * 
+     * @param:
+     * boolean Singleplayer: gibt an, ob das Spiel im Singleplayer Modus ist und folglich der Spieler zu beginn online ist
      */
-    public Player(String name, Space space)
+    public Player(String name, Space space, boolean singleplayer)
     {
         this.space = space;
         this.name = name;
         //der Spawnpunkt muss nochmal überdacht werden
         
-        makeFrame();
+        if (singleplayer) login();
         currentMass = space.getSpawnMass();
         this.playerS=new PlayerS(this,new VektorD(0,0), currentMass);
         this.playerC=new PlayerC(this, currentMass.getSandbox(), new VektorD(50,50),frame);
@@ -51,6 +55,12 @@ public class Player implements Serializable
         this.frame.addMouseMotionListener(l);
         this.frame.addWindowListener(l);
         this.frame.addMouseWheelListener(l);
+    }
+    
+    public void disposeFrame(){
+        if (frame == null)return;
+        this.frame.dispose();
+        frame = null;
     }
     
     public Space getSpace(){
@@ -78,6 +88,19 @@ public class Player implements Serializable
      */
     public String getName(){
         return name;
+    }
+    
+    public void login(){
+        if(online)return;
+        this.online = true;
+        makeFrame();
+    }
+    
+    public void logout(){
+        if(!online)return;
+        closeMenu();
+        this.online = false;
+        disposeFrame();
     }
     
     /**
@@ -109,21 +132,37 @@ public class Player implements Serializable
     }
     
     /**
-     * Setzt die notActive Variable wieder auf false
-     * z.B. wenn ein Menu geschlossen wird
+     * soll aufgerufen werden, wenn ein Fenster geöffnet wird
      */
-    public void activate()
+    public void openMenu(Menu menu)
     {
-        notActive = false;
+        this.openedMenu = menu;
     }
     
     /**
-     * Setzt die notActive Variable auf true
-     * z.B. wenn ein Menu geöffnet wird
+     * soll vom Fenster aus aufgerufen werden, wenn ein Fenster geschlossen wird
      */
-    public void deactivate()
+    public void removeMenu()
     {
-        notActive = true;
+        this.openedMenu = null;
+    }
+    
+    /**
+     * schließt das gerade geöffnete Menu
+     */
+    public void closeMenu()
+    {
+        if (openedMenu == null)return;
+        openedMenu.closeMenu();
+        openedMenu = null;
+    }
+    
+    /**
+     * gibt false zurück, wenn gerade ein Menü offen ist
+     */
+    public boolean isActive()
+    {
+        return openedMenu == null;
     }
     
     /**
@@ -134,12 +173,11 @@ public class Player implements Serializable
      *             't': typed (nur Unicode Buchstaben)
      */
     public void keyEvent(KeyEvent e, char type) {
-        if(notActive == true)return;  // Wenn ein anderes Menu offen ist passiert nichts!
+        if (!isActive())return;  // wenn ein Menü offen ist, dann passiert nichts
         switch (e.getKeyCode()){
             case Shortcuts.open_escape_menu: 
                 if (type != 'p') break;
                 new EscapeMenu(this);
-                deactivate();
                 break;
             case Shortcuts.change_space_craft:
                 if (type != 'p') break;
@@ -158,6 +196,7 @@ public class Player implements Serializable
      * irgend ein EventObjekt; Keine Ahnung was das kann
      */
     public void mouseWheelMoved(MouseWheelEvent e){
+        if (isActive())return;  // wenn ein Menü offen ist, dann passiert nichts
         if(!inCraft)playerS.mouseWheelMoved(e);
     }
     
@@ -170,6 +209,7 @@ public class Player implements Serializable
      * entered und exited wurde nicht implementiert, weil es dafür bisher keine Verwendung gab
      */
     public void mouseEvent(MouseEvent e, char type) {
+        closeMenu();
         if (inCraft)playerC.mouseEvent(e,type);
         else playerS.mouseEvent(e,type);
     }
@@ -177,7 +217,8 @@ public class Player implements Serializable
     public void windowEvent(WindowEvent e, char type){
         if (type=='c'){ //Schließen des Fensters
             if (this.main!=null){
-                main.removePlayer(this.name);
+                logout();
+                //main.removePlayer(this.name);
             }
             else{
                 System.exit(0); //Fehler
@@ -204,14 +245,6 @@ public class Player implements Serializable
      */
     public Frame getFrame(){
         return frame;
-    }
-    
-    /**
-     * Spiel (für diesen Spieler) beenden!
-     */
-    public void exit(){
-        main.removePlayer(this);
-        frame.dispose();
     }
     
     /**

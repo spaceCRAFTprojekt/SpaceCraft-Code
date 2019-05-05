@@ -7,27 +7,27 @@ import geom.VektorI;
 public class EscapeMenu extends Menu {
     private JLabel pause;
     private JButton restart;
-    private JButton exit;
+    private JButton logout;
 
     //Constructor 
     public EscapeMenu(Player p){
         super(p, "Pause", new VektorI(225, 270));
         
         // erstellt ein neues Label
-        pause = new MenuLabel(this, "Pause", new VektorI(60,3) ,new VektorI(90,30), 30);
+        pause = new MenuLabel(this, "Pause", new VektorI(60,30) ,new VektorI(90,30), 30);
         
         // Erstellt einen neuen Button
-        restart = new MenuButton(this, "Fly on", new VektorI(30,120), new VektorI(150, 35)){
+        restart = new MenuButton(this, "Weiter", new VektorI(30,120), new VektorI(150, 35)){
             public void onClick(){closeMenu();}
         };
          
-        exit = new MenuButton(this, "Spiel beenden", new VektorI(30,170), new VektorI(150, 35)){
-            public void onClick(){exit();}
+        logout = new MenuButton(this, "Logout", new VektorI(30,170), new VektorI(150, 35)){
+            public void onClick(){logout();}
         };
     }
 
-    public void exit(){
-        this.getPlayer().exit();
+    public void logout(){
+        this.getPlayer().logout();
         dispose();
     }
 }

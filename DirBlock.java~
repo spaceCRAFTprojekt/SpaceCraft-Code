@@ -7,14 +7,14 @@ public class DirBlock extends SBlock
     /**
      * ...
      */
-    public DirBlock(String name, String imageString)
+    public DirBlock(int id, String name, String imageString)
     {
-        super(name, imageString);
+        super(id, name, imageString);
     }
     
-    public DirBlock(String name)
+    public DirBlock(int id,String name)
     {
-        super(name);
+        super(id, name);
     }
     
     /**
@@ -26,7 +26,7 @@ public class DirBlock extends SBlock
     public void onConstruct(Sandbox sb, VektorI pos){
         Meta meta = new Meta();
         meta.put("dir" , 0);
-        sb.setMeta(pos, met);
+        sb.setMeta(pos, meta);
     }
     
     public static int getDir(Sandbox sb, VektorI pos){

@@ -4,9 +4,9 @@ import geom.*;
  */
 public class Blocks_Note extends SBlock
 {
-    public Blocks_Note()
+    public Blocks_Note(int id)
     {
-        super("noteblock", "blocks_note");
+        super(id, "noteblock", "blocks_note");
     }
 
     @Override
@@ -18,7 +18,6 @@ public class Blocks_Note extends SBlock
     
     @Override
     public void onRightclick(Sandbox sb, VektorI pos, Player p){
-        p.deactivate();
         Meta meta = sb.getMeta(pos);
         String text = (String)meta.get("text");
         new Menu(p, "Note-Block", new VektorI(300,340)){

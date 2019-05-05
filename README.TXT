@@ -35,5 +35,7 @@ History:
  03.05.2019 v0.1.7_AK * Blocks Framework fertig; Pistons implementiert; Änderung von Metadata in Meta 
                         Framework für Menus und implementierung des Pause Menus. Versuch Note-Block
  03.05.2019 v0.1.8_AK * NoteBlock geht
+ 05.05.2019 v0.1.9_AK * Blocks id statisch; Blocks werden nicht mehr in den Gamesaves gespeichert; Attribute von Blöcken; 
+                        Player Login; rewrite öffnen und schließen von Menus
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

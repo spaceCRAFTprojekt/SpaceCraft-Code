@@ -46,6 +46,7 @@ public abstract class Menu extends JFrame {
         this.add(contentPane);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        p.openMenu(this);
         
         initComponents();
     }
@@ -53,7 +54,7 @@ public abstract class Menu extends JFrame {
     public void initComponents(){}
     
     public void closeMenu(){
-        p.activate();
+        p.removeMenu();
         dispose();
     }
     

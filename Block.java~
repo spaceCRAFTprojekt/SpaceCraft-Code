@@ -13,18 +13,27 @@ public class Block implements Serializable
     private transient BufferedImage img;
     private transient String name;
     
+    private transient boolean walkable = true;  // ob ein Spieler durch z.B.: durch Bäume durchgehen kann
+    private transient int light = 0;  // ob der Block Licht ausstrahlt
+    private transient boolean light_propagates = true;   // ob der Block lichtdurchlässig ist
+    private transient boolean climbable = false;  // ob man an dem Block hochklettern kann (muss walkable false sein)
+    //private transient Item item = null; // falls der Block ein Item hat
+    //private transient BufferedImage inventoryImage = null; // falls im Inv ein anderes Bild angezeigt werden soll
+    //private transient Item drops = null;
+    
+    
     /**
      * ...
      */
-    public Block(String name, String imageString)
+    public Block(int idString name, String imageString)
     {
-        this(name)
+        this(id, name);
         this.img = ImageTools.get('C', imageString);
     }
     
-    public Block(String name)
+    public Block(int id, String name)
     {
-        this.id=Blocks.blocks.size();
+        this.id=id;
         this.name = name;
         Blocks.blocks.put(id,this);
     }

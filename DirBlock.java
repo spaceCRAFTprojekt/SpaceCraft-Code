@@ -7,14 +7,14 @@ public class DirBlock extends SBlock
     /**
      * ...
      */
-    public DirBlock(String name, String imageString)
+    public DirBlock(int id, String name, String imageString)
     {
-        super(name, imageString);
+        super(id, name, imageString);
     }
     
-    public DirBlock(String name)
+    public DirBlock(int id, String name)
     {
-        super(name);
+        super(id, name);
     }
     
     /**

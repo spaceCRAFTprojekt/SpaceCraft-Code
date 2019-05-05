@@ -31,8 +31,8 @@ public class PlayerS implements Serializable
          JMenuItem copy = new JMenuItem("Copy");  
          JMenuItem paste = new JMenuItem("Paste");  
          popupmenu.add(cut); popupmenu.add(copy); popupmenu.add(paste);        
-          player.getFrame().add(popupmenu);
-        player.getFrame().setLayout(null);
+          //player.getFrame().add(popupmenu);
+        /player.getFrame().setLayout(null);
     }
     
     public PlayerS(Player player, VektorD pos)
@@ -133,7 +133,7 @@ public class PlayerS implements Serializable
         g.setColor(Color.BLACK);
         g.fillRect(0,0,screenSize.x,screenSize.y); // nice
         Space sp=player.getSpace();
-        int acuracy = 0;
+        int acuracy = 100;
         for (int i=0;i<sp.masses.size();i++){
             if (sp.masses.get(i)!=null){
                 for (int j=acuracy;j<sp.masses.get(i).o.pos.size();j=j+acuracy){  // ernsthaft?

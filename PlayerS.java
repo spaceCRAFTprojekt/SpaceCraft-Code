@@ -31,8 +31,8 @@ public class PlayerS implements Serializable
          JMenuItem copy = new JMenuItem("Copy");  
          JMenuItem paste = new JMenuItem("Paste");  
          popupmenu.add(cut); popupmenu.add(copy); popupmenu.add(paste);        
-          player.getFrame().add(popupmenu);
-        player.getFrame().setLayout(null);
+          //player.getFrame().add(popupmenu);
+        //player.getFrame().setLayout(null);
     }
     
     public PlayerS(Player player, VektorD pos)

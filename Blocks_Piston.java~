@@ -5,8 +5,8 @@ import java.io.Serializable;
 import java.io.ObjectStreamException;
 public class Blocks_Piston extends DirBlock
 {
-    public Blocks_Piston(){
-        super("Piston", "blocks_piston_off");
+    public Blocks_Piston(int id){
+        super(id, "Piston", "blocks_piston_off");
     }
 
     @Override
@@ -19,7 +19,7 @@ public class Blocks_Piston extends DirBlock
         if (connectedBlocks == null)return;
         VektorI dir = new VektorI(getDir(sb, pos)).multiply(-1);
         for(int i = connectedBlocks.size()-1; i >= 0; i--){
-            VektorI pos = getPos2(sb, connectedBlocks.get(i));
+            VektorI pos2 = connectedBlocks.get(i);
             VektorI pos3 = pos2.add(dir);
             if(sb.getBlock(pos3) == null)sb.setBlock(sb.getBlock(pos2), pos3);
             sb.breakBlock(pos2);
@@ -54,7 +54,7 @@ public class Blocks_Piston extends DirBlock
         return blocks;
     }
     
-    DirBlock pistonOn = new DirBlock("piston_on", "blocks_piston_on"){
+    DirBlock pistonOn = new DirBlock(301, "piston_on", "blocks_piston_on"){
             @Override
             public boolean onBreak(Sandbox sb, VektorI pos, Player p){
                 VektorI pos2 = getPos2(sb, pos);
@@ -66,14 +66,14 @@ public class Blocks_Piston extends DirBlock
             public void onRightclick(Sandbox sb, VektorI pos, Player p){
                 VektorI pos2 = getPos2(sb, pos);
                 if(sb.getBlock(pos2).getName() == "piston_front")sb.breakBlock(pos2);
-                sb.swapBlock(Blocks.get(3), pos);
+                sb.swapBlock(Blocks.get(300), pos);  //
             }
             
             @Override
             public boolean onPlace(Sandbox sb, VektorI pos, Player p){return false;}
         };
         
-    DirBlock pistonFront = new DirBlock("piston_front", "blocks_piston_front"){
+    DirBlock pistonFront = new DirBlock(302, "piston_front", "blocks_piston_front"){
             @Override
             public boolean onBreak(Sandbox sb, VektorI pos, Player p){
                 return false;

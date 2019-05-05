@@ -20,7 +20,7 @@ import java.io.ObjectInputStream;
  */
 public class Main implements Serializable
 {
-    static String spacefilename="space"; //sollteen die in Settings sein?
+    static String spacefilename="space"; //sollteen die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";
     static String planetCfilename="planetC";
@@ -38,8 +38,7 @@ public class Main implements Serializable
      */
     public static Main newMain(boolean useOldData){
         String folder=Settings.GAMESAVE_FOLDER;
-        if (useOldData && new File(folder+File.separator+blocksfilename+fileEnding).exists() &&
-                          new File(folder+File.separator+spacefilename+fileEnding).exists() &&
+        if (useOldData && new File(folder+File.separator+spacefilename+fileEnding).exists() &&
                           new File(folder+File.separator+playersfilename+fileEnding).exists() &&
                           new File(folder+File.separator+planetCfilename+"0"+fileEnding).exists() &&
                           new File(folder+File.separator+"main.ser").exists()){ //mindestens einer
@@ -50,7 +49,11 @@ public class Main implements Serializable
         }
         for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
             file.delete();
-        return new Main();
+        
+        Main m = new Main();    
+            
+        return m;
+        
     }
     
     public static Main newMain(){
@@ -63,39 +66,28 @@ public class Main implements Serializable
     
     /**
      * Konstruktor
+     * erstellt ein neues Spiel und einen neuen Spieler
      */
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        space = new Space(100); //10-fache Beschleunigung im Space
+        space = new Space(100); //10-fache Beschleunigung im Space Lg; drum steht 100 da :) AK
         newPlayer("Singleplayer");
+        getPlayer("Singleplayer").login();
         getPlayer("Singleplayer").toSpace();
     }
     
     /**
      * "Ich warte" ~ DB Kunde
-     * auf die Beschreibung @LG LG
+     * auf die Beschreibung @LG
      * Instruktionen zur Serialisierung, siehe Readme.
      * LG
-     * ist alles für das Laden des aktuellen Spielstands
+     * ist alles für das Speichern des aktuellen Spielstands
      */
     private Object writeReplace() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
         new File(folder).mkdirs();
-        
-        HashMap<Integer,Block> blocks=Blocks.blocks; //Blöcke
-        try{
-            FileOutputStream blo=new FileOutputStream(folder+File.separator+blocksfilename+fileEnding);
-            ObjectOutputStream bloO=new ObjectOutputStream(blo);
-            for (int i=0;i<blocks.size();i++){
-                bloO.writeObject(blocks.get(i).getName());
-                //bloO.writeObject(blocks.get(i).getImageString());
-            }
-        }
-        catch(Exception e){
-            System.out.println(e+": "+e.getMessage());
-        }
-        
+       
         ArrayList<ShipC> shipCs=ShipC.shipCs; //Schiffe
         for (int i=0;i<shipCs.size();i++){
             try{
@@ -117,7 +109,7 @@ public class Main implements Serializable
                 FileOutputStream sbo=new FileOutputStream(folder+File.separator+planetCfilename+i+fileEnding);
                 ObjectOutputStream sboO=new ObjectOutputStream(sbo);
                 sboO.writeObject(planetCs.get(i).map);
-                sboO.writeObject(shipCs.get(i).meta);
+                sboO.writeObject(planetCs.get(i).meta);
                 sboO.writeObject(planetCs.get(i).getSubsandboxes());
                 //sboO.writeObject(planetCs.get(i).getPlanetS());
             }
@@ -149,8 +141,10 @@ public class Main implements Serializable
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
-     * Setup-Funktion, aufgerufen nach der Deserialisierung.
+     * Setup-Funktion, aufgerufen nach der Deserialisierung. 
      * LG
+     * Oder mit anderen Worten: Liest den aktuellen Spielstand aus den gamesaves und erstellt damit alle nötigen Objekte
+     * AK
      */
     public Object readResolve() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
@@ -159,33 +153,7 @@ public class Main implements Serializable
             return null;
         }
         
-        try{
-            FileInputStream bli=new FileInputStream(folder+File.separator+blocksfilename+fileEnding);
-            ObjectInputStream bliO=new ObjectInputStream(bli);
-            String name=null;
-            String imageString=null;
-            int aval=bliO.available();
-            while(aval>0){
-                Object o=bliO.readObject();
-                if (name==null){
-                    name=(String) o;
-                }
-                else if (imageString==null){
-                    imageString=(String) o;
-                }
-                if (name!=null && imageString!=null){
-                    new Block(name,imageString); //fügt sich automatisch in die HashMap ein
-                    name=null;
-                    imageString=null;
-                }
-                aval=bliO.available();
-            }
-        }
-        catch(Exception e){
-            System.out.println("Main: 1: "+e+": "+e.getMessage());
-        }
-        
-        for (int i=0;i<Integer.MAX_VALUE;i++){
+        for (int i=0;i<Integer.MAX_VALUE;i++){  //Schiffe
             try{
                 if (new File(folder+File.separator+shipCfilename+i+fileEnding).exists()){
                     FileInputStream sbi=new FileInputStream(folder+File.separator+shipCfilename+i+fileEnding);
@@ -206,7 +174,7 @@ public class Main implements Serializable
             }
         }
         
-        for (int i=0;i<Integer.MAX_VALUE;i++){
+        for (int i=0;i<Integer.MAX_VALUE;i++){  //Planeten
             try{
                 if (new File(folder+File.separator+planetCfilename+i+fileEnding).exists()){
                     FileInputStream sbi=new FileInputStream(folder+File.separator+planetCfilename+i+fileEnding);
@@ -227,7 +195,7 @@ public class Main implements Serializable
             }
         }
         
-        try{
+        try{  // Space
             FileInputStream spi=new FileInputStream(folder+File.separator+spacefilename+fileEnding);
             ObjectInputStream spiO=new ObjectInputStream(spi);
             space=(Space) spiO.readObject();
@@ -236,7 +204,7 @@ public class Main implements Serializable
             System.out.println("Main: 4: "+e+": "+e.getMessage());
         }
         
-        try{
+        try{  //Players
             FileInputStream pli=new FileInputStream(folder+File.separator+playersfilename+fileEnding);
             ObjectInputStream pliO=new ObjectInputStream(pli);
             players=(ArrayList<Player>) pliO.readObject();
@@ -286,7 +254,7 @@ public class Main implements Serializable
     public String newPlayer(String name)
     {
         if (getPlayer(name) != null)return "Es gibt bereits einen Spieler mit dem Namen " + name + "!";
-        Player p=new Player(name, space);
+        Player p=new Player(name, space, true);  // aktuell immer Singleplayer
         p.setMain(this);
         players.add(p);
         return "Spieler " + name + " erfolgreich erstellt";
@@ -324,3 +292,40 @@ public class Main implements Serializable
         System.exit(0);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Hallo ~unknown
