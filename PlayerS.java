@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 import javax.swing.*;  // test
 /**
  * ein Spieler in der Space Ansicht
@@ -126,10 +128,13 @@ public class PlayerS implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
+        BufferedImage img = new BufferedImage(screenSize.x, screenSize.y, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();   
+        
         VektorD posToNull = getPosToNull();
         
-        g.setColor(Color.BLACK);
-        g.fillRect(0,0,screenSize.x,screenSize.y); // nice
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
         Space sp=player.getSpace();
         int accuracy = 100;
         for (int i=0;i<sp.masses.size();i++){
@@ -139,8 +144,8 @@ public class PlayerS implements Serializable
                     posDiff1=posDiff1.multiply(scale);
                     VektorD posDiff2=sp.masses.get(i).o.pos.get(j).subtract(posToNull);
                     posDiff2=posDiff2.multiply(scale);
-                    g.setColor(Color.WHITE);
-                    g.drawLine((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y),(int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y));
+                    g2.setColor(Color.WHITE);
+                    g2.drawLine((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y),(int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y));
                 }
                 VektorD posDiff=sp.masses.get(i).getPos().subtract(posToNull);
                 posDiff=posDiff.multiply(scale);
@@ -149,13 +154,14 @@ public class PlayerS implements Serializable
                     r=((PlanetS) sp.masses.get(i)).getRadius();
                 }
                 r=(int)(r*scale);
-                if (sp.masses.get(i) == player.getCurrentMass())g.setColor(Color.RED);
-                else if(sp.masses.get(i) == focussedMass)g.setColor(Color.CYAN);
-                else g.setColor(Color.WHITE);
-                g.fillArc((int) (screenSize.x/2+posDiff.x-r),(int) (screenSize.y/2-posDiff.y-r),2*r,2*r,0,360);
+                if (sp.masses.get(i) == player.getCurrentMass())g2.setColor(Color.RED);
+                else if(sp.masses.get(i) == focussedMass)g2.setColor(Color.CYAN);
+                else g2.setColor(Color.WHITE);
+                g2.fillArc((int) (screenSize.x/2+posDiff.x-r),(int) (screenSize.y/2-posDiff.y-r),2*r,2*r,0,360);
             }
         }
         
+        g.drawImage(img, 0,0, Color.BLACK, null);
         //popupmenu.paint(g);
         
     }
