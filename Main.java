@@ -56,10 +56,6 @@ public class Main implements Serializable
         
     }
     
-    public static Main newMain(){
-        return newMain(false);
-    }
-    
     public static void main(String[]Args){
         newMain(false);
     }

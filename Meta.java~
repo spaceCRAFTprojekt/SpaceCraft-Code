@@ -1,6 +1,0 @@
-import java.io.Serializable;
-impor
-public class Meta extends HashMap<String, Object> implements Serializable
-{
-    
-}
