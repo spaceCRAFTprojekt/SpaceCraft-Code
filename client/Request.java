@@ -14,23 +14,25 @@ public class Request{
      * Space.getAllRadii <= echter Plural
      * Space.getAllOrbits
      * Main.exitIfNoPlayers
+     * Main.exit
      * Sandbox.getPosToPlayer
      * Sandbox.leftclickBlock
      * Sandbox.rightclickBlock
      * Sandbox.getMapIDs
      */
     public static ArrayList<Request> requests=new ArrayList<Request>();
-    Player p;
-    String todo;
-    Object[] params;
-    Object waitingFor; //Auf eine Änderung dieses Werts wird gewartet => sollte in der eigentlichen Funktion im Server notify'd werden.
-    Object oldWaitingFor;
+    public Player p;
+    public String todo;
+    public Object[] params;
+    public Object waitingFor; //Auf eine Änderung dieses Werts wird gewartet => sollte in der eigentlichen Funktion im Server notify'd werden (siehe server.RequestResolver)
     /**
      * Player p stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
-     * Konvention: todo="Space"/"Craft"+"."+Name der Methode im Server.
+     * Konvention: todo=Klassenname+"."+Methodenname
      * waitingFor=irgendein Return-Wert
      * Übergabewerte der Methode im Server: p, waitingFor (als ret), params
      * waitingFor muss mindestens ein Attribut haben, damit es funktioniert (darf also auch nicht null sein)
+     * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
+     * Eigentlich sind viele params unnötig, da ja der Player mitübergeben wird, aus diesem lassen sich die meisten params auch ziehen.
      */
     public Request(Player p, String todo, Object waitingFor, Object... params){
         //https://www.javamex.com/tutorials/wait_notify_how_to.shtml

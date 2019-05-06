@@ -101,29 +101,19 @@ public class Space implements Serializable
                 VektorI posPix = screenSize.toDouble().multiply(0.5).add(posRel).toInt();
                 int distance = (int)Math.round(posPix.subtract(pos).getLength());
                 if (distance < r+20){
-                    synchronized(ret){
-                        ret=new Integer(i);
-                        ret.notify();
-                        return;
-                    }
+                    ret=new Integer(i);
                 }
             }
         }
-        synchronized(ret){
-            ret=new Integer(-2); //kann nicht -1 sein, da sonst ewig gewartet wird
-            ret.notify();
-        }
+        ret=new Integer(-2); //kann nicht -1 sein, da sonst ewig gewartet wird
     }
     
     public void getMassPos(Player p, VektorD ret, int index){ //ist eine Request-Funktion (deshalb Player standardmäßig als Übergabeparameter)
-        synchronized(ret){
-            if (masses.get(index)==null){
-                ret=null;
-            }
-            else{
-                ret=masses.get(index).getPos();
-            }
-            ret.notify();
+        if (masses.get(index)==null){
+            ret=new VektorD(Double.NaN,Double.NaN);
+        }
+        else{
+            ret=masses.get(index).getPos();
         }
     }
     

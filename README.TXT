@@ -37,5 +37,6 @@ History:
  03.05.2019 v0.1.8_AK * NoteBlock geht
  05.05.2019 v0.1.9_AK * Blocks id statisch; Blocks werden nicht mehr in den Gamesaves gespeichert; Attribute von Blöcken; 
                         Player Login; rewrite öffnen und schließen von Menus; PlayerS Grafik mit BufferedImage
+ 06.05.2019 v0.2.0_LG * Server/Client-System. Unfertig, ungetestet, wahrscheinlich instabil.
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

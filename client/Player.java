@@ -43,7 +43,7 @@ public class Player implements Serializable
         
         if (singleplayer) login();
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
-        this.playerC=new PlayerC(this,currentMassIndex,new VektorD(50,50),frame);
+        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
     }
     
     private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier

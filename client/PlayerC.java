@@ -23,13 +23,14 @@ public class PlayerC implements Serializable
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
     private Player player;
     private VektorD pos;
-    private int sandboxIndex;
+    private boolean onPlanet; //sonst: auf einem Schiff
+    private int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
     private transient BufferedImage texture;
     private VektorD hitbox = new VektorD(1,2);
-    public PlayerC(Player player, int sandboxIndex, VektorD pos, Frame frame)
+    public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos, Frame frame)
     {
         this.player = player;
-        setSandbox(sandboxIndex, pos);
+        setSandbox(onPlanet, sandboxIndex, pos);
         makeTexture();
         timerSetup();
     }
@@ -56,7 +57,8 @@ public class PlayerC implements Serializable
     /**
      * Setze Spieler in einer andere Sandbox
      */
-    public void setSandbox(int sandboxIndex, VektorD pos){
+    public void setSandbox(boolean onPlanet, int sandboxIndex, VektorD pos){
+        this.onPlanet=onPlanet;
         this.sandboxIndex = sandboxIndex;
         this.pos = pos;
     }
@@ -99,18 +101,21 @@ public class PlayerC implements Serializable
         if (type == 'c'){
             VektorI clickPos = new VektorI(e);
             VektorI sPos=new VektorI(Integer.MAX_VALUE,Integer.MAX_VALUE); //schlecht gelöst: sollte ein unmöglicher Wert sein
-            new Request(player,"Sandbox.getPosToPlayer",sPos,clickPos,pos,blockBreite);
-            if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
-                //System.out.println("Tried to break block at "+sPos.toString());
-                Boolean success=new Boolean(false);
-                new Request(player,"Sandbox.leftclickBlock",success,sPos);
-            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
-                //System.out.println("Tried to place block at "+sPos.toString());
-                Boolean success=new Boolean(false);
-                new Request(player,"Sandbox.rightclickBlock",success,sPos);
+            new Request(player,"Sandbox.getPosToPlayer",sPos,onPlanet,sandboxIndex,clickPos,pos,blockBreite);
+            if (sPos.x!=Integer.MAX_VALUE && sPos.y!=Integer.MAX_VALUE){
+                if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
+                    //System.out.println("Tried to break block at "+sPos.toString());
+                    Boolean success=new Boolean(false);
+                    new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
+                }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
+                    //System.out.println("Tried to place block at "+sPos.toString());
+                    Boolean success=new Boolean(false);
+                    new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
+                }
             }
         }
     }
+    
     /***********************************************************************************************************************************************************
     /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************
@@ -135,7 +140,7 @@ public class PlayerC implements Serializable
         VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
         int[][] mapIDs=new int[0][0];
-        new Request(player,"Sandbox.getMapIDs",mapIDs,upperLeftCorner,bottomRightCorner);
+        new Request(player,"Sandbox.getMapIDs",mapIDs,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner);
         ColorModel cm=ColorModel.getRGBdefault();
         BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB

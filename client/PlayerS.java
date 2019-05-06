@@ -77,7 +77,7 @@ public class PlayerS implements Serializable
                 lastDragPosition = new VektorI(e.getX(), e.getY());
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
                 VektorD pos;
-                if (focussedMassIndex==-1){
+                if (focussedMassIndex==-1){ //stimmt das so?
                     pos=posToMass;
                 }
                 else{
@@ -107,6 +107,9 @@ public class PlayerS implements Serializable
         }
         VektorD focussedMassPos=null;
         new Request(player,"Space.getMassPos",focussedMassPos,focussedMassIndex);
+        if (focussedMassPos.x==Double.NaN || focussedMassPos.y==Double.NaN){
+            return null;
+        }
         return focussedMassPos;
     }
     
