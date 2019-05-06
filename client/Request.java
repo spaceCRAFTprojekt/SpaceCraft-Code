@@ -7,18 +7,23 @@ import java.lang.reflect.Field;
  */
 public class Request{
     /**
-     * Liste aller Request-Funktionen:
-     * Space.getFocussedMassIndex
-     * Space.getMassPos
-     * Space.getAllMassPos
-     * Space.getAllRadii <= echter Plural
-     * Space.getAllOrbits
-     * Main.exitIfNoPlayers
-     * Main.exit
-     * Sandbox.getPosToPlayer
-     * Sandbox.leftclickBlock
-     * Sandbox.rightclickBlock
-     * Sandbox.getMapIDs
+     * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
+     * Space.getFocussedMassIndex(VektorD pos, VektorI screenSize, double scale)
+     * Space.getMassPos(int index)
+     * Space.getAllPos()
+     * Space.getAllRadii() <= echter Plural
+     * Space.getAllOrbits()
+     * === ab hier noch nicht implementiert ===
+     * Main.exitIfNoPlayers()
+     * Main.exit()
+     * Sandbox.getPosToPlayer(boolean onPlanet, int sandboxIndex, VektorI clickPos, VektorD pos, int blockBreite
+     * Sandbox.leftclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
+     * Sandbox.rightclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
+     * Sandbox.getMapIDs(boolean onPlanet, int sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
+     * 
+     * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch Player p, Object waitingFor(=Object ret))
+     * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
+     * Eigentlich sind viele params unnötig, da ja der Player mitübergeben wird, aus diesem lassen sich die meisten params auch ziehen.
      */
     public static ArrayList<Request> requests=new ArrayList<Request>();
     public Player p;
@@ -28,11 +33,12 @@ public class Request{
     /**
      * Player p stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
      * Konvention: todo=Klassenname+"."+Methodenname
-     * waitingFor=irgendein Return-Wert
+     * waitingFor=irgendein Rückgabewert (der formale Rückgabewert ist void)
+     * Bis waitingFor notify'd wird (passiert, wenn kein Fehler auftritt, in server.RequestResolver), wartet der Thread.
      * Übergabewerte der Methode im Server: p, waitingFor (als ret), params
-     * waitingFor muss mindestens ein Attribut haben, damit es funktioniert (darf also auch nicht null sein)
-     * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
-     * Eigentlich sind viele params unnötig, da ja der Player mitübergeben wird, aus diesem lassen sich die meisten params auch ziehen.
+     * waitingFor muss mindestens ein Attribut haben, damit es funktioniert (darf also auch nicht null sein).
+     * waitingFor sollte den gleichen Datentyp wie das "returnte" Objekt haben (sonst gibt es vermutlich einen Fehler mit dem Felderabgleich).
+     * waitingFor muss sich in der Funktion irgendwie ändern, sonst hört das Programm mit dem Warten nicht auf!
      */
     public Request(Player p, String todo, Object waitingFor, Object... params){
         //https://www.javamex.com/tutorials/wait_notify_how_to.shtml
