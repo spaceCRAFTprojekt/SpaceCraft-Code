@@ -100,18 +100,15 @@ public class PlayerC implements Serializable
     public void mouseEvent(MouseEvent e, char type) {
         if (type == 'c'){
             VektorI clickPos = new VektorI(e);
-            VektorI sPos=new VektorI(Integer.MAX_VALUE,Integer.MAX_VALUE); //schlecht gelöst: sollte ein unmöglicher Wert sein
-            new Request(player,"Sandbox.getPosToPlayer",sPos,onPlanet,sandboxIndex,clickPos,pos,blockBreite);
-            if (sPos.x!=Integer.MAX_VALUE && sPos.y!=Integer.MAX_VALUE){
-                if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
-                    //System.out.println("Tried to break block at "+sPos.toString());
-                    Boolean success=new Boolean(false);
-                    new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
-                }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
-                    //System.out.println("Tried to place block at "+sPos.toString());
-                    Boolean success=new Boolean(false);
-                    new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
-                }
+            VektorI sPos=getPosToPlayer(clickPos,blockBreite);
+            if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
+                //System.out.println("Tried to break block at "+sPos.toString());
+                Boolean success=new Boolean(false);
+                new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
+            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
+                //System.out.println("Tried to place block at "+sPos.toString());
+                Boolean success=new Boolean(false);
+                new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
             }
         }
     }
@@ -130,6 +127,18 @@ public class PlayerC implements Serializable
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
+    }
+    
+    /**
+     * Gibt die Position eines Blocks an
+     * 
+     * @param: 
+     * bPos: Position des Blocks relativ zur oberen rechten Ecke der Spieleransicht in Pixeln
+     * blockBreite: Breite eines Blocks in Pixeln
+     */
+    public VektorI getPosToPlayer(VektorI bPos, int blockBreite){
+        //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
+        return (getUpperLeftCorner(pos).add(bPos.toDouble().divide(blockBreite))).toIntFloor();
     }
 
     /**

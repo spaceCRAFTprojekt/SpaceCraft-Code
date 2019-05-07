@@ -30,6 +30,7 @@ public class Main implements Serializable
     
     private transient ArrayList<Player> players = new ArrayList<Player>(); // normalerweise nur ein Spieler
     private transient Space space;
+    private transient RequestResolver rr;
 
     /**
      * "Lasset die Spiele beginnen" ~ Kim Jong Un
@@ -71,6 +72,7 @@ public class Main implements Serializable
         newPlayer("Singleplayer");
         getPlayer("Singleplayer").login();
         getPlayer("Singleplayer").toSpace();
+        requestResolverSetup();
     }
     
     /**
@@ -208,7 +210,15 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println("Main: 5: "+e+": "+e.getMessage());
         }
+        requestResolverSetup();
         return this;
+    }
+    
+    /**
+     * Der Request-Resolver ist ein Bindeglied zwischen Server und Client. Diese Funktion ist wichtig.
+     */
+    public void requestResolverSetup(){
+        this.rr=new RequestResolver(this);
     }
     
     /**
@@ -262,12 +272,28 @@ public class Main implements Serializable
     }
     
     /**
+     * Request-Funktion
+     */
+    public void exitIfNoPlayers(Player p, Boolean exited){
+        exited=new Boolean(true);
+        exitIfNoPlayers();
+    }
+    
+    /**
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
     public void exit(){
         System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
         Serializer.serialize(this);
         System.exit(0);
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public void exit(Player p, Boolean exited){
+        exited=new Boolean(true);
+        exit();
     }
 }
 // Hallo ~unknown

@@ -123,18 +123,16 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public void getAllPos(Player p, Object ret){
-        ArrayList<VektorD> poss=new ArrayList<VektorD>();
+    public void getAllPos(Player p, ArrayList<VektorD> ret){
         for (int i=0;i<masses.size();i++){
-            poss.add(masses.get(i).getPos());
+            ret.add(masses.get(i).getPos());
         }
-        ret=poss;
     }
     
     /**
      * Request-Funktion
      */
-    public void getAllRadii(Player p, Object ret){
+    public void getAllRadii(Player p, ArrayList<Integer> ret){
         ArrayList<Integer> radii=new ArrayList<Integer>();
         for (int i=0;i<masses.size();i++){
             if (masses.get(i) instanceof PlanetS){
@@ -150,7 +148,7 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public void getAllOrbits(Player p, Object ret){
+    public void getAllOrbits(Player p, ArrayList<ArrayList<VektorD>> ret){
         ArrayList<ArrayList<VektorD>> orbits=new ArrayList<ArrayList<VektorD>>();
         for (int i=0;i<masses.size();i++){
             orbits.add(new ArrayList<VektorD>());

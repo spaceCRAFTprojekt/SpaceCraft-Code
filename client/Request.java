@@ -1,6 +1,7 @@
 package client;
 import java.util.ArrayList;
 import java.lang.reflect.Field;
+import java.io.Serializable;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
@@ -13,10 +14,8 @@ public class Request{
      * Space.getAllPos()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
-     * === ab hier noch nicht implementiert ===
      * Main.exitIfNoPlayers()
      * Main.exit()
-     * Sandbox.getPosToPlayer(boolean onPlanet, int sandboxIndex, VektorI clickPos, VektorD pos, int blockBreite
      * Sandbox.leftclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
      * Sandbox.rightclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(boolean onPlanet, int sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
@@ -30,6 +29,7 @@ public class Request{
     public String todo;
     public Object[] params;
     public Object waitingFor; //Auf eine Änderung dieses Werts wird gewartet => sollte in der eigentlichen Funktion im Server notify'd werden (siehe server.RequestResolver)
+    public Thread thread; //der wartende Thread
     /**
      * Player p stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
      * Konvention: todo=Klassenname+"."+Methodenname
@@ -41,12 +41,14 @@ public class Request{
      * waitingFor muss sich in der Funktion irgendwie ändern, sonst hört das Programm mit dem Warten nicht auf!
      */
     public Request(Player p, String todo, Object waitingFor, Object... params){
+        System.out.println("new Request: "+todo);
         //https://www.javamex.com/tutorials/wait_notify_how_to.shtml
         synchronized(waitingFor){
             this.p=p;
             this.todo=todo;
             this.waitingFor=waitingFor;
             this.params=params;
+            this.thread=Thread.currentThread();
             Field[] fields=waitingFor.getClass().getFields();
             Object[] attrs=new Object[fields.length]; //irgendetwas hier muss sich ändern, damit der Request beendet wird
             for (int i=0;i<fields.length;i++){
@@ -61,19 +63,22 @@ public class Request{
                 boolean br=false;
                 while(!br){
                     waitingFor.wait();
-                    //System.out.println("Waiting...");
                     for (int i=0;i<fields.length;i++){
                         try{
+                            System.out.println(fields[i].getName()+": "+fields[i].get(waitingFor)+" "+attrs[i]);
                             if (fields[i].get(waitingFor)!=attrs[i]){
                                 br=true;
                             }
                         }
-                        catch(IllegalAccessException e){}
+                        catch(IllegalAccessException e){
+                            System.out.println("Illegal Access!");
+                        }
                     }
                 }
+                System.out.println("Finished with waiting");
             }
             catch(InterruptedException e){
-                //System.out.println("Interrupted!");
+                System.out.println("Interrupted!");
             }
         }
     }

@@ -105,8 +105,9 @@ public abstract class Sandbox implements Serializable
      *  @param:
      *  * VektorI pos: Position des Blocks
      *  * Player p: Spieler der rechtsklickt
+     * Request-Funktion
      */
-    public void rightclickBlock(VektorI pos, Player p){
+    public void rightclickBlock(Player p, Boolean success, boolean onPlanet, int sandboxIndex, VektorI pos){
         try{
             if (map[pos.x][pos.y] == null){
                 placeBlock(Blocks.get(104), pos, p);
@@ -116,6 +117,7 @@ public abstract class Sandbox implements Serializable
             }
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
+        success=new Boolean(true); //muss sich immer verändern, sonst wartet der Request ewig
     }
 
     /**
@@ -125,8 +127,9 @@ public abstract class Sandbox implements Serializable
      *  @param:
      *  * VektorI pos: Position des Blocks
      *  * Player p: Spieler der linksklickt
+     * Request-Funktion
      */
-    public void leftclickBlock(VektorI pos, Player p){
+    public void leftclickBlock(Player p, Boolean success, boolean onPlanet, int sandboxIndex,  VektorI pos){
         try{
             if (map[pos.x][pos.y] == null){
                 return;  // evtl. an Player weitergeben
@@ -136,6 +139,7 @@ public abstract class Sandbox implements Serializable
             }
         }catch(Exception e){ //block außerhalb der Map 
         }
+        success=new Boolean(true);
     }
 
     /**
@@ -268,72 +272,16 @@ public abstract class Sandbox implements Serializable
     public VektorD getUpperLeftCorner(VektorD pos){
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
     }
-
-    /**
-     * Gibt die Position eines Blocks an
-     * 
-     * @param: 
-     * bPos: Position des Blocks relativ zur oberen rechten Ecke der Spieleransicht in Pixeln
-     * pPos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox in Blöcken
-     * blockBreite: Breite eines Blocks in Pixeln
-     */
-    public VektorI getPosToPlayer(VektorI bPos, VektorD pPos, int blockBreite){
-        //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
-        return (getUpperLeftCorner(pPos).add(bPos.toDouble().divide(blockBreite))).toIntFloor();
-    }
     
     /**
-     * Grafik ausgeben
-     * @param: 
-     * pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
-     * blockBreite: Breite eines Blocks in Pixeln
+     * Request-Funktion
      */
-    /*
-    public void paint(Graphics g, VektorI screenSize, VektorD pos, int blockBreite){
-        VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
-
-        ColorModel cm=ColorModel.getRGBdefault();
-        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
-        //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
-        int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-
-        Hashtable<String,BufferedImage> blockImages=new Hashtable<String,BufferedImage>(); //Skalierung
-        for (int x = upperLeftCorner.x; x<=bottomRightCorner.x; x++){
-            for (int y = upperLeftCorner.y; y<=bottomRightCorner.y; y++){
-                Block block=map[x][y];
-                if (block!=null && blockImages.get(block.getName())==null){
-                    BufferedImage img=block.getImage();
-                    Hashtable<String,Object> properties=new Hashtable<String,Object>();
-                    String[] prns=image.getPropertyNames();
-                    if (prns!=null){
-                        for (int i=0;i<prns.length;i++){
-                            properties.put(prns[i],image.getProperty(prns[i]));
-                        }
-                    }
-                    BufferedImage img2=new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties);
-                    Graphics gr=img2.getGraphics();
-                    gr.drawImage(img,0,0,blockBreite,blockBreite,null);
-                    blockImages.put(block.getName(),img2);
-                }
+    public void getMapIDs(Player p, int[][] ret, boolean onPlanet, int sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
+        ret=new int[upperLeftCorner.x-bottomRightCorner.x][upperLeftCorner.y-bottomRightCorner.y];
+        for (int i=upperLeftCorner.x;i<bottomRightCorner.x;i++){
+            for (int j=upperLeftCorner.y;j<bottomRightCorner.y;j++){
+                ret[i][j]=map[i-upperLeftCorner.x][j-upperLeftCorner.y].getID();
             }
         }
-
-        for (int x = upperLeftCorner.x; x<bottomRightCorner.x; x++){
-            for (int y = upperLeftCorner.y; y<bottomRightCorner.y; y++){
-                Block block = map[x][y];
-                if(block != null){
-                    BufferedImage img=blockImages.get(block.getName());
-                    int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-                    for (int i=0;i<blockBreite;i++){
-                        int index = ((y-upperLeftCorner.y)*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + (x-upperLeftCorner.x)*blockBreite;
-                        System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
-                    }
-                }
-            }
-        }
-        g.setColor(new Color(0,0,0,1));
-        g.drawImage(image,0,0,new Color(0,0,0,255),null);
-    }*/
+    }
 }

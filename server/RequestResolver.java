@@ -23,45 +23,52 @@ public class RequestResolver{
             }
         },Settings.REQUEST_RESOLVE_PERIOD,Settings.REQUEST_RESOLVE_PERIOD);
     }
+    
     public void resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         synchronized(req.waitingFor){
-            String className=req.todo.substring(0,req.todo.indexOf("."));
-            String methodName=req.todo.substring(req.todo.indexOf(".")+1);
-            Object[] params=new Object[req.params.length+2];
-            params[0]=req.p;
-            params[1]=req.waitingFor;
-            for (int i=0;i<req.params.length;i++){
-                params[i+2]=req.params[i];
-            }
-            Class[] parameterTypes=new Class[params.length];
-            for (int i=0;i<params.length;i++){
-                parameterTypes[i]=params[i].getClass();
-            }
-            if (className=="Space"){
-                Method method=Space.class.getMethod(methodName,parameterTypes);
-                method.invoke(main.getSpace(),params);
-            }
-            else if (className=="Main"){
-                Method method=Main.class.getMethod(methodName,parameterTypes);
-                method.invoke(main,params);
-            }
-            else if (className=="Sandbox"){
-                boolean onPlanet=(boolean) params[2];
-                int sandboxIndex=(int) params[3];
-                if (onPlanet){
-                    Method method=PlanetC.class.getMethod(methodName,parameterTypes);
-                    method.invoke(PlanetC.planetCs.get(sandboxIndex),params);
+            if (req.thread.getState()==Thread.State.WAITING){
+                String className=req.todo.substring(0,req.todo.indexOf("."));
+                String methodName=req.todo.substring(req.todo.indexOf(".")+1);
+                Object[] params=new Object[req.params.length+2];
+                params[0]=req.p;
+                params[1]=req.waitingFor;
+                for (int i=0;i<req.params.length;i++){
+                    params[i+2]=req.params[i];
                 }
+                Class[] parameterTypes=new Class[params.length];
+                for (int i=0;i<params.length;i++){
+                    parameterTypes[i]=params[i].getClass();
+                }
+                if (className.equals("Space")){
+                    Method method=Space.class.getMethod(methodName,parameterTypes);
+                    method.invoke(main.getSpace(),params);
+                }
+                else if (className.equals("Main")){
+                    Method method=Main.class.getMethod(methodName,parameterTypes);
+                    method.invoke(main,params);
+                }
+                else if (className.equals("Sandbox")){
+                    boolean onPlanet=(boolean) params[2];
+                    int sandboxIndex=(int) params[3];
+                    if (onPlanet){
+                        Method method=PlanetC.class.getMethod(methodName,parameterTypes);
+                        method.invoke(PlanetC.planetCs.get(sandboxIndex),params);
+                    }
+                    else{
+                        Method method=ShipC.class.getMethod(methodName,parameterTypes);
+                        method.invoke(ShipC.shipCs.get(sandboxIndex),params);
+                    }
+                }
+                //hier können auch noch weitere Klassen folgen
                 else{
-                    Method method=ShipC.class.getMethod(methodName,parameterTypes);
-                    method.invoke(ShipC.shipCs.get(sandboxIndex),params);
+                    throw new IllegalArgumentException("className = "+className+", methodName = "+methodName);
                 }
+                req.waitingFor.notify();
+                System.out.println("Notified!");
             }
-            //hier können auch noch weitere Klassen folgen
             else{
-                throw new IllegalArgumentException();
+                System.out.println("Thread not waiting");
             }
-            req.waitingFor.notify();
         }
     }
 }
