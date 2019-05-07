@@ -271,8 +271,8 @@ public class Main implements Serializable
     /**
      * Request-Funktion
      */
-    public Boolean exitIfNoPlayers(Player p, Boolean exited){
-        exited=new Boolean(true);
+    public Boolean exitIfNoPlayers(Player p){
+        Boolean exited=new Boolean(true);
         exitIfNoPlayers();
         return exited;
     }
@@ -289,8 +289,8 @@ public class Main implements Serializable
     /**
      * Request-Funktion
      */
-    public Boolean exit(Player p, Boolean exited){
-        exited=new Boolean(true);
+    public Boolean exit(Player p){
+        Boolean exited=new Boolean(true);
         exit();
         return exited;
     }

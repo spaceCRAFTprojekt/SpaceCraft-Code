@@ -103,16 +103,10 @@ public class PlayerC implements Serializable
             VektorI sPos=getPosToPlayer(clickPos,blockBreite);
             if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
-                Boolean success=new Boolean(false);
-                Request req=new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
-                success=(Boolean) req.ret;
-                req=null;
+                Boolean success=(Boolean) (new Request(player,"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
-                Boolean success=new Boolean(false);
-                Request req=new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
-                success=(Boolean) req.ret;
-                req=null;
+                Boolean success=(Boolean) (new Request(player,"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
             }
         }
     }
@@ -152,18 +146,15 @@ public class PlayerC implements Serializable
         VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
-        int[][] mapIDs=new int[0][0];
-        Request req=new Request(player,"Sandbox.getMapIDs",mapIDs,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner);
-        mapIDs=(int[][]) req.ret;
-        req=null;
+        int[][] mapIDs=(int[][]) (new Request(player,"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner).ret);
         ColorModel cm=ColorModel.getRGBdefault();
         BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
         int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
         Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
-        for (int x = 0; x<=screenSize.x; x++){
-            for (int y = 0; y<=screenSize.y; y++){
+        for (int x = 0; x<=ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
+            for (int y = 0; y<=ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
                 BufferedImage img=BlocksC.images.get(mapIDs[x][y]);
                 if (img!=null){
                     Hashtable<String,Object> properties=new Hashtable<String,Object>();
@@ -185,14 +176,14 @@ public class PlayerC implements Serializable
             }
         }
 
-        for (int x = upperLeftCorner.x; x<bottomRightCorner.x; x++){
-            for (int y = upperLeftCorner.y; y<bottomRightCorner.y; y++){
+        for (int x = 0; x<ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
+            for (int y = 0; y<ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
                 int id = mapIDs[x][y];
                 if(id != -1){ //Luft
                     BufferedImage img=blockImages.get(id);
                     int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
                     for (int i=0;i<blockBreite;i++){
-                        int index = ((y-upperLeftCorner.y)*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + (x-upperLeftCorner.x)*blockBreite;
+                        int index = (y*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + x*blockBreite;
                         System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
                     }
                 }

@@ -107,8 +107,8 @@ public abstract class Sandbox implements Serializable
      *  * Player p: Spieler der rechtsklickt
      * Request-Funktion
      */
-    public Boolean rightclickBlock(Player p, Boolean success, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
-        success=new Boolean(false);
+    public Boolean rightclickBlock(Player p, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+        Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
                 placeBlock(Blocks.get(104), pos, p);
@@ -131,8 +131,8 @@ public abstract class Sandbox implements Serializable
      *  * Player p: Spieler der linksklickt
      * Request-Funktion
      */
-    public Boolean leftclickBlock(Player p, Boolean success, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
-        success=new Boolean(false);
+    public Boolean leftclickBlock(Player p, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
+        Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
                 return success;  // evtl. an Player weitergeben
@@ -280,11 +280,16 @@ public abstract class Sandbox implements Serializable
     /**
      * Request-Funktion
      */
-    public int[][] getMapIDs(Player p, int[][] ret, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
-        ret=new int[upperLeftCorner.x-bottomRightCorner.x][upperLeftCorner.y-bottomRightCorner.y];
-        for (int i=upperLeftCorner.x;i<bottomRightCorner.x;i++){
-            for (int j=upperLeftCorner.y;j<bottomRightCorner.y;j++){
-                ret[i-upperLeftCorner.x][j-upperLeftCorner.y]=map[i][j].getID();
+    public int[][] getMapIDs(Player p, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
+        int[][] ret=new int[bottomRightCorner.x-upperLeftCorner.x+1][bottomRightCorner.y-upperLeftCorner.y+1];
+        for (int x=upperLeftCorner.x;x<=bottomRightCorner.x;x++){
+            for (int y=upperLeftCorner.y;y<=bottomRightCorner.y;y++){
+                int i=x-upperLeftCorner.x;
+                int j=y-upperLeftCorner.y;
+                if (x>=0 && y>=0 && x<map.length && y<map[0].length && map[x][y]!=null)
+                    ret[i][j]=map[x][y].getID();
+                else
+                    ret[i][j]=-1; //Luft
             }
         }
         return ret;

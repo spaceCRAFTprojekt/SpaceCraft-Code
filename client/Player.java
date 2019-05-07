@@ -38,7 +38,7 @@ public class Player implements Serializable
     public Player(String name, boolean singleplayer)
     {
         this.name = name;
-        this.currentMassIndex=-1;
+        this.currentMassIndex=0;
         //der Spawnpunkt muss nochmal überdacht werden
         
         if (singleplayer) login();
@@ -93,10 +93,7 @@ public class Player implements Serializable
         closeMenu();
         this.online = false;
         disposeFrame();
-        Boolean exited=new Boolean(false); //nötig aufgrund der Struktur des Requests
-        Request req=new Request(this,"Main.exitIfNoPlayers",exited);
-        exited=(Boolean) req.ret;
-        req=null;
+        Boolean exited=(Boolean) (new Request(this,"Main.exitIfNoPlayers",Boolean.class).ret);
     }
     
     public boolean isOnline(){
@@ -170,10 +167,7 @@ public class Player implements Serializable
      */
     public void exit(){
         logout();
-        Boolean exited=new Boolean(false);
-        Request req=new Request(this,"Main.exit",exited);
-        exited=(Boolean) req.ret; //ohnehin nach System.exit, also sinnlos?
-        req=null;
+        Boolean exited=(Boolean) (new Request(this,"Main.exit",Boolean.class).ret);
     }
     
     /**

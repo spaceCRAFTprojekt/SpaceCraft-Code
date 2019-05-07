@@ -83,14 +83,7 @@ public class PlayerS implements Serializable
                 else{
                     pos=posToMass.add(getFocussedMassPos());
                 }
-                focussedMassIndex=new Integer(-1);
-                
-                Request req=new Request(player,"Space.getFocussedMassIndex",focussedMassIndex,pos,player.getScreenSize(),scale);
-                focussedMassIndex=(Integer) req.ret;
-                req=null;
-                if (focussedMassIndex.intValue()==-2){
-                    focussedMassIndex=new Integer(-1);
-                }
+                focussedMassIndex=(Integer) (new Request(player,"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret);
                 break;
             case 'r': lastDragPosition = null;
                 break;
@@ -107,13 +100,7 @@ public class PlayerS implements Serializable
         if (focussedMassIndex==-1){
             return null;
         }
-        VektorD focussedMassPos=null;
-        Request req=new Request(player,"Space.getMassPos",focussedMassPos,focussedMassIndex);
-        req.ret=focussedMassPos;
-        req=null;
-        if (focussedMassPos.x==Double.NaN || focussedMassPos.y==Double.NaN){
-            return null;
-        }
+        VektorD focussedMassPos=(VektorD) (new Request(player,"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
         return focussedMassPos;
     }
     
@@ -139,17 +126,11 @@ public class PlayerS implements Serializable
         g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
         
         ArrayList<VektorD> poss=new ArrayList<VektorD>();
-        Request req1=new Request(this.player,"Space.getAllPos",poss);
+        Request req1=new Request(this.player,"Space.getAllPos",ArrayList.class);
         poss=(ArrayList<VektorD>) req1.ret;
         req1=null;
-        ArrayList<ArrayList<VektorD>> orbits=new ArrayList<ArrayList<VektorD>>(); //das pos-Array
-        Request req2=new Request(this.player,"Space.getAllOrbits",orbits);
-        orbits=(ArrayList<ArrayList<VektorD>>) req2.ret;
-        req2=null;
-        ArrayList<Integer> radii=new ArrayList<Integer>();
-        Request req3=new Request(this.player,"Space.getAllRadii",radii);
-        radii=(ArrayList<Integer>) req3.ret;
-        req3=null;
+        ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player,"Space.getAllOrbits",ArrayList.class).ret);
+        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player,"Space.getAllRadii",ArrayList.class).ret);
         
         int accuracy = 100;
         for (int i=0;i<poss.size();i++){

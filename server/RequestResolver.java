@@ -17,7 +17,12 @@ public class RequestResolver{
                         resolveRequest(Request.requests.remove(0));
                     }
                     catch(Exception e){
-                        System.out.println("Exception when resolving request: "+e+" "+e.getMessage());
+                        if (e instanceof InvocationTargetException){
+                            System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                        }
+                        else{
+                            System.out.println("Exception when resolving request: "+e);
+                        }
                     }
                 }
             }
@@ -27,17 +32,22 @@ public class RequestResolver{
     public void resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         synchronized(req){
             if (req.thread.getState()==Thread.State.WAITING){ //Ist das nötig?
+                System.out.println("Resolving Request "+req.todo);
                 String className=req.todo.substring(0,req.todo.indexOf("."));
                 String methodName=req.todo.substring(req.todo.indexOf(".")+1);
-                Object[] params=new Object[req.params.length+2];
+                Object[] params=new Object[req.params.length+1];
                 params[0]=req.p;
-                params[1]=req.ret;
                 for (int i=0;i<req.params.length;i++){
-                    params[i+2]=req.params[i];
+                    params[i+1]=req.params[i];
                 }
                 Class[] parameterTypes=new Class[params.length];
                 for (int i=0;i<params.length;i++){
-                    parameterTypes[i]=params[i].getClass();
+                    //if (params[i]!=null){
+                        parameterTypes[i]=params[i].getClass();
+                    /*}
+                    else{
+                        parameterTypes[i]=Object.class;
+                    }*/
                 }
                 if (className.equals("Space")){
                     Method method=Space.class.getMethod(methodName,parameterTypes);
@@ -48,8 +58,8 @@ public class RequestResolver{
                     req.ret=method.invoke(main,params);
                 }
                 else if (className.equals("Sandbox")){
-                    boolean onPlanet=(boolean) params[2];
-                    int sandboxIndex=(int) params[3];
+                    boolean onPlanet=(boolean) params[1];
+                    int sandboxIndex=(int) params[2];
                     if (onPlanet){
                         Method method=PlanetC.class.getMethod(methodName,parameterTypes);
                         req.ret=method.invoke(PlanetC.planetCs.get(sandboxIndex),params);
