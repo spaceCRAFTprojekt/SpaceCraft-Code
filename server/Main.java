@@ -261,9 +261,6 @@ public class Main implements Serializable
         return "Spieler " + name + " erfolgreich erstellt";
     }
     
-    /**
-     * 
-     */
     public void exitIfNoPlayers(){
         for(int i = 0; i<players.size();i++){
             if(players.get(i).isOnline())return; // wenn ein Spieler online ist abbrechen
@@ -274,9 +271,10 @@ public class Main implements Serializable
     /**
      * Request-Funktion
      */
-    public void exitIfNoPlayers(Player p, Boolean exited){
+    public Boolean exitIfNoPlayers(Player p, Boolean exited){
         exited=new Boolean(true);
         exitIfNoPlayers();
+        return exited;
     }
     
     /**
@@ -291,9 +289,10 @@ public class Main implements Serializable
     /**
      * Request-Funktion
      */
-    public void exit(Player p, Boolean exited){
+    public Boolean exit(Player p, Boolean exited){
         exited=new Boolean(true);
         exit();
+        return exited;
     }
 }
 // Hallo ~unknown

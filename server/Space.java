@@ -88,7 +88,8 @@ public class Space implements Serializable
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
      */
-    public void getFocussedMassIndex(Player p, Integer ret, VektorI pos, VektorI screenSize, double scale){
+    public Integer getFocussedMassIndex(Player p, Integer ret, VektorD pos, VektorI screenSize, Double scale){
+        ret=new Integer(-1);
         for (int i=0;i<masses.size();i++){
             if (masses.get(i)!=null){
                 VektorD posRel=masses.get(i).getPos().subtract(p.getPlayerS().getPosToNull());
@@ -98,65 +99,70 @@ public class Space implements Serializable
                     r=(int)Math.round(((double)((PlanetS) masses.get(i)).getRadius()));
                 }
                 r=(int)(r*scale);
-                VektorI posPix = screenSize.toDouble().multiply(0.5).add(posRel).toInt();
+                VektorD posPix = screenSize.toDouble().multiply(0.5).add(posRel);
                 int distance = (int)Math.round(posPix.subtract(pos).getLength());
                 if (distance < r+20){
                     ret=new Integer(i);
                 }
             }
         }
-        ret=new Integer(-2); //kann nicht -1 sein, da sonst ewig gewartet wird
+        ret=new Integer(-1);
+        return ret;
     }
     
     /**
      * Request-Funktion (Player standardmäßig als Übergabeparameter)
      */
-    public void getMassPos(Player p, VektorD ret, int index){
+    public VektorD getMassPos(Player p, VektorD ret, Integer index){
+        ret=new VektorD(Double.NaN,Double.NaN); //es ist egal, dass das ret ist, aber ret ist halt schon da
         if (masses.get(index)==null){
-            ret=new VektorD(Double.NaN,Double.NaN);
+            
         }
         else{
             ret=masses.get(index).getPos();
         }
+        return ret;
     }
     
     /**
      * Request-Funktion
      */
-    public void getAllPos(Player p, ArrayList<VektorD> ret){
+    public ArrayList<VektorD> getAllPos(Player p, ArrayList<VektorD> ret){
+        ret=new ArrayList<VektorD>();
         for (int i=0;i<masses.size();i++){
             ret.add(masses.get(i).getPos());
         }
+        return ret;
     }
     
     /**
      * Request-Funktion
      */
-    public void getAllRadii(Player p, ArrayList<Integer> ret){
-        ArrayList<Integer> radii=new ArrayList<Integer>();
+    public ArrayList<Integer> getAllRadii(Player p, ArrayList<Integer> ret){
+        ret=new ArrayList<Integer>();
         for (int i=0;i<masses.size();i++){
             if (masses.get(i) instanceof PlanetS){
-                radii.add(((PlanetS) masses.get(i)).getRadius());
+                ret.add(((PlanetS) masses.get(i)).getRadius());
             }
             else{
-                radii.add(2);
+                ret.add(2);
             }
         }
-        ret=radii;
+        return ret;
     }
     
     /**
      * Request-Funktion
      */
-    public void getAllOrbits(Player p, ArrayList<ArrayList<VektorD>> ret){
-        ArrayList<ArrayList<VektorD>> orbits=new ArrayList<ArrayList<VektorD>>();
+    public ArrayList<ArrayList<VektorD>> getAllOrbits(Player p, ArrayList<ArrayList<VektorD>> ret){
+        ret=new ArrayList<ArrayList<VektorD>>();
         for (int i=0;i<masses.size();i++){
-            orbits.add(new ArrayList<VektorD>());
+            ret.add(new ArrayList<VektorD>());
             for (int j=0;j<masses.get(i).o.pos.size();j++){
-                orbits.get(i).add(masses.get(i).o.pos.get(j));
+                ret.get(i).add(masses.get(i).o.pos.get(j));
             }
         }
-        ret=orbits;
+        return ret;
     }
     
     /**

@@ -94,7 +94,9 @@ public class Player implements Serializable
         this.online = false;
         disposeFrame();
         Boolean exited=new Boolean(false); //nötig aufgrund der Struktur des Requests
-        new Request(this,"Main.exitIfNoPlayers",exited);
+        Request req=new Request(this,"Main.exitIfNoPlayers",exited);
+        exited=(Boolean) req.ret;
+        req=null;
     }
     
     public boolean isOnline(){
@@ -169,7 +171,9 @@ public class Player implements Serializable
     public void exit(){
         logout();
         Boolean exited=new Boolean(false);
-        new Request(this,"Main.exit",exited);
+        Request req=new Request(this,"Main.exit",exited);
+        exited=(Boolean) req.ret; //ohnehin nach System.exit, also sinnlos?
+        req=null;
     }
     
     /**

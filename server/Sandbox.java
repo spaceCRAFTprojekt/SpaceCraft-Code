@@ -107,7 +107,8 @@ public abstract class Sandbox implements Serializable
      *  * Player p: Spieler der rechtsklickt
      * Request-Funktion
      */
-    public void rightclickBlock(Player p, Boolean success, boolean onPlanet, int sandboxIndex, VektorI pos){
+    public Boolean rightclickBlock(Player p, Boolean success, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+        success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
                 placeBlock(Blocks.get(104), pos, p);
@@ -117,7 +118,8 @@ public abstract class Sandbox implements Serializable
             }
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
-        success=new Boolean(true); //muss sich immer verändern, sonst wartet der Request ewig
+        success=new Boolean(true);
+        return success;
     }
 
     /**
@@ -129,10 +131,11 @@ public abstract class Sandbox implements Serializable
      *  * Player p: Spieler der linksklickt
      * Request-Funktion
      */
-    public void leftclickBlock(Player p, Boolean success, boolean onPlanet, int sandboxIndex,  VektorI pos){
+    public Boolean leftclickBlock(Player p, Boolean success, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
+        success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
-                return;  // evtl. an Player weitergeben
+                return success;  // evtl. an Player weitergeben
             }else{
                 breakBlock(pos, p);
                 System.out.println("Block at "+pos.toString()+" leftclicked by "+p.getName()+"!");
@@ -140,6 +143,7 @@ public abstract class Sandbox implements Serializable
         }catch(Exception e){ //block außerhalb der Map 
         }
         success=new Boolean(true);
+        return success;
     }
 
     /**
@@ -276,12 +280,13 @@ public abstract class Sandbox implements Serializable
     /**
      * Request-Funktion
      */
-    public void getMapIDs(Player p, int[][] ret, boolean onPlanet, int sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
+    public int[][] getMapIDs(Player p, int[][] ret, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
         ret=new int[upperLeftCorner.x-bottomRightCorner.x][upperLeftCorner.y-bottomRightCorner.y];
         for (int i=upperLeftCorner.x;i<bottomRightCorner.x;i++){
             for (int j=upperLeftCorner.y;j<bottomRightCorner.y;j++){
-                ret[i][j]=map[i-upperLeftCorner.x][j-upperLeftCorner.y].getID();
+                ret[i-upperLeftCorner.x][j-upperLeftCorner.y]=map[i][j].getID();
             }
         }
+        return ret;
     }
 }

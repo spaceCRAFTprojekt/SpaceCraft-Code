@@ -85,7 +85,9 @@ public class PlayerS implements Serializable
                 }
                 focussedMassIndex=new Integer(-1);
                 
-                new Request(player,"Space.getFocussedMassIndex",focussedMassIndex,pos,player.getScreenSize(),scale);
+                Request req=new Request(player,"Space.getFocussedMassIndex",focussedMassIndex,pos,player.getScreenSize(),scale);
+                focussedMassIndex=(Integer) req.ret;
+                req=null;
                 if (focussedMassIndex.intValue()==-2){
                     focussedMassIndex=new Integer(-1);
                 }
@@ -106,7 +108,9 @@ public class PlayerS implements Serializable
             return null;
         }
         VektorD focussedMassPos=null;
-        new Request(player,"Space.getMassPos",focussedMassPos,focussedMassIndex);
+        Request req=new Request(player,"Space.getMassPos",focussedMassPos,focussedMassIndex);
+        req.ret=focussedMassPos;
+        req=null;
         if (focussedMassPos.x==Double.NaN || focussedMassPos.y==Double.NaN){
             return null;
         }
@@ -135,11 +139,17 @@ public class PlayerS implements Serializable
         g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
         
         ArrayList<VektorD> poss=new ArrayList<VektorD>();
-        new Request(this.player,"Space.getAllPos",poss);
+        Request req1=new Request(this.player,"Space.getAllPos",poss);
+        poss=(ArrayList<VektorD>) req1.ret;
+        req1=null;
         ArrayList<ArrayList<VektorD>> orbits=new ArrayList<ArrayList<VektorD>>(); //das pos-Array
-        new Request(this.player,"Space.getAllOrbits",orbits);
+        Request req2=new Request(this.player,"Space.getAllOrbits",orbits);
+        orbits=(ArrayList<ArrayList<VektorD>>) req2.ret;
+        req2=null;
         ArrayList<Integer> radii=new ArrayList<Integer>();
-        new Request(this.player,"Space.getAllRadii",radii);
+        Request req3=new Request(this.player,"Space.getAllRadii",radii);
+        radii=(ArrayList<Integer>) req3.ret;
+        req3=null;
         
         int accuracy = 100;
         for (int i=0;i<poss.size();i++){

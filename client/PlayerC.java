@@ -104,11 +104,15 @@ public class PlayerC implements Serializable
             if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
                 Boolean success=new Boolean(false);
-                new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
+                Request req=new Request(player,"Sandbox.leftclickBlock",success,onPlanet,sandboxIndex,sPos);
+                success=(Boolean) req.ret;
+                req=null;
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
                 Boolean success=new Boolean(false);
-                new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
+                Request req=new Request(player,"Sandbox.rightclickBlock",success,onPlanet,sandboxIndex,sPos);
+                success=(Boolean) req.ret;
+                req=null;
             }
         }
     }
@@ -149,7 +153,9 @@ public class PlayerC implements Serializable
         VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
         int[][] mapIDs=new int[0][0];
-        new Request(player,"Sandbox.getMapIDs",mapIDs,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner);
+        Request req=new Request(player,"Sandbox.getMapIDs",mapIDs,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner);
+        mapIDs=(int[][]) req.ret;
+        req=null;
         ColorModel cm=ColorModel.getRGBdefault();
         BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
