@@ -219,6 +219,7 @@ public class Main implements Serializable
      */
     public void requestResolverSetup(){
         this.rr=new RequestResolver(this);
+        Request.requests=new ArrayList<Request>();
     }
     
     /**
