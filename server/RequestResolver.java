@@ -32,7 +32,9 @@ public class RequestResolver{
     public void resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         synchronized(req){
             if (req.thread.getState()==Thread.State.WAITING){ //Ist das nötig?
-                //System.out.println("Resolving Request "+req.todo);
+                if (ClientSettings.PRINT_COMMUNICATION){
+                    System.out.println("Resolving Request "+req.todo);
+                }
                 String className=req.todo.substring(0,req.todo.indexOf("."));
                 String methodName=req.todo.substring(req.todo.indexOf(".")+1);
                 Object[] params=new Object[req.params.length+1];

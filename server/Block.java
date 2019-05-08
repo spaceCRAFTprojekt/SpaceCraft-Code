@@ -24,13 +24,12 @@ public class Block implements Serializable
     
     
     /**
-     * ...
+     * nur static möglich, nicht in-Game (wegen der Bilder für den Client)
      */
     public Block(int id, String name, String imageString)
     {
         this(id, name);
         this.img = ImageTools.get('C', imageString);
-        client.BlocksC.images.put(id,this.img);
     }
     
     public Block(int id, String name)

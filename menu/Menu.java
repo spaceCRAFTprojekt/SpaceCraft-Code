@@ -18,6 +18,7 @@ import client.Player;
 /**
  * @info:
  * Dient als Vorlage für Menüs  // Plural ist um die Uhrzeit auch schwer
+ * Sollten nur clientseitig konstruiert werden! (Task newMenu o.Ä., wenns vom Server ausgeht)
  * 
  * @rewrite
  * wird auch in Blöcken (z.B. Blocks_Note) intern verwendet!!!
@@ -25,20 +26,19 @@ import client.Player;
  * v0.1.8_AK Umschreiben als abstracte Klasse
  */
 public abstract class Menu extends JFrame {
-    private Player p;
+    protected Player p;
     JPanel contentPane;
     //Constructor 
     public Menu(Player p, String title, VektorI size){
-        this.p = p;
         this.setTitle(title);
         this.setSize(size.x, size.y);
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.p=p;
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
-                public void WindowClosing(WindowEvent e) {
-                    closeMenu();
-                }
-            });
-
+            public void windowClosing(WindowEvent e){
+                closeMenu();
+            }
+        });
         //Erstellt einen neue "Pane", auf die Grafikelemente ge"tan" werden können
         contentPane = new JPanel(null);
         contentPane.setPreferredSize(new Dimension(230,165));
@@ -59,7 +59,6 @@ public abstract class Menu extends JFrame {
         p.removeMenu();
         dispose();
     }
-    
     
     public Player getPlayer(){
         return p;

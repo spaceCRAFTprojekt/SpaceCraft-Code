@@ -198,4 +198,12 @@ public class PlayerC implements Serializable
     public void repaint(){
         player.repaint();
     }
+    
+    public boolean isOnPlanet(){
+        return onPlanet;
+    }
+    
+    public int getSandboxIndex(){
+        return sandboxIndex;
+    }
 }

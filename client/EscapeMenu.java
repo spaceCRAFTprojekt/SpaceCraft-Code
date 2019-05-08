@@ -14,7 +14,7 @@ public class EscapeMenu extends Menu {
     
     //Constructor 
     public EscapeMenu(Player p){
-        super(p, "Pause", new VektorI(225, 320));
+        super(p,"Pause", new VektorI(225, 320));
         
         // erstellt ein neues Label
         pause = new MenuLabel(this, "Pause", new VektorI(60,30) ,new VektorI(90,30), 30);
@@ -28,19 +28,19 @@ public class EscapeMenu extends Menu {
             public void onClick(){logout();}
         };
         
-        logout = new MenuButton(this, "Exit", new VektorI(30,220), new VektorI(150, 35)){
+        exit = new MenuButton(this, "Exit", new VektorI(30,220), new VektorI(150, 35)){
             public void onClick(){exit();}
         };
     }
 
     public void logout(){
-        this.getPlayer().logout();
+        getPlayer().logout();
         dispose();
     }
     
     public void exit(){
-        this.getPlayer().logout();
-        this.getPlayer().exit();
+        getPlayer().logout();
+        getPlayer().exit();
         dispose();
     }
 }

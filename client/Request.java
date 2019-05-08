@@ -1,7 +1,5 @@
 package client;
 import java.util.ArrayList;
-import java.lang.reflect.Field;
-import java.io.Serializable;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
@@ -11,14 +9,18 @@ public class Request{
      * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exitIfNoPlayers()
      * Main.exit()
-     * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, double scale)
-     * Space.getMassPos(int index)
+     * Main.login()
+     * Main.logout()
+     * Main.retrieveBlockImages()
+     * Main.returnFromMenu(String menuName, Object[] menuParams)
+     * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
+     * Space.getMassPos(Integer index)
      * Space.getAllPos()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
-     * Sandbox.leftclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
-     * Sandbox.rightclickBlock(boolean onPlanet, int sandboxIndex, VektorI sPos)
-     * Sandbox.getMapIDs(boolean onPlanet, int sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
+     * Sandbox.leftclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
+     * Sandbox.rightclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
+     * Sandbox.getMapIDs(Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch den Player p)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.

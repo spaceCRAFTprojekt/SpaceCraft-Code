@@ -1,5 +1,6 @@
 package client;
 import java.util.ArrayList;
+import java.util.HashMap;
 import geom.*;
 import menu.*;
 import java.awt.Graphics;
@@ -7,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
@@ -21,6 +23,9 @@ import java.io.ObjectOutputStream;
 public class Player implements Serializable
 {
     private String name;
+    private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
+    private ArrayList<Task> tasks;
+    private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     private boolean inCraft = true;
     private transient Frame frame;
@@ -33,15 +38,14 @@ public class Player implements Serializable
      * Erstellt neuen Spieler in einem Weltraum
      * 
      * @param:
-     * boolean Singleplayer: gibt an, ob das Spiel im Singleplayer Modus ist und folglich der Spieler zu beginn online ist
+     * int id: Index in der Playerliste in Main
      */
-    public Player(String name, boolean singleplayer)
+    public Player(int id, String name)
     {
         this.name = name;
         this.currentMassIndex=0;
         //der Spawnpunkt muss nochmal überdacht werden
-        
-        if (singleplayer) login();
+        taskResolverSetup();
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
         this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
     }
@@ -64,7 +68,13 @@ public class Player implements Serializable
     
     public Object readResolve() throws ObjectStreamException{
         this.makeFrame();
+        this.taskResolverSetup();
         return this;
+    }
+    
+    public void taskResolverSetup(){
+        this.tr=new TaskResolver(this);
+        this.tasks=new ArrayList<Task>();
     }
 
     /**
@@ -72,6 +82,10 @@ public class Player implements Serializable
      */
     public String getName(){
         return name;
+    }
+    
+    public int getID(){
+        return id;
     }
     
     public int getCurrentMassIndex(){
@@ -84,20 +98,37 @@ public class Player implements Serializable
     
     public void login(){
         if(online)return;
-        this.online = true;
-        makeFrame();
+        Boolean success=(Boolean) (new Request(this,"Main.login",Boolean.class).ret);
+        if (success){
+            this.online = true;
+            makeFrame();
+        }
+        else{
+            System.out.println("No success when trying to log in");
+        }
+        retrieveBlockImages();
     }
     
     public void logout(){
         if(!online)return;
-        closeMenu();
-        this.online = false;
-        disposeFrame();
-        Boolean exited=(Boolean) (new Request(this,"Main.exitIfNoPlayers",Boolean.class).ret);
+        Boolean success=(Boolean) (new Request(this,"Main.logout",Boolean.class).ret);
+        if (success){
+            closeMenu();
+            this.online = false;
+            disposeFrame();
+            Boolean exited=(Boolean) (new Request(this,"Main.exitIfNoPlayers",Boolean.class).ret);
+        }
+        else{
+            System.out.println("No success when trying to log out");
+        }
     }
     
     public boolean isOnline(){
         return online;
+    }
+    
+    public void setOnline(boolean b){
+        this.online=b;
     }
     
     /**
@@ -160,6 +191,15 @@ public class Player implements Serializable
     public boolean isActive()
     {
         return openedMenu == null;
+    }
+    
+    /**
+     * Task-Funktion
+     */
+    public void showMenu(String menuName, Object[] menuParams){
+        if (menuName.equals("NoteblockMenu")){
+            new NoteblockMenu(this,(VektorI) menuParams[0],(String) menuParams[1]);
+        }
     }
     
     /**
@@ -257,5 +297,9 @@ public class Player implements Serializable
     }
     public void repaint(){
         if(frame!=null)frame.repaint();
+    }
+    
+    public void retrieveBlockImages(){
+        BlocksC.images=(HashMap<Integer,BufferedImage>) (new Request(this,"Main.retrieveBlockImages",HashMap.class).ret);
     }
 }

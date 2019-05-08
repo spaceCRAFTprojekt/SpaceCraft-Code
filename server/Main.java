@@ -1,8 +1,10 @@
 package server;
 import client.*;
+import geom.VektorI;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.HashMap;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.IOException;
@@ -28,7 +30,9 @@ public class Main implements Serializable
     static String blocksfilename="blocks";
     static String fileEnding=".ser";
     
-    private transient ArrayList<Player> players = new ArrayList<Player>(); // normalerweise nur ein Spieler
+    private transient ArrayList<Player> players = new ArrayList<Player>();
+    // Kopie der Player, muss synchronisiert werden!
+    // normalerweise nur ein Spieler
     private transient Space space;
     private transient RequestResolver rr;
 
@@ -68,11 +72,11 @@ public class Main implements Serializable
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+        requestResolverSetup();
         space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
         newPlayer("Singleplayer");
         getPlayer("Singleplayer").login();
         getPlayer("Singleplayer").toSpace();
-        requestResolverSetup();
     }
     
     /**
@@ -145,6 +149,7 @@ public class Main implements Serializable
      * AK
      */
     public Object readResolve() throws ObjectStreamException{
+        requestResolverSetup();
         String folder=Settings.GAMESAVE_FOLDER;
         if (!new File(folder).isDirectory()){
             System.out.println("Folder "+folder+" does not exist.");
@@ -210,7 +215,6 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println("Main: 5: "+e+": "+e.getMessage());
         }
-        requestResolverSetup();
         return this;
     }
     
@@ -257,7 +261,7 @@ public class Main implements Serializable
     public String newPlayer(String name)
     {
         if (getPlayer(name) != null)return "Es gibt bereits einen Spieler mit dem Namen " + name + "!";
-        Player p=new Player(name, true);  // aktuell immer Singleplayer
+        Player p=new Player(0, name);
         players.add(p);
         return "Spieler " + name + " erfolgreich erstellt";
     }
@@ -270,15 +274,6 @@ public class Main implements Serializable
     }
     
     /**
-     * Request-Funktion
-     */
-    public Boolean exitIfNoPlayers(Player p){
-        Boolean exited=new Boolean(true);
-        exitIfNoPlayers();
-        return exited;
-    }
-    
-    /**
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
     public void exit(){
@@ -288,12 +283,55 @@ public class Main implements Serializable
     }
     
     /**
-     * Request-Funktion
+     * Ab hier Request-Funktionen
      */
     public Boolean exit(Player p){
         Boolean exited=new Boolean(true);
         exit();
         return exited;
+    }
+    
+    public Boolean exitIfNoPlayers(Player p){
+        Boolean exited=new Boolean(true);
+        exitIfNoPlayers();
+        return exited;
+    }
+    
+    public Boolean login(Player p){
+        players.get(p.getID()).setOnline(true);
+        return new Boolean(true);
+    }
+    
+    public Boolean logout(Player p){
+        players.get(p.getID()).setOnline(true);
+        return new Boolean(true);
+    }
+    
+    public HashMap<Integer,BufferedImage> retrieveBlockImages(Player p){
+        HashMap<Integer,BufferedImage> ret=new HashMap<Integer,BufferedImage>();
+        for (HashMap.Entry<Integer,Block> entry : Blocks.blocks.entrySet()) {
+            ret.put(entry.getKey(),entry.getValue().getImage());
+        }
+        return ret;
+    }
+    
+    public Boolean returnFromMenu(Player p, String menuName, Object[] menuParams){
+        if (menuName.equals("NoteblockMenu")){
+            Sandbox sb;
+            if ((Boolean) menuParams[0]){ //onPlanet
+                sb=PlanetC.planetCs.get((Integer) menuParams[1]);
+            }
+            else{
+                sb=ShipC.shipCs.get((Integer) menuParams[1]);
+            }
+            Meta mt=sb.getMeta((VektorI) menuParams[2]);
+            if (mt!=null){
+                mt.put("text",menuParams[3]);
+                return new Boolean(true);
+            }
+            return new Boolean(false);
+        }
+        return new Boolean(false);
     }
 }
 // Hallo ~unknown
