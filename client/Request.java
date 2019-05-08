@@ -22,7 +22,7 @@ public class Request{
      * Sandbox.rightclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * 
-     * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch den Player p)
+     * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch der Player p)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
      * Aus irgendeinem Grund (der, fürchte ich, mit hässlicher Multithreaderei zu tun hat) kann man keine Methoden des Players aufrufen. 
      * (Unter anderem deshalb gibt es überhaupt so viele params)

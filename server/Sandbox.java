@@ -135,7 +135,7 @@ public abstract class Sandbox implements Serializable
         Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
-                return success;  // evtl. an Player weitergeben
+                return success;
             }else{
                 breakBlock(pos, p);
                 System.out.println("Block at "+pos.toString()+" leftclicked by "+p.getName()+"!");

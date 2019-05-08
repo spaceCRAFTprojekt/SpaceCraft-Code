@@ -4,6 +4,9 @@ import java.util.TimerTask;
 import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+/**
+ * recht ähnlich zu server.RequestResolver
+ */
 public class TaskResolver{
     Player p;
     Timer t;
