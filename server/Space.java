@@ -88,7 +88,7 @@ public class Space implements Serializable
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
      */
-    public Integer getFocussedMassIndex(Player p, VektorD pos, VektorD posToNull, VektorI screenSize, Double scale){
+    public Integer getFocussedMassIndex(Integer playerID, VektorD pos, VektorD posToNull, VektorI screenSize, Double scale){
         Integer ret=new Integer(-1);
         for (int i=0;i<masses.size();i++){
             if (masses.get(i)!=null){
@@ -111,9 +111,9 @@ public class Space implements Serializable
     }
     
     /**
-     * Request-Funktion (Player standardmäßig als Übergabeparameter)
+     * Request-Funktion (Player-ID standardmäßig als Übergabeparameter)
      */
-    public VektorD getMassPos(Player p, Integer index){
+    public VektorD getMassPos(Integer playerID, Integer index){
         VektorD ret=new VektorD(Double.NaN,Double.NaN);
         if (masses.get(index)==null){
             
@@ -127,7 +127,7 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public ArrayList<VektorD> getAllPos(Player p){
+    public ArrayList<VektorD> getAllPos(Integer playerID){
         ArrayList<VektorD> ret=new ArrayList<VektorD>();
         for (int i=0;i<masses.size();i++){
             ret.add(masses.get(i).getPos());
@@ -138,7 +138,7 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public ArrayList<Integer> getAllRadii(Player p){
+    public ArrayList<Integer> getAllRadii(Integer playerID){
         ArrayList<Integer> ret=new ArrayList<Integer>();
         for (int i=0;i<masses.size();i++){
             if (masses.get(i) instanceof PlanetS){
@@ -154,7 +154,7 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public ArrayList<ArrayList<VektorD>> getAllOrbits(Player p){
+    public ArrayList<ArrayList<VektorD>> getAllOrbits(Integer playerID){
         ArrayList<ArrayList<VektorD>> ret=new ArrayList<ArrayList<VektorD>>();
         for (int i=0;i<masses.size();i++){
             ret.add(new ArrayList<VektorD>());

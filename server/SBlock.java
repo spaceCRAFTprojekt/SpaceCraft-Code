@@ -28,9 +28,9 @@ public abstract class SBlock extends Block
      * @param:
      * Sandbox sb: Sandbox, in der der Block ist
      * VektorI pos: Position des Blocks in dieser Sandbox
-     * Player p: Spieler
+     * int playerID: ID des Spielers
      */
-    public void onRightclick(Sandbox sb, VektorI pos, Player p){};
+    public void onRightclick(Sandbox sb, VektorI pos, int playerID){};
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler gesetzt wird
@@ -39,9 +39,9 @@ public abstract class SBlock extends Block
      * @param:
      * Sandbox sb: Sandbox, in der der Block ist
      * VektorI pos: Position des Blocks in dieser Sandbox
-     * Player p: Spieler
+     * int playerID: ID des Spielers
      */
-    public boolean onPlace(Sandbox sb, VektorI pos, Player p){
+    public boolean onPlace(Sandbox sb, VektorI pos, int playerID){
         return true;
     }
     
@@ -60,9 +60,9 @@ public abstract class SBlock extends Block
      * @param:
      * Sandbox sb: Sandbox, in der der Block ist
      * VektorI pos: Position des Blocks in dieser Sandbox
-     * Player p: Spieler
+     * int playerID: ID des Spielers
      */
-    public boolean onBreak(Sandbox sb, VektorI pos, Player p){
+    public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
         return true;
     }
     

@@ -23,13 +23,14 @@ public class PlayerS implements Serializable
     private Integer focussedMassIndex; //Integer, damit man ihn notify'n kann
     private transient VektorI lastDragPosition = null;
     
-    private JPopupMenu popupmenu;
+    private transient JPopupMenu popupmenu;
     
     public PlayerS(Player player, VektorD pos, int focussedMassIndex)
     {
         this.player = player;
         this.posToMass=pos;
         this.focussedMassIndex=new Integer(focussedMassIndex);
+        //muss man hier auch schon synchronisieren?
         
         popupmenu = new JPopupMenu("Edit");   
          JMenuItem cut = new JMenuItem("Cut");  
@@ -51,7 +52,8 @@ public class PlayerS implements Serializable
         switch(e.getKeyCode()){
             case Shortcuts.space_focus_current_mass: 
                 focussedMassIndex=player.getCurrentMassIndex();
-                popupmenu.show(player.getFrame() , 300,300);  
+                new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,(Object) focussedMassIndex);
+                popupmenu.show(player.getFrame(),300,300);
                 popupmenu.setVisible(true);
                 break;
         }
@@ -73,6 +75,7 @@ public class PlayerS implements Serializable
                     VektorD diff = lastDragPosition.subtract(thisDragPosition).toDouble().multiply(1/scale);
                     diff.y = -diff.y;   // die Y Achse ist umgedreht
                     this.posToMass = posToMass.add(diff);
+                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,(Object) this.posToMass);
                 }
                 lastDragPosition = new VektorI(e.getX(), e.getY());
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
@@ -83,7 +86,8 @@ public class PlayerS implements Serializable
                 else{
                     pos=posToMass.add(getFocussedMassPos());
                 }
-                focussedMassIndex=(Integer) (new Request(player,"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret);
+                focussedMassIndex=(Integer) (new Request(player.getID(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret);
+                new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,(Object) focussedMassIndex);
                 break;
             case 'r': lastDragPosition = null;
                 break;
@@ -94,13 +98,14 @@ public class PlayerS implements Serializable
         int amountOfClicks = e.getWheelRotation();
         scale = scale * Math.pow(2,amountOfClicks);
         if (scale == 0)scale = 1;
+        new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"scale",Double.class,(Object) scale);
     }
     
     public VektorD getFocussedMassPos(){
         if (focussedMassIndex==-1){
             return null;
         }
-        VektorD focussedMassPos=(VektorD) (new Request(player,"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
+        VektorD focussedMassPos=(VektorD) (new Request(player.getID(),"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
         return focussedMassPos;
     }
     
@@ -125,12 +130,9 @@ public class PlayerS implements Serializable
         g2.setColor(Color.BLACK);
         g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
         
-        ArrayList<VektorD> poss=new ArrayList<VektorD>();
-        Request req1=new Request(this.player,"Space.getAllPos",ArrayList.class);
-        poss=(ArrayList<VektorD>) req1.ret;
-        req1=null;
-        ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player,"Space.getAllOrbits",ArrayList.class).ret);
-        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player,"Space.getAllRadii",ArrayList.class).ret);
+        ArrayList<VektorD> poss=(ArrayList<VektorD>) (new Request(this.player.getID(),"Space.getAllPos",ArrayList.class).ret);
+        ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player.getID(),"Space.getAllOrbits",ArrayList.class).ret);
+        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),"Space.getAllRadii",ArrayList.class).ret);
         
         int accuracy = 100;
         for (int i=0;i<poss.size();i++){

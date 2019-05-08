@@ -26,7 +26,7 @@ public class NoteblockMenu extends Menu{
             public void onClick(){
                 text=mta.getText();
                 Object[] menuParams={onPlanet,sandboxIndex,pos,text};
-                Boolean success=(Boolean) (new Request(getPlayer(),"Main.returnFromMenu",Boolean.class,"NoteblockMenu",menuParams).ret);
+                Boolean success=(Boolean) (new Request(getPlayer().getID(),"Main.returnFromMenu",Boolean.class,"NoteblockMenu",menuParams).ret);
                 closeMenu();
             }
         };

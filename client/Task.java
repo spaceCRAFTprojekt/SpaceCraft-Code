@@ -1,16 +1,18 @@
 package client;
 import java.util.ArrayList;
+import java.io.Serializable;
 /**
  * Tasks kommen vom Server und müssen hier erledigt werden. (Falls jemand das hier hacken will:
  * Wie du vielleicht sehen kannst, stehen in den Player-Klassen ohnehin keine wichtigen Sachen.
  * Du kannst also das Spiel für dich im Wesentlichen nur kaputt machen.)
  * Tasks geben nichts zurück und der Server wartet nie auf den Client.
  */
-public class Task{
+public class Task implements Serializable{
     /**
      * Liste aller Task-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
-     * Player.synchronize(Player p)
+     * Player.synchronize(Player p) <= noch nicht implementiert
      * Player.showMenu(String menuName, Object[] menuParams)
+     * Player.repaint()
      */
     public static ArrayList<Task> tasks=new ArrayList<Task>();
     public String todo;

@@ -12,7 +12,7 @@ public class Blocks_Piston extends DirBlock
     }
 
     @Override
-    public void onRightclick(Sandbox sb, VektorI pos, Player p){
+    public void onRightclick(Sandbox sb, VektorI pos, int playerID){
         switchOn(sb, pos);
     }
     
@@ -58,30 +58,30 @@ public class Blocks_Piston extends DirBlock
     
     DirBlock pistonOn = new DirBlock(301, "piston_on", "blocks_piston_on"){
             @Override
-            public boolean onBreak(Sandbox sb, VektorI pos, Player p){
+            public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
                 if(sb.getBlock(pos2).getName() == "piston_front")sb.breakBlock(pos2);
                 return true;
             }
 
             @Override
-            public void onRightclick(Sandbox sb, VektorI pos, Player p){
+            public void onRightclick(Sandbox sb, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
                 if(sb.getBlock(pos2).getName() == "piston_front")sb.breakBlock(pos2);
                 sb.swapBlock(Blocks.get(300), pos);  // Piston_off wieder setzten
             }
             
             @Override
-            public boolean onPlace(Sandbox sb, VektorI pos, Player p){return false;}
+            public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
         };
         
     DirBlock pistonFront = new DirBlock(302, "piston_front", "blocks_piston_front"){
             @Override
-            public boolean onBreak(Sandbox sb, VektorI pos, Player p){
+            public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
                 return false;
             }
 
             @Override
-            public boolean onPlace(Sandbox sb, VektorI pos, Player p){return false;}
+            public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
         };
 }

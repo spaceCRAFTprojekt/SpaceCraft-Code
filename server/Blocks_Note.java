@@ -20,11 +20,10 @@ public class Blocks_Note extends SBlock
     }
     
     @Override
-    public void onRightclick(Sandbox sb, VektorI pos, Player p){
+    public void onRightclick(Sandbox sb, VektorI pos, int playerID){
         Meta meta = sb.getMeta(pos);
         String text = (String)meta.get("text");
-        int id=p.getID();
         Object[] menuParams={pos,text};
-        new Task(id,"Player.showMenu","NoteblockMenu",menuParams);
+        new Task(playerID,"Player.showMenu","NoteblockMenu",menuParams);
     }
 }

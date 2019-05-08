@@ -27,7 +27,7 @@ public abstract class Sandbox implements Serializable
     public transient Block[][]map;
     public Meta[][]meta;
     // Sandboxen können Sandboxen enthalten (Kompositum). z.B.: Schiff auf Planet
-    protected transient ArrayList<Sandbox> subsandboxes = new ArrayList<Sandbox>(); //Namensänderung, war früher "sandboxes"
+    protected transient ArrayList<Sandbox> subsandboxes = new ArrayList<Sandbox>();
     protected transient Timer spaceTimer; //nur eine Referenz
 
     /***********************************************************************************************************************************************************
@@ -104,17 +104,17 @@ public abstract class Sandbox implements Serializable
      *  
      *  @param:
      *  * VektorI pos: Position des Blocks
-     *  * Player p: Spieler der rechtsklickt
+     *  * Integer playerID
      * Request-Funktion
      */
-    public Boolean rightclickBlock(Player p, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+    public Boolean rightclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
         Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
-                placeBlock(Blocks.get(104), pos, p);
+                placeBlock(Blocks.get(104), pos, playerID);
             }else{
-                ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, p);
-                System.out.println("Block at "+pos.toString()+" rightclicked by "+p.getName()+"!");
+                ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, playerID);
+                System.out.println("Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");
             }
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
@@ -128,17 +128,17 @@ public abstract class Sandbox implements Serializable
      *  
      *  @param:
      *  * VektorI pos: Position des Blocks
-     *  * Player p: Spieler der linksklickt
+     *  * Integer playerID
      * Request-Funktion
      */
-    public Boolean leftclickBlock(Player p, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
+    public Boolean leftclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
         Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
                 return success;
             }else{
-                breakBlock(pos, p);
-                System.out.println("Block at "+pos.toString()+" leftclicked by "+p.getName()+"!");
+                breakBlock(pos, playerID);
+                System.out.println("Block at "+pos.toString()+" leftclicked by Player "+playerID+"!");
             }
         }catch(Exception e){ //block außerhalb der Map 
         }
@@ -152,14 +152,14 @@ public abstract class Sandbox implements Serializable
      * @param:
      *  * Block block: Block der plaziert werden soll
      *  * VektorI pos: Position des Blocks
-     *  * Player p: Spieler der den Block plaziert
+     *  * int playerID
      */
-    public void placeBlock(Block block, VektorI pos, Player p){
+    public void placeBlock(Block block, VektorI pos, int playerID){
         try{
-            if(!((SBlock)block).onPlace(this, pos, p))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
+            if(!((SBlock)block).onPlace(this, pos, playerID))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
         }catch(Exception e){} // => kein SpecialBlock => kann immer plaziert werden
         setBlock(block, pos);
-        System.out.println("Block at "+pos.toString()+" placed by "+p.getName()+"!");
+        System.out.println("Block at "+pos.toString()+" placed by Player "+playerID+"!");
     }
 
     /**
@@ -194,14 +194,14 @@ public abstract class Sandbox implements Serializable
      * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurückgibt und löscht die Metadaten
      * @param:
      *  * VektorI pos: Position des Blocks
-     *  * Player p: Spieler der den Block abbaut
+     *  * int playerID
      */
-    public void breakBlock(VektorI pos, Player p){
+    public void breakBlock(VektorI pos, int playerID){
         if (map[pos.x][pos.y] == null) return;
         try{
-            if (((SBlock)map[pos.x][pos.y]).onBreak(this, pos, p)){
+            if (((SBlock)map[pos.x][pos.y]).onBreak(this, pos, playerID)){
                 breakBlock(pos);
-                System.out.println("Block at "+pos.toString()+" breaked by "+p.getName()+"!");
+                System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
             }
         }catch(Exception e){breakBlock(pos);}
     }
@@ -280,7 +280,7 @@ public abstract class Sandbox implements Serializable
     /**
      * Request-Funktion
      */
-    public int[][] getMapIDs(Player p, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
+    public int[][] getMapIDs(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
         int[][] ret=new int[bottomRightCorner.x-upperLeftCorner.x+1][bottomRightCorner.y-upperLeftCorner.y+1];
         for (int x=upperLeftCorner.x;x<=bottomRightCorner.x;x++){
             for (int y=upperLeftCorner.y;y<=bottomRightCorner.y;y++){

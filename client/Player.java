@@ -24,7 +24,6 @@ public class Player implements Serializable
 {
     private String name;
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
-    private ArrayList<Task> tasks;
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     private boolean inCraft = true;
@@ -33,6 +32,7 @@ public class Player implements Serializable
     private PlayerC playerC;
     private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
     private int currentMassIndex;
+    //transiente Variablen werden nicht synchronisiert
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
@@ -42,12 +42,14 @@ public class Player implements Serializable
      */
     public Player(int id, String name)
     {
+        this.id=id;
         this.name = name;
         this.currentMassIndex=0;
         //der Spawnpunkt muss nochmal überdacht werden
         taskResolverSetup();
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
         this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
+        //muss man hier auch schon synchronisieren?
     }
     
     private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier
@@ -74,7 +76,6 @@ public class Player implements Serializable
     
     public void taskResolverSetup(){
         this.tr=new TaskResolver(this);
-        this.tasks=new ArrayList<Task>();
     }
 
     /**
@@ -94,11 +95,12 @@ public class Player implements Serializable
     
     public void setCurrentMassIndex(int cmi){
         currentMassIndex=cmi;
+        new Request(id,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class,(Object) cmi);
     }
     
     public void login(){
         if(online)return;
-        Boolean success=(Boolean) (new Request(this,"Main.login",Boolean.class).ret);
+        Boolean success=(Boolean) (new Request(id,"Main.login",Boolean.class).ret);
         if (success){
             this.online = true;
             makeFrame();
@@ -111,12 +113,12 @@ public class Player implements Serializable
     
     public void logout(){
         if(!online)return;
-        Boolean success=(Boolean) (new Request(this,"Main.logout",Boolean.class).ret);
+        Boolean success=(Boolean) (new Request(id,"Main.logout",Boolean.class).ret);
         if (success){
             closeMenu();
             this.online = false;
             disposeFrame();
-            Boolean exited=(Boolean) (new Request(this,"Main.exitIfNoPlayers",Boolean.class).ret);
+            Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
         }
         else{
             System.out.println("No success when trying to log out");
@@ -127,7 +129,7 @@ public class Player implements Serializable
         return online;
     }
     
-    public void setOnline(boolean b){
+    public void setOnline(boolean b){ //wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout()
         this.online=b;
     }
     
@@ -138,6 +140,7 @@ public class Player implements Serializable
     {
         if (!inCraft)return; // wenn der Spieler schon in der Space Ansicht ist, dann wird nichts getan
         inCraft = false;
+        new Request(id,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class,(Object) inCraft);
         repaint();
     }
     
@@ -148,6 +151,7 @@ public class Player implements Serializable
     {
         if (inCraft)return; // wenn der Spieler schon in der Craft Ansicht ist, dann wird nichts getan
         inCraft = true;
+        new Request(id,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class,(Object) inCraft);
         repaint();
     }
     
@@ -207,7 +211,7 @@ public class Player implements Serializable
      */
     public void exit(){
         logout();
-        Boolean exited=(Boolean) (new Request(this,"Main.exit",Boolean.class).ret);
+        Boolean exited=(Boolean) (new Request(id,"Main.exit",Boolean.class).ret);
     }
     
     /**
@@ -295,11 +299,15 @@ public class Player implements Serializable
             else if (playerS != null) playerS.paint(g, screenSize);
         }
     }
+    
+    /**
+     * (auch) Task-Funktion
+     */
     public void repaint(){
         if(frame!=null)frame.repaint();
     }
     
     public void retrieveBlockImages(){
-        BlocksC.images=(HashMap<Integer,BufferedImage>) (new Request(this,"Main.retrieveBlockImages",HashMap.class).ret);
+        BlocksC.images=(HashMap<Integer,BufferedImage>) (new Request(id,"Main.retrieveBlockImages",HashMap.class).ret);
     }
 }

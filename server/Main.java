@@ -232,7 +232,7 @@ public class Main implements Serializable
     public void repaint()
     {
         for (int i = 0; i<players.size();i++){
-            players.get(i).repaint();
+            new Task(i,"Player.repaint");
         }
     }
     
@@ -255,13 +255,20 @@ public class Main implements Serializable
         return null;
     }
     
+    public Player getPlayer(int id){
+        if (id>=0 && id<players.size()){
+            return players.get(id);
+        }
+        return null;
+    }
+    
     /**
      * neuer Spieler (vorerst nur zu Testzwecken)
      */
     public String newPlayer(String name)
     {
         if (getPlayer(name) != null)return "Es gibt bereits einen Spieler mit dem Namen " + name + "!";
-        Player p=new Player(0, name);
+        Player p=new Player(players.size(), name);
         players.add(p);
         return "Spieler " + name + " erfolgreich erstellt";
     }
@@ -282,32 +289,31 @@ public class Main implements Serializable
         System.exit(0);
     }
     
-    /**
-     * Ab hier Request-Funktionen
-     */
-    public Boolean exit(Player p){
+    //Ab hier Request-Funktionen
+    
+    public Boolean exit(Integer playerID){
         Boolean exited=new Boolean(true);
         exit();
         return exited;
     }
     
-    public Boolean exitIfNoPlayers(Player p){
+    public Boolean exitIfNoPlayers(Integer playerID){
         Boolean exited=new Boolean(true);
         exitIfNoPlayers();
         return exited;
     }
     
-    public Boolean login(Player p){
-        players.get(p.getID()).setOnline(true);
+    public Boolean login(Integer playerID){
+        players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
         return new Boolean(true);
     }
     
-    public Boolean logout(Player p){
-        players.get(p.getID()).setOnline(true);
+    public Boolean logout(Integer playerID){
+        players.get(playerID).setOnline(false); //siehe login(Integer playerID)
         return new Boolean(true);
     }
     
-    public HashMap<Integer,BufferedImage> retrieveBlockImages(Player p){
+    public HashMap<Integer,BufferedImage> retrieveBlockImages(Integer playerID){
         HashMap<Integer,BufferedImage> ret=new HashMap<Integer,BufferedImage>();
         for (HashMap.Entry<Integer,Block> entry : Blocks.blocks.entrySet()) {
             ret.put(entry.getKey(),entry.getValue().getImage());
@@ -315,7 +321,7 @@ public class Main implements Serializable
         return ret;
     }
     
-    public Boolean returnFromMenu(Player p, String menuName, Object[] menuParams){
+    public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         if (menuName.equals("NoteblockMenu")){
             Sandbox sb;
             if ((Boolean) menuParams[0]){ //onPlanet
@@ -332,6 +338,28 @@ public class Main implements Serializable
             return new Boolean(false);
         }
         return new Boolean(false);
+    }
+    
+    //ab hier unfertig
+    /**
+     * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
+     */
+    public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value){
+        //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
+        Player p=players.get(playerID);
+        Class pc=Player.class;
+        //tatsächliches Setzen der Variable mit reflect.Field. Unfertig.
+        //pc.();
+    }
+    
+    public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value){
+        PlayerS p=players.get(playerID).getPlayerS();
+        Class pc=PlayerS.class;
+    }
+    
+    public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value){
+        PlayerC p=players.get(playerID).getPlayerC();
+        Class pc=PlayerC.class;
     }
 }
 // Hallo ~unknown
