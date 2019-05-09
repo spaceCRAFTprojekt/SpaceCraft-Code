@@ -346,6 +346,13 @@ public class Player implements Serializable
     
     public void synchronizeWithServer(){
         Player pOnServer=((Player) new Request(id,"Main.retrievePlayer",Player.class).ret);
-        
+        inCraft=pOnServer.inCraft;
+        currentMassIndex=pOnServer.currentMassIndex;
+        playerS.posToMass=pOnServer.getPlayerS().posToMass;
+        playerS.scale=pOnServer.getPlayerS().scale;
+        playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
+        playerC.pos=pOnServer.getPlayerC().pos;
+        playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
+        playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
     }
 }

@@ -48,6 +48,11 @@ public class PlayerC implements Serializable
                     repaint();
                 }
             },0,ClientSettings.PLAYERC_TIMER_PERIOD);
+        timer.schedule(new TimerTask(){
+                public void run(){
+                    synchronizeWithServer();
+                }
+            },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -206,6 +211,11 @@ public class PlayerC implements Serializable
 
     public void repaint(){
         player.repaint();
+    }
+    
+    public void synchronizeWithServer(){
+        if (player.isOnline())
+            player.synchronizeWithServer();
     }
     
     public boolean isOnPlanet(){
