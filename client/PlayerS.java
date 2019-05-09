@@ -20,7 +20,7 @@ public class PlayerS implements Serializable
     private Player player;
     private VektorD posToMass;
     private double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
-    private Integer focussedMassIndex; //Integer, damit man ihn notify'n kann
+    private int focussedMassIndex;
     private transient VektorI lastDragPosition = null;
     
     private transient JPopupMenu popupmenu;
@@ -29,7 +29,7 @@ public class PlayerS implements Serializable
     {
         this.player = player;
         this.posToMass=pos;
-        this.focussedMassIndex=new Integer(focussedMassIndex);
+        this.focussedMassIndex=focussedMassIndex;
         //muss man hier auch schon synchronisieren?
         
         popupmenu = new JPopupMenu("Edit");   
@@ -52,7 +52,8 @@ public class PlayerS implements Serializable
         switch(e.getKeyCode()){
             case Shortcuts.space_focus_current_mass: 
                 focussedMassIndex=player.getCurrentMassIndex();
-                new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,(Object) focussedMassIndex);
+                if (player.onClient())
+                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 popupmenu.show(player.getFrame(),300,300);
                 popupmenu.setVisible(true);
                 break;
@@ -75,7 +76,8 @@ public class PlayerS implements Serializable
                     VektorD diff = lastDragPosition.subtract(thisDragPosition).toDouble().multiply(1/scale);
                     diff.y = -diff.y;   // die Y Achse ist umgedreht
                     this.posToMass = posToMass.add(diff);
-                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,(Object) this.posToMass);
+                    if (player.onClient())
+                        new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
                 }
                 lastDragPosition = new VektorI(e.getX(), e.getY());
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
@@ -86,8 +88,9 @@ public class PlayerS implements Serializable
                 else{
                     pos=posToMass.add(getFocussedMassPos());
                 }
-                focussedMassIndex=(Integer) (new Request(player.getID(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret);
-                new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,(Object) focussedMassIndex);
+                focussedMassIndex=((Integer) new Request(player.getID(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                if (player.onClient())
+                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 break;
             case 'r': lastDragPosition = null;
                 break;
@@ -98,7 +101,8 @@ public class PlayerS implements Serializable
         int amountOfClicks = e.getWheelRotation();
         scale = scale * Math.pow(2,amountOfClicks);
         if (scale == 0)scale = 1;
-        new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"scale",Double.class,(Object) scale);
+        if (player.onClient())
+            new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"scale",Double.class,scale);
     }
     
     public VektorD getFocussedMassPos(){
@@ -110,7 +114,7 @@ public class PlayerS implements Serializable
     }
     
     public VektorD getPosToNull(){
-        if(focussedMassIndex.intValue()==-1){
+        if(focussedMassIndex==-1){
             return posToMass;
         }
         else{
@@ -150,7 +154,7 @@ public class PlayerS implements Serializable
                 int r=radii.get(i);
                 r=(int)(r*scale);
                 if (i== player.getCurrentMassIndex())g2.setColor(Color.RED);
-                else if(i == focussedMassIndex.intValue())g2.setColor(Color.CYAN);
+                else if(i == focussedMassIndex)g2.setColor(Color.CYAN);
                 else g2.setColor(Color.WHITE);
                 g2.fillArc((int) (screenSize.x/2+posDiff.x-r),(int) (screenSize.y/2-posDiff.y-r),2*r,2*r,0,360);
             }

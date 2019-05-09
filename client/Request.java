@@ -10,6 +10,7 @@ public class Request implements Serializable{
      * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exit()
      * Main.exitIfNoPlayers()
+     * Main.newPlayer(String name)
      * Main.login()
      * Main.logout()
      * Main.retrieveBlockImages()

@@ -101,6 +101,10 @@ public class RequestResolver{
                 parameterTypes[i]=params[i].getClass();
             }
             if (className.equals("Main")){
+                if (methodName.equals("synchronizePlayerVariable") || methodName.equals("synchronizePlayerSVariable") || methodName.equals("synchronizePlayerCVariable")){
+                    //Diese Methoden nehmen formal Objects als Parameter, das muss auch so in den ParameterTypes stehen
+                    parameterTypes[3]=Object.class;
+                }
                 Method method=Main.class.getMethod(methodName,parameterTypes);
                 method.invoke(main,params);
             }

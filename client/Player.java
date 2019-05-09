@@ -26,6 +26,7 @@ public class Player implements Serializable
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
+    private boolean onClient;
     private boolean inCraft = true;
     private transient Frame frame;
     private PlayerS playerS;
@@ -39,17 +40,30 @@ public class Player implements Serializable
      * 
      * @param:
      * int id: Index in der Playerliste in Main
+     * String name: Name des Players
+     * boolean onClient: ob der Player sich im Client befindet (ob also er synchronisiert wird oder nicht)
+     * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), außer man weiß, was man tut.
      */
-    public Player(int id, String name)
+    public Player(int id, String name, boolean onClient)
     {
         this.id=id;
         this.name = name;
+        this.onClient=onClient;
         this.currentMassIndex=0;
         //der Spawnpunkt muss nochmal überdacht werden
-        taskResolverSetup();
+        if (onClient){
+            taskResolverSetup();
+        }
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
         this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
         //muss man hier auch schon synchronisieren?
+    }
+    
+    public static Player newPlayer(String name){
+        int id=((Integer) new Request(-1,"Main.newPlayer",Integer.class,name).ret).intValue(); //Kopie des Players am Server
+        if (id!=-1)
+            return new Player(id,name,true); //Player hier am Client
+        return null;
     }
     
     private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier
@@ -89,13 +103,18 @@ public class Player implements Serializable
         return id;
     }
     
+    public boolean onClient(){
+        return onClient;
+    }
+    
     public int getCurrentMassIndex(){
         return currentMassIndex;
     }
     
     public void setCurrentMassIndex(int cmi){
         currentMassIndex=cmi;
-        new Request(id,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class,(Object) cmi);
+        if (onClient)
+            new Request(id,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class, cmi);
     }
     
     public void login(){
@@ -140,7 +159,8 @@ public class Player implements Serializable
     {
         if (!inCraft)return; // wenn der Spieler schon in der Space Ansicht ist, dann wird nichts getan
         inCraft = false;
-        new Request(id,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class,(Object) inCraft);
+        if (onClient)
+            new Request(id,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
         repaint();
     }
     
@@ -151,7 +171,8 @@ public class Player implements Serializable
     {
         if (inCraft)return; // wenn der Spieler schon in der Craft Ansicht ist, dann wird nichts getan
         inCraft = true;
-        new Request(id,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class,(Object) inCraft);
+        if (onClient)
+            new Request(id,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
         repaint();
     }
     

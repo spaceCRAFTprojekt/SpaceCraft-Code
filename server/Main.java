@@ -74,9 +74,6 @@ public class Main implements Serializable
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
         requestResolverSetup();
         space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
-        newPlayer("Singleplayer");
-        getPlayer("Singleplayer").login();
-        getPlayer("Singleplayer").toSpace();
     }
     
     /**
@@ -242,7 +239,6 @@ public class Main implements Serializable
     public Space getSpace(){
         return space;
     }
-
     
     /**
      * gibt das Spieler Objekt mit dem Namen name zurück
@@ -260,17 +256,6 @@ public class Main implements Serializable
             return players.get(id);
         }
         return null;
-    }
-    
-    /**
-     * neuer Spieler (vorerst nur zu Testzwecken)
-     */
-    public String newPlayer(String name)
-    {
-        if (getPlayer(name) != null)return "Es gibt bereits einen Spieler mit dem Namen " + name + "!";
-        Player p=new Player(players.size(), name);
-        players.add(p);
-        return "Spieler " + name + " erfolgreich erstellt";
     }
     
     public void exitIfNoPlayers(){
@@ -360,6 +345,22 @@ public class Main implements Serializable
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value){
         PlayerC p=players.get(playerID).getPlayerC();
         Class pc=PlayerC.class;
+    }
+    
+    /**
+     * neuer Spieler (vorerst nur zu Testzwecken)
+     * Request-Funktion!
+     * playerID wird bei Requests standardmäßig übergeben, ist hier aber ohne Belang (-1).
+     * Return-Wert: Kein Erfolg: -1, sonst die ID
+     * Erstellt nur die Kopie des Players am Server. Um einen Player mit Client zu erstellen, wird static client.Player.newPlayer(String name) verwendet.
+     */
+    public Integer newPlayer(Integer playerID, String name)
+    {
+        if (getPlayer(name) != null)return new Integer(-1);
+        int id=players.size();
+        Player p=new Player(id, name, true);
+        players.add(p);
+        return id;
     }
 }
 // Hallo ~unknown

@@ -62,9 +62,11 @@ public class PlayerC implements Serializable
         this.onPlanet=onPlanet;
         this.sandboxIndex = sandboxIndex;
         this.pos = pos;
-        new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,(Object) onPlanet);
-        new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,(Object) sandboxIndex);
-        new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,(Object) pos);
+        if (player.onClient()){
+            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,onPlanet);
+            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,sandboxIndex);
+            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+        }
     }
 
     /**
@@ -88,7 +90,8 @@ public class PlayerC implements Serializable
                 case 'd': pos.x=pos.x + 1; // right
                 break;
             }
-            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,(Object) pos);
+            if (player.onClient())
+                new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
             //System.out.println(pos.toString());
         }
     }
