@@ -85,13 +85,15 @@ public class Player implements Serializable
     }
     
     public Object readResolve() throws ObjectStreamException{
-        this.makeFrame();
+        if (online)
+            this.makeFrame();
         this.taskResolverSetup();
         return this;
     }
     
     public void taskResolverSetup(){
         this.tr=new TaskResolver(this);
+        Task.tasks=new ArrayList<Task>(); //nicht gut, wenn alle die gleiche ArrayList verwenden
     }
 
     /**
@@ -123,6 +125,7 @@ public class Player implements Serializable
         if(online)return;
         Boolean success=(Boolean) (new Request(id,"Main.login",Boolean.class).ret);
         if (success){
+            synchronizeWithServer();
             this.online = true;
             makeFrame();
         }

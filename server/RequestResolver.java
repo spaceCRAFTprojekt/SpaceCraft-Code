@@ -34,7 +34,7 @@ public class RequestResolver{
             synchronized(req){
                 if (req.thread.getState()==Thread.State.WAITING){ //Ist das nötig?
                     if (ClientSettings.PRINT_COMMUNICATION){
-                        System.out.println("Resolving Request "+req.todo);
+                        System.out.println("Resolving Request"+req.todo);
                     }
                     String className=req.todo.substring(0,req.todo.indexOf("."));
                     String methodName=req.todo.substring(req.todo.indexOf(".")+1);
@@ -87,7 +87,7 @@ public class RequestResolver{
         }
         else{
             if (ClientSettings.PRINT_COMMUNICATION){
-                System.out.println("Resolving Request "+req.todo);
+                System.out.println("Resolving Request "+req.todo+", client is not waiting");
             }
             String className=req.todo.substring(0,req.todo.indexOf("."));
             String methodName=req.todo.substring(req.todo.indexOf(".")+1);

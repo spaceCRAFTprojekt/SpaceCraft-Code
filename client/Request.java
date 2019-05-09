@@ -4,10 +4,7 @@ import java.io.Serializable;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
- */
-public class Request implements Serializable{
-    /**
-     * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
+ * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exit()
      * Main.exitIfNoPlayers()
      * Main.newPlayer(String name)
@@ -30,7 +27,8 @@ public class Request implements Serializable{
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
-     */
+ */
+public class Request implements Serializable{
     public static ArrayList<Request> requests=new ArrayList<Request>();
     public int playerID;
     public String todo;
