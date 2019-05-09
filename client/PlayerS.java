@@ -17,10 +17,11 @@ import javax.swing.*;  // test
  */
 public class PlayerS implements Serializable
 {
+    //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private Player player;
-    private VektorD posToMass;
-    private double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
-    private int focussedMassIndex;
+    public VektorD posToMass;
+    public double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
+    public int focussedMassIndex;
     private transient VektorI lastDragPosition = null;
     
     private transient JPopupMenu popupmenu;

@@ -18,13 +18,14 @@ import java.io.ObjectStreamException;
  */
 public class PlayerC implements Serializable
 {
+    //alle Variablen, die synchronisiert werden, müssen public sein
     private transient Timer timer;
 
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
     private Player player;
-    private VektorD pos;
-    private boolean onPlanet; //sonst: auf einem Schiff
-    private int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
+    public VektorD pos;
+    public boolean onPlanet; //sonst: auf einem Schiff
+    public int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
     private transient BufferedImage texture;
     private VektorD hitbox = new VektorD(1,2);
     public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos, Frame frame)

@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.lang.reflect.Field;
 /**
  * Der Server.
  * Enthält die main-Methode
@@ -270,6 +271,12 @@ public class Main implements Serializable
      */
     public void exit(){
         System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
+        for (int i=0;i<players.size();i++){
+            if (players.get(i).isOnline()){
+                players.get(i).logout(); //Server-Kopie des Players
+                new Task(i,"Player.logoutTask"); //Player im Client
+            }
+        }
         Serializer.serialize(this);
         System.exit(0);
     }
@@ -329,22 +336,27 @@ public class Main implements Serializable
     /**
      * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
-    public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value){
+    public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
         Player p=players.get(playerID);
         Class pc=Player.class;
         //tatsächliches Setzen der Variable mit reflect.Field. Unfertig.
-        //pc.();
+        Field f=pc.getDeclaredField(varname);
+        f.set(p,value);
     }
     
-    public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value){
+    public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         PlayerS p=players.get(playerID).getPlayerS();
         Class pc=PlayerS.class;
+        Field f=pc.getDeclaredField(varname);
+        f.set(p,value);
     }
     
-    public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value){
+    public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         PlayerC p=players.get(playerID).getPlayerC();
         Class pc=PlayerC.class;
+        Field f=pc.getDeclaredField(varname);
+        f.set(p,value);
     }
     
     /**
@@ -361,6 +373,13 @@ public class Main implements Serializable
         Player p=new Player(id, name, true);
         players.add(p);
         return id;
+    }
+    
+    /**
+     * Gibt die Kopie des Players hier vom Server zurück. Zur Synchronisierung (siehe Player.synchronizeWithServer)
+     */
+    public Player retrievePlayer(Integer playerID){
+        return players.get(playerID);
     }
 }
 // Hallo ~unknown

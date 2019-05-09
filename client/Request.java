@@ -15,9 +15,10 @@ public class Request implements Serializable{
      * Main.logout()
      * Main.retrieveBlockImages()
      * Main.returnFromMenu(String menuName, Object[] menuParams)
-     * Main.synchronizePlayerVariable(String varname, Class class, Object value); <= nicht fertig implementiert!
-     * Main.synchronizePlayerSVariable(String varname, Class class, Object value); <= nicht fertig implementiert!
-     * Main.synchronizePlayerCVariable(String varname, Class class, Object value); <= nicht fertig implementiert!
+     * Main.synchronizePlayerVariable(String varname, Class class, Object value)
+     * Main.synchronizePlayerSVariable(String varname, Class class, Object value)
+     * Main.synchronizePlayerCVariable(String varname, Class class, Object value) (diese drei setzen Werte von Variablen der Kopie des Players am Server zu dem angegebenen Wert)
+     * Main.retrievePlayer() (id wird ja schon mitgegeben) (zur Synchronisierung)
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
      * Space.getAllPos()

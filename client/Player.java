@@ -22,17 +22,19 @@ import java.io.ObjectOutputStream;
  */
 public class Player implements Serializable
 {
+    //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private String name;
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
+    //Warum ist das transient? Ich fände es sehr sinnvoll, das zu serialisieren. -LG
     private boolean onClient;
-    private boolean inCraft = true;
+    public boolean inCraft = true;
     private transient Frame frame;
     private PlayerS playerS;
     private PlayerC playerC;
     private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
-    private int currentMassIndex;
+    public int currentMassIndex;
     //transiente Variablen werden nicht synchronisiert
     
     /**
@@ -137,11 +139,21 @@ public class Player implements Serializable
             closeMenu();
             this.online = false;
             disposeFrame();
-            Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
+            //Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
         }
         else{
             System.out.println("No success when trying to log out");
         }
+    }
+    
+    /**
+     * Wenn Main exited, dann werden alle Player rausgeschmissen (Es werden keine Requests mehr gestellt im Vergleich zu logout()).
+     */
+    public void logoutTask(){
+        if (!online)return;
+        closeMenu();
+        this.online=false;
+        disposeFrame();
     }
     
     public boolean isOnline(){
@@ -330,5 +342,10 @@ public class Player implements Serializable
     
     public void retrieveBlockImages(){
         BlocksC.images=(HashMap<Integer,BufferedImage>) (new Request(id,"Main.retrieveBlockImages",HashMap.class).ret);
+    }
+    
+    public void synchronizeWithServer(){
+        Player pOnServer=((Player) new Request(id,"Main.retrievePlayer",Player.class).ret);
+        
     }
 }

@@ -10,9 +10,9 @@ import java.io.Serializable;
 public class Task implements Serializable{
     /**
      * Liste aller Task-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
-     * Player.synchronize(Player p) <= noch nicht implementiert
      * Player.showMenu(String menuName, Object[] menuParams)
      * Player.repaint()
+     * Player.logoutTask() (bei Main.exit o.Ä.)
      */
     public static ArrayList<Task> tasks=new ArrayList<Task>();
     public String todo;

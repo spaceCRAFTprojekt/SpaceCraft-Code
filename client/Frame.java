@@ -26,6 +26,7 @@ public class Frame extends JFrame{
         setLayout(null);
         setSize(screenSize.x,screenSize.y);
         setVisible(true);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
                 public void WindowClosing(WindowEvent e) {
                     p.logout();
