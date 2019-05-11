@@ -1,5 +1,6 @@
 package server;
-import client.*;
+import client.Request;
+import client.ClientSettings;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.lang.reflect.Method;
@@ -30,12 +31,12 @@ public class RequestResolver{
     }
     
     public void resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
+        if (ClientSettings.PRINT_COMMUNICATION){
+            System.out.println("Resolving Request "+req);
+        }
         if (req.retClass!=null){
             synchronized(req){
                 if (req.thread.getState()==Thread.State.WAITING){ //Ist das nötig?
-                    if (ClientSettings.PRINT_COMMUNICATION){
-                        System.out.println("Resolving Request"+req.todo);
-                    }
                     String className=req.todo.substring(0,req.todo.indexOf("."));
                     String methodName=req.todo.substring(req.todo.indexOf(".")+1);
                     Object[] params=new Object[req.params.length+1];
@@ -87,7 +88,7 @@ public class RequestResolver{
         }
         else{
             if (ClientSettings.PRINT_COMMUNICATION){
-                System.out.println("Resolving Request "+req.todo+", client is not waiting");
+                System.out.println("(Client is not waiting)");
             }
             String className=req.todo.substring(0,req.todo.indexOf("."));
             String methodName=req.todo.substring(req.todo.indexOf(".")+1);

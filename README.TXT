@@ -1,9 +1,14 @@
 SpaceCraft
 ==========
 
-DoTo: 
-> Grafik flüssiger
+DoTo:
 > Grafik halbe Blöcke
+> Caching von Blöcken
+> Caching von Planetenbahnen
+> Inventar
+> Mehr Blöcke
+> Space-Craft-Schnittstelle
+> Internet?
 
 Regeln:
 * Alle Klassen und Methoden werden (auf Deutsch) genau beschrieben (Getter und Setter nicht zwingend)

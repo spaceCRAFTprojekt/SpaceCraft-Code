@@ -16,6 +16,8 @@ import java.io.Serializable;
      * Main.synchronizePlayerSVariable(String varname, Class class, Object value)
      * Main.synchronizePlayerCVariable(String varname, Class class, Object value) (diese drei setzen Werte von Variablen der Kopie des Players am Server zu dem angegebenen Wert)
      * Main.retrievePlayer() (id wird ja schon mitgegeben) (zur Synchronisierung)
+     * Main.writeIntoChat(String message)
+     * Main.getChatContent(int numLines)
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
      * Space.getAllPos()
@@ -92,5 +94,9 @@ public class Request implements Serializable{
             this.finished=false;
             requests.add(this);
         }
+    }
+    
+    public String toString(){
+        return todo;
     }
 }

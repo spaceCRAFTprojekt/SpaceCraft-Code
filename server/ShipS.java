@@ -28,4 +28,8 @@ public class ShipS extends Mass implements Serializable
     }
     
     protected void spaceTimerSetup(){}
+    
+    public Sandbox getSandbox(){
+        return null;
+    }
 }

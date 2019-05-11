@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
-import client.*;
+import client.ClientSettings;
 /**
  * Eine virtuelle Umgebung aus Blöcken
  * 

@@ -1,5 +1,9 @@
 package server;
-import client.*;
+import client.Player;
+import client.PlayerS;
+import client.PlayerC;
+import client.Request;
+import client.Task;
 import geom.VektorI;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -34,6 +38,7 @@ public class Main implements Serializable
     private transient ArrayList<Player> players = new ArrayList<Player>();
     // Kopie der Player, muss synchronisiert werden!
     // normalerweise nur ein Spieler
+    private transient ArrayList<String> chat=new ArrayList<String>();
     private transient Space space;
     private transient RequestResolver rr;
 
@@ -220,8 +225,8 @@ public class Main implements Serializable
      * Der Request-Resolver ist ein Bindeglied zwischen Server und Client. Diese Funktion ist wichtig.
      */
     public void requestResolverSetup(){
-        this.rr=new RequestResolver(this);
         Request.requests=new ArrayList<Request>();
+        this.rr=new RequestResolver(this);
     }
     
     /**
@@ -380,6 +385,25 @@ public class Main implements Serializable
      */
     public Player retrievePlayer(Integer playerID){
         return players.get(playerID);
+    }
+    
+    public void writeIntoChat(Integer playerID, String message){
+        chat.add(players.get(playerID).getName()+": "+message);
+    }
+    
+    public String[] getChatContent(Integer playerID, Integer numLines){
+        //die letzten (numLines) Zeilen
+        String[] ret=new String[numLines];
+        int chatSize=chat.size();
+        for (int i=0;i<numLines;i++){
+            if (chatSize-numLines+i>=0){
+                ret[i]=chat.get(chatSize-numLines+i);
+            }
+            else{
+                ret[i]="";
+            }
+        }
+        return ret;
     }
 }
 // Hallo ~unknown

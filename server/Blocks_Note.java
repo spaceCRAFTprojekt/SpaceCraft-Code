@@ -1,7 +1,7 @@
 package server;
 import geom.*;
-import client.*;
 import menu.*;
+import client.Task;
 /**
  * Test der Metadaten
  */

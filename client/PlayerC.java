@@ -86,14 +86,14 @@ public class PlayerC implements Serializable
         if (type == 'p'){
             //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
             //braucht eigentlich noch einen posInsideOfBounds request o.Ä.
-            switch(Character.toLowerCase(e.getKeyChar())){
-                case 'w': pos.y=pos.y - 1; // up
+            switch(e.getKeyCode()){
+                case Shortcuts.move_up: pos.y=pos.y - 1;
                 break;
-                case 's': pos.y=pos.y + 1; // down
+                case Shortcuts.move_down: pos.y=pos.y + 1;
                 break;
-                case 'a': pos.x=pos.x - 1; // left
+                case Shortcuts.move_left: pos.x=pos.x - 1;
                 break;
-                case 'd': pos.x=pos.x + 1; // right
+                case Shortcuts.move_right: pos.x=pos.x + 1;
                 break;
             }
             if (player.onClient())

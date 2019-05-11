@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.io.Serializable;
 public abstract class Mass implements Serializable
 {
-    protected Sandbox sb;
     protected double m;
     protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
     protected VektorD vel;
@@ -29,9 +28,7 @@ public abstract class Mass implements Serializable
     /**
      * Gibt die Sandbox der Masse zurück
      */
-    public Sandbox getSandbox(){
-        return sb;
-    }
+    public abstract Sandbox getSandbox();
     
     public double getMass(){
         return m;

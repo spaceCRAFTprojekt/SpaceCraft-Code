@@ -1,6 +1,5 @@
 package server;
 import geom.*;
-import client.*;
 /**
  * für alle Blöcke, die mehr als eine dekorative Funktion haben
  * z.B.:

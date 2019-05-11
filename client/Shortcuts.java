@@ -14,4 +14,5 @@ public abstract class Shortcuts
     public static final int open_escape_menu = KeyEvent.VK_ESCAPE;
     public static final int change_space_craft = KeyEvent.VK_TAB;
     public static final int space_focus_current_mass = KeyEvent.VK_R;
+    public static final int open_chat_writer = KeyEvent.VK_C;
 }

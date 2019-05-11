@@ -4,6 +4,8 @@ import java.util.HashMap;
 import geom.*;
 import menu.*;
 import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -92,8 +94,8 @@ public class Player implements Serializable
     }
     
     public void taskResolverSetup(){
-        this.tr=new TaskResolver(this);
         Task.tasks=new ArrayList<Task>(); //nicht gut, wenn alle die gleiche ArrayList verwenden
+        this.tr=new TaskResolver(this);
     }
 
     /**
@@ -269,6 +271,9 @@ public class Player implements Serializable
                 changePlayer();
                 repaint();
                 break;
+            case Shortcuts.open_chat_writer:
+                new ChatWriterMenu(this);
+                break;
             default:
                 if (inCraft)playerC.keyEvent(e,type);
                 else playerS.keyEvent(e,type);
@@ -333,6 +338,12 @@ public class Player implements Serializable
         if (g!=null){
             if (inCraft && playerC != null)playerC.paint(g, screenSize);
             else if (playerS != null) playerS.paint(g, screenSize);
+            String[] chat=(String[]) new Request(id,"Main.getChatContent",String[].class,5).ret;
+            g.setColor(Color.WHITE);
+            g.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+            for (int i=0;i<chat.length;i++){
+                g.drawString(chat[i],20,i*16+8);
+            }
         }
     }
     
@@ -357,5 +368,9 @@ public class Player implements Serializable
         playerC.pos=pOnServer.getPlayerC().pos;
         playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
         playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
+    }
+    
+    public void writeIntoChat(String message){
+        new Request(id,"Main.writeIntoChat",null,message);
     }
 }

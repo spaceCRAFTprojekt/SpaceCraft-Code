@@ -143,9 +143,15 @@ public class PlayerS implements Serializable
         for (int i=0;i<poss.size();i++){
             if (poss.get(i)!=null){
                 for (int j=accuracy;j<orbits.get(i).size();j=j+accuracy){  // ernsthaft?
-                    VektorD posDiff1=orbits.get(i).get(j-accuracy).subtract(posToNull);
+                    VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
+                    VektorD posToNull2=posToNull;
+                    if (focussedMassIndex!=-1){
+                        posToNull1=posToMass.add(orbits.get(focussedMassIndex).get(j-accuracy));
+                        posToNull2=posToMass.add(orbits.get(focussedMassIndex).get(j));
+                    }
+                    VektorD posDiff1=orbits.get(i).get(j-accuracy).subtract(posToNull1);
                     posDiff1=posDiff1.multiply(scale);
-                    VektorD posDiff2=orbits.get(i).get(j).subtract(posToNull);
+                    VektorD posDiff2=orbits.get(i).get(j).subtract(posToNull2);
                     posDiff2=posDiff2.multiply(scale);
                     g2.setColor(Color.WHITE);
                     g2.drawLine((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y),(int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y));

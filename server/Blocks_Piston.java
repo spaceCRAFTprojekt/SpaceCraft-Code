@@ -1,6 +1,5 @@
 package server;
 import geom.*;
-import client.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.io.Serializable;
