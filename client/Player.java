@@ -4,8 +4,6 @@ import java.util.HashMap;
 import geom.*;
 import menu.*;
 import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -338,12 +336,6 @@ public class Player implements Serializable
         if (g!=null){
             if (inCraft && playerC != null)playerC.paint(g, screenSize);
             else if (playerS != null) playerS.paint(g, screenSize);
-            String[] chat=(String[]) new Request(id,"Main.getChatContent",String[].class,5).ret;
-            g.setColor(Color.WHITE);
-            g.setFont(new Font(Font.SERIF,Font.PLAIN,12));
-            for (int i=0;i<chat.length;i++){
-                g.drawString(chat[i],20,i*16+8);
-            }
         }
     }
     

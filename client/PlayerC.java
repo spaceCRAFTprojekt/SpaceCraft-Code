@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
@@ -203,6 +205,15 @@ public class PlayerC implements Serializable
                 }
             }
         }
+        
+        Graphics2D g2=image.createGraphics();
+        String[] chat=(String[]) new Request(player.getID(),"Main.getChatContent",String[].class,5).ret;
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+        for (int i=0;i<chat.length;i++){
+            g2.drawString(chat[i],20,i*16+8);
+        }
+        
         g.setColor(new Color(0,0,0,1));
         g.drawImage(image,0,0,new Color(0,0,0,255),null);
         

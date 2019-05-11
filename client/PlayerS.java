@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
+import java.awt.Font;
 import javax.swing.*;  // test
 /**
  * ein Spieler in der Space Ansicht
@@ -165,6 +166,13 @@ public class PlayerS implements Serializable
                 else g2.setColor(Color.WHITE);
                 g2.fillArc((int) (screenSize.x/2+posDiff.x-r),(int) (screenSize.y/2-posDiff.y-r),2*r,2*r,0,360);
             }
+        }
+        
+        String[] chat=(String[]) new Request(player.getID(),"Main.getChatContent",String[].class,5).ret;
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+        for (int i=0;i<chat.length;i++){
+            g2.drawString(chat[i],20,i*16+8);
         }
         
         g.drawImage(img, 0,0, Color.BLACK, null);
