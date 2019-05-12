@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 import util.geom.*;
+import items.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -30,13 +31,23 @@ public class PlayerC implements Serializable
     public int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
     private transient BufferedImage texture;
     private VektorD hitbox = new VektorD(1,2);
+    
+    private Inv inv;
     public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos, Frame frame)
     {
         this.player = player;
         setSandbox(onPlanet, sandboxIndex, pos);
         makeTexture();
         timerSetup();
-        //muss man hier auch schon synchronisieren?
+        //muss man hier auch schon synchronisieren?  ka ~ unknown
+        
+        // Inventar:
+        inv = new Inv(ClientSettings.INV_SIZE);
+        inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
+        inv.setStack(new VektorI(3,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),90));
+        inv.setStack(new VektorI(7,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),34));
+        inv.addStack(new Stack(new CraftItem(2, "", BlocksC.images.get(2)),34));
+        inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
     }
 
     private void makeTexture(){
@@ -97,6 +108,8 @@ public class PlayerC implements Serializable
                 break;
                 case Shortcuts.move_right: pos.x=pos.x + 1;
                 break;
+                case Shortcuts.open_inventory: openInventory();
+                break;
             }
             if (player.onClient())
                 new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
@@ -125,6 +138,11 @@ public class PlayerC implements Serializable
                 Boolean success=(Boolean) (new Request(player.getID(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
             }
         }
+    }
+    
+    // und die Methoden, die für diese Events gebraucht werden
+    public void openInventory(){
+        new InventoryMenu(player, this.inv);
     }
     
     /***********************************************************************************************************************************************************

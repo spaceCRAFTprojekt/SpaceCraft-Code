@@ -1,6 +1,6 @@
 package client;
 import menu.*;
-import geom.*;
+import util.geom.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 public class ChatWriterMenu extends Menu{

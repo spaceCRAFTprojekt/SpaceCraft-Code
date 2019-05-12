@@ -26,6 +26,7 @@ public abstract class InvMenu extends Menu implements MouseMotionListener, Mouse
         this.addMouseListener(this);
     }
     
+    
     public ItemImage getMenuInv(VektorI pos){
         Component c = SwingUtilities.getDeepestComponentAt(this, pos.x, pos.y);
         if(c instanceof ItemImage){

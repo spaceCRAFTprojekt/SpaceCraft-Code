@@ -30,8 +30,9 @@ public abstract class Menu extends JFrame {
     JPanel contentPane;
     //Constructor 
     public Menu(Player p, String title, VektorI size){
-        this.setTitle(title);
         this.setSize(size.x, size.y);
+    
+        this.setTitle(title);
         this.p=p;
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

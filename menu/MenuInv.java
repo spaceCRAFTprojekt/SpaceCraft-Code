@@ -44,7 +44,7 @@ public class MenuInv extends JPanel
 
         m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu
     }
-
+    
     public MenuInv(Menu m, Inv inv, VektorI pos){
         this(m, inv);
         this.setLocation(pos.x, pos.y);
