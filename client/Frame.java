@@ -6,7 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Component;
 import java.awt.Image;
-import geom.*;
+import util.geom.*;
 import java.awt.Graphics;
 /**
  * Grafikdarstellung für einen Spieler

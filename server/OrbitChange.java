@@ -1,5 +1,5 @@
 package server;
-import geom.*;
+import util.geom.*;
 import java.io.Serializable;
 /**
  * Eine Kraft, die für eine bestimmte Zeit wirkt.

@@ -44,5 +44,8 @@ History:
                         Player Login; rewrite öffnen und schließen von Menus; PlayerS Grafik mit BufferedImage
  06.05.2019 v0.2.0_LG * Server/Client-System. Server und Client kommunizieren nur über Tasks (Server->Client) und Requests(Client->Server)
                         Player müssen synchronisiert werden.
+ 06.05.2019 v0.2.1_LG * Ich warte ...
+ 06.05.2019 v0.2.2_LG * 
+ 12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util; 
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

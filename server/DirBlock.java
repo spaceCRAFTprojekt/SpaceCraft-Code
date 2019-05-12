@@ -1,5 +1,5 @@
 package server;
-import geom.*;
+import util.geom.*;
 /**
  * Ein Block, der eine bestimmte Drehung hat
  */

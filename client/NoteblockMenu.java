@@ -1,6 +1,6 @@
 package client;
 import menu.*;
-import geom.*;
+import util.geom.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 public class NoteblockMenu extends Menu{

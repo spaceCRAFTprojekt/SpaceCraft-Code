@@ -1,5 +1,5 @@
 package server;
-import geom.VektorI;
+import util.geom.VektorI;
 public class Mapgen
 {
     static Block[][] generateMap(String type, VektorI size, int radius){

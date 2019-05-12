@@ -1,5 +1,5 @@
 package menu;
-import geom.VektorI;
+import util.geom.VektorI;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;

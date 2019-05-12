@@ -1,6 +1,7 @@
 package server;
 import java.util.ArrayList;
-import geom.*;
+import util.geom.*;
+import util.ImageTools;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.io.ObjectStreamException;

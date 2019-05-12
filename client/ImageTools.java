@@ -1,7 +1,7 @@
 package client;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import geom.VektorI;
+import util.geom.VektorI;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 /**

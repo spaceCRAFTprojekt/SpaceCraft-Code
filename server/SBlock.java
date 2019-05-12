@@ -1,5 +1,5 @@
 package server;
-import geom.*;
+import util.geom.*;
 /**
  * für alle Blöcke, die mehr als eine dekorative Funktion haben
  * z.B.:

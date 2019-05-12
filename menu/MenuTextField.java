@@ -1,5 +1,5 @@
 package menu;
-import geom.VektorI;
+import util.geom.VektorI;
 import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.Font;

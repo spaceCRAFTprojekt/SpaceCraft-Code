@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.border.Border;
 import javax.swing.*;
-import geom.VektorI;
+import util.geom.VektorI;
 import client.Player;
 
 /**

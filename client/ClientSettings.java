@@ -1,5 +1,5 @@
 package client;
-import geom.VektorI;
+import util.geom.VektorI;
 public abstract class ClientSettings{
     public static long PLAYERC_TIMER_PERIOD=30; //in Millisekunden
     public static long SYNCHRONIZE_REQUEST_PERIOD=1000;

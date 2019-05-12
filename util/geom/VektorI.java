@@ -1,4 +1,4 @@
-package geom;
+package util.geom;
 import java.lang.Math;
 import java.io.Serializable;
 import java.awt.event.MouseEvent;

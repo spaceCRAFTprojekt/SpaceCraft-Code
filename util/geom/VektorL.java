@@ -1,4 +1,4 @@
-package geom;
+package util.geom;
 import java.lang.Math;
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ public class VektorL implements Serializable
         this.y = y;
     }
     
-    public vset(VektorL v){
+    public void set(VektorL v){
         this.x = v.x;
         this.y = v.y;
     }

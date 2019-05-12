@@ -4,7 +4,7 @@ import client.PlayerS;
 import client.PlayerC;
 import client.Request;
 import client.Task;
-import geom.VektorI;
+import util.geom.VektorI;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.HashMap;
@@ -59,8 +59,10 @@ public class Main implements Serializable
             }
             catch(Exception e){}
         }
+        try{
         for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
             file.delete();
+        }catch(Exception e){}
         Main m = new Main();    
             
         return m;

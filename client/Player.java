@@ -1,7 +1,7 @@
 package client;
 import java.util.ArrayList;
 import java.util.HashMap;
-import geom.*;
+import util.geom.*;
 import menu.*;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;

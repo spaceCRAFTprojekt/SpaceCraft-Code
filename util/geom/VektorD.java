@@ -1,6 +1,6 @@
-package geom;
+package util.geom;
 import java.lang.Math;
-import java.io.Serializable;
+import java.io.Serializable; 
 
 /**
  * Simple Integer Vektor

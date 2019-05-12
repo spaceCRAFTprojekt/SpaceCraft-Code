@@ -1,5 +1,5 @@
 package server;
-import geom.VektorI;
+import util.geom.VektorI;
 import java.io.Serializable;
 /**
  * Enthält eine Sandbox und die Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox

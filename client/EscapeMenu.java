@@ -1,6 +1,6 @@
 package client;
 import javax.swing.*;
-import geom.VektorI;
+import util.geom.VektorI;
 import menu.*;
 /**
  * Wird angezeigt, wenn man esc drügggt...  // es ist kurz vor 0 Uhr; ich kann nicht mehr schreiben

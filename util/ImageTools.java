@@ -1,7 +1,8 @@
-package server;
+package util;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
-import geom.VektorI;
+import util.geom.VektorI;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 /**
@@ -17,7 +18,7 @@ public abstract class ImageTools
      *                    'C': Craft
      * @return BufferedImage Object oder wenn nicht vorhanden null
      */
-    static BufferedImage get(char type, String name)
+    public static BufferedImage get(char type, String name)
     {
         try{
             BufferedImage img=ImageIO.read(new File("textures"+Character.toUpperCase(type)+"/"+name+".png"));

@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.awt.Graphics;
 import java.awt.Color;
-import geom.*;
+import util.geom.*;
 import java.io.Serializable;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;

@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ColorModel;
 import java.awt.Color;
-import geom.*;
+import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.ObjectOutputStream;
