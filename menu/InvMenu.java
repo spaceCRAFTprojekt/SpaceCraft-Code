@@ -16,7 +16,7 @@ import client.Player;
 /**
  * Ein Menu in dem ein Inventar ist
  */
-public abstract class InvMenu extends Menu implements MouseMotionListener, MouseListener{
+public abstract class InvMenu extends PlayerMenu implements MouseMotionListener, MouseListener{
     private transient ItemImage draggedItemImage = null;  // Das ItemImage (in dem das MenuInv, das Inv und die Position gespeichert sind)
     private transient Stack draggedStack = null; // wenn der Stack vom ItemImage abweicht
     public InvMenu(Player p, String title, VektorI size){

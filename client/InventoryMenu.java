@@ -11,7 +11,7 @@ import util.geom.*;
  * 
  * Abkürzung InvMenu leider schon belegt
  */
-public class InventoryMenu extends Menu
+public class InventoryMenu extends PlayerMenu
 {
     private transient MenuInv mi;
     private static int BORDER = 10;

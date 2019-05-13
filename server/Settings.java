@@ -1,5 +1,5 @@
 package server;
-import geom.*;
+import util.geom.*;
 import java.io.File;
 public abstract class Settings{
     //Klasse für alle Konstanten. Ob diese dann aber alle einstellbar sind, ist noch nicht sicher.

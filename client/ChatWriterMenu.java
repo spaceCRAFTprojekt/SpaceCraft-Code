@@ -3,7 +3,7 @@ import menu.*;
 import util.geom.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-public class ChatWriterMenu extends Menu{
+public class ChatWriterMenu extends PlayerMenu{
     MenuTextArea mta;
     MenuButton mb;
     public ChatWriterMenu(Player p){

@@ -68,7 +68,9 @@ public class Request implements Serializable{
                 this.params=params;
                 this.thread=Thread.currentThread();
                 this.finished=false;
-                requests.add(this);
+                synchronized(requests){
+                    requests.add(this);
+                }
                 try{
                     boolean br=false;
                     while(!br){

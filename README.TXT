@@ -3,7 +3,6 @@ SpaceCraft
 
 DoTo:
 > Grafik halbe Blöcke
-> Caching von Blöcken
 > Caching von Planetenbahnen
 > Inventar
 > Mehr Blöcke
@@ -46,6 +45,7 @@ History:
                         Player müssen synchronisiert werden.
  06.05.2019 v0.2.1_LG * Ich warte ...
  06.05.2019 v0.2.2_LG * 
- 12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util; 
-                        
+ 12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util;
+ 13.05.2019 v0.2.4_LG * Cache der Map im Player
+ 13.05.2019 v0.2.5_MH * Merge v0.1.10_MH: StartMenu, LoginMenu; PlayerMenu; Menu geändert; in menu neue sachen hinzugefügt
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

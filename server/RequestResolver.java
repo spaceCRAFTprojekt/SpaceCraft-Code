@@ -15,7 +15,9 @@ public class RequestResolver{
             public void run(){
                 while(Request.requests.size()>0){
                     try{
-                        resolveRequest(Request.requests.remove(0));
+                        synchronized(Request.requests){
+                            resolveRequest(Request.requests.remove(0));
+                        }
                     }
                     catch(Exception e){
                         if (e instanceof InvocationTargetException){
