@@ -227,7 +227,6 @@ public class Main implements Serializable
      * Der Request-Resolver ist ein Bindeglied zwischen Server und Client. Diese Funktion ist wichtig.
      */
     public void requestResolverSetup(){
-        Request.requests=new ArrayList<Request>();
         this.rr=new RequestResolver(this);
     }
     
@@ -288,6 +287,10 @@ public class Main implements Serializable
         System.exit(0);
     }
     
+    public RequestResolver getRequestResolver(){
+        return rr;
+    }
+    
     //Ab hier Request-Funktionen
     
     public Boolean exit(Integer playerID){
@@ -312,14 +315,6 @@ public class Main implements Serializable
         return new Boolean(true);
     }
     
-    public HashMap<Integer,BufferedImage> retrieveBlockImages(Integer playerID){
-        HashMap<Integer,BufferedImage> ret=new HashMap<Integer,BufferedImage>();
-        for (HashMap.Entry<Integer,Block> entry : Blocks.blocks.entrySet()) {
-            ret.put(entry.getKey(),entry.getValue().getImage());
-        }
-        return ret;
-    }
-    
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         if (menuName.equals("NoteblockMenu")){
             Sandbox sb;
@@ -339,31 +334,38 @@ public class Main implements Serializable
         return new Boolean(false);
     }
     
-    //ab hier unfertig
     /**
      * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
     public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
-        Player p=players.get(playerID);
-        Class pc=Player.class;
-        //tatsächliches Setzen der Variable mit reflect.Field. Unfertig.
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
+            Player p=players.get(playerID);
+            Class pc=Player.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){}
     }
     
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        PlayerS p=players.get(playerID).getPlayerS();
-        Class pc=PlayerS.class;
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            PlayerS p=players.get(playerID).getPlayerS();
+            Class pc=PlayerS.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){}
     }
     
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        PlayerC p=players.get(playerID).getPlayerC();
-        Class pc=PlayerC.class;
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            PlayerC p=players.get(playerID).getPlayerC();
+            Class pc=PlayerC.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){}
     }
     
     /**
@@ -377,7 +379,7 @@ public class Main implements Serializable
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, true);
+        Player p=new Player(id, name, false);
         players.add(p);
         return id;
     }

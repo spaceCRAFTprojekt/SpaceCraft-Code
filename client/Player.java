@@ -12,10 +12,11 @@ import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
@@ -25,11 +26,14 @@ public class Player implements Serializable
     //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private String name;
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
+    private transient Socket requestSocket;
+    private transient ObjectOutputStream requestOut;
+    private transient ObjectInputStream requestIn;
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     //Warum ist das transient? Ich fände es sehr sinnvoll, das zu serialisieren. -LG
     private boolean onClient;
-    public boolean inCraft = true;
+    public boolean inCraft;
     private transient Frame frame;
     private PlayerS playerS;
     private PlayerC playerC;
@@ -52,19 +56,26 @@ public class Player implements Serializable
         this.name = name;
         this.onClient=onClient;
         this.currentMassIndex=0;
+        this.inCraft=true;
         //der Spawnpunkt muss nochmal überdacht werden
-        if (onClient){
-            taskResolverSetup();
-        }
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
         this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
         //muss man hier auch schon synchronisieren?
     }
     
     public static Player newPlayer(String name){
-        int id=((Integer) new Request(-1,"Main.newPlayer",Integer.class,name).ret).intValue(); //Kopie des Players am Server
-        if (id!=-1)
-            return new Player(id,name,true); //Player hier am Client
+        try{
+            Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+            int id=(Integer) (new Request(-1,new ObjectOutputStream(s.getOutputStream()),new ObjectInputStream(s.getInputStream()),"Main.newPlayer",Integer.class,name).ret); //Kopie des Players am Server
+            if (id!=-1){
+                s.close();
+                return new Player(id,name,true); //Player hier am Client
+            }
+            s.close();
+        }
+        catch(Exception e){
+            System.out.println("Exception when creating socket: "+e);
+        }
         return null;
     }
     
@@ -85,8 +96,15 @@ public class Player implements Serializable
     }
     
     public Object readResolve() throws ObjectStreamException{
-        if (online)
+        if (onClient && online){
             this.makeFrame();
+            try{
+                this.socketSetup();
+            }
+            catch(Exception e){
+                System.out.println("Exception when creating socket: "+e);
+            }
+        }
         this.taskResolverSetup();
         return this;
     }
@@ -95,57 +113,61 @@ public class Player implements Serializable
         Task.tasks=new ArrayList<Task>(); //nicht gut, wenn alle die gleiche ArrayList verwenden
         this.tr=new TaskResolver(this);
     }
-
-    /**
-     * gibt den Namen des Spielers zurück
-     */
-    public String getName(){
-        return name;
+    
+    public void socketSetup() throws UnknownHostException, IOException{
+        this.requestSocket=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+        this.requestOut=new ObjectOutputStream(requestSocket.getOutputStream());
+        this.requestIn=new ObjectInputStream(requestSocket.getInputStream());
+        synchronized(requestOut){
+            requestOut.flush();
+        }
     }
     
-    public int getID(){
-        return id;
-    }
-    
-    public boolean onClient(){
-        return onClient;
-    }
-    
-    public int getCurrentMassIndex(){
-        return currentMassIndex;
-    }
-    
-    public void setCurrentMassIndex(int cmi){
-        currentMassIndex=cmi;
-        if (onClient)
-            new Request(id,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class, cmi);
+    public void socketClose() throws IOException{
+        requestSocket.close();
+        requestOut=null;
+        requestIn=null;
     }
     
     public void login(){
         if(online)return;
-        Boolean success=(Boolean) (new Request(id,"Main.login",Boolean.class).ret);
-        if (success){
-            synchronizeWithServer();
-            this.online = true;
-            makeFrame();
+        if (onClient){
+            try{
+                socketSetup();
+            }
+            catch(Exception e){
+                System.out.println("Exception when creating socket: "+e);
+            }
+            taskResolverSetup();
+            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class).ret);
+            if (success){
+                //synchronizeWithServer();
+                this.online = true;
+                makeFrame();
+            }
+            else{
+                System.out.println("No success when trying to log in");
+            }
         }
-        else{
-            System.out.println("No success when trying to log in");
-        }
-        retrieveBlockImages();
     }
     
     public void logout(){
         if(!online)return;
-        Boolean success=(Boolean) (new Request(id,"Main.logout",Boolean.class).ret);
-        if (success){
-            closeMenu();
-            this.online = false;
-            disposeFrame();
-            //Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
-        }
-        else{
-            System.out.println("No success when trying to log out");
+        if (onClient){
+            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.logout",Boolean.class).ret);
+            if (success){
+                try{
+                    socketClose();
+                }
+                catch(Exception e){}
+                closeMenu();
+                this.online = false;
+                disposeFrame();
+                //Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
+            }
+            else{
+                System.out.println("No success when trying to log out");
+            }
         }
     }
     
@@ -157,14 +179,10 @@ public class Player implements Serializable
         closeMenu();
         this.online=false;
         disposeFrame();
-    }
-    
-    public boolean isOnline(){
-        return online;
-    }
-    
-    public void setOnline(boolean b){ //wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout()
-        this.online=b;
+        try{
+            socketClose();
+        }
+        catch(Exception e){}
     }
     
     /**
@@ -175,7 +193,7 @@ public class Player implements Serializable
         if (!inCraft)return; // wenn der Spieler schon in der Space Ansicht ist, dann wird nichts getan
         inCraft = false;
         if (onClient)
-            new Request(id,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
+            new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
         repaint();
     }
     
@@ -187,7 +205,7 @@ public class Player implements Serializable
         if (inCraft)return; // wenn der Spieler schon in der Craft Ansicht ist, dann wird nichts getan
         inCraft = true;
         if (onClient)
-            new Request(id,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
+            new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
         repaint();
     }
     
@@ -247,7 +265,7 @@ public class Player implements Serializable
      */
     public void exit(){
         logout();
-        Boolean exited=(Boolean) (new Request(id,"Main.exit",Boolean.class).ret);
+        Boolean exited=(Boolean) (new Request(id,requestOut,requestIn,"Main.exit",Boolean.class).ret);
     }
     
     /**
@@ -333,7 +351,7 @@ public class Player implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
-        if (g!=null){
+        if (onClient && g!=null){
             if (inCraft && playerC != null)playerC.paint(g, screenSize);
             else if (playerS != null) playerS.paint(g, screenSize);
         }
@@ -346,23 +364,62 @@ public class Player implements Serializable
         if(frame!=null)frame.repaint();
     }
     
-    public void retrieveBlockImages(){
-        BlocksC.images=(HashMap<Integer,BufferedImage>) (new Request(id,"Main.retrieveBlockImages",HashMap.class).ret);
-    }
-    
     public void synchronizeWithServer(){
-        Player pOnServer=((Player) new Request(id,"Main.retrievePlayer",Player.class).ret);
-        inCraft=pOnServer.inCraft;
-        currentMassIndex=pOnServer.currentMassIndex;
-        playerS.posToMass=pOnServer.getPlayerS().posToMass;
-        playerS.scale=pOnServer.getPlayerS().scale;
-        playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
-        playerC.pos=pOnServer.getPlayerC().pos;
-        playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
-        playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
+        if (onClient && online){
+            Player pOnServer=(Player) (new Request(id,requestOut,requestIn,"Main.retrievePlayer",Player.class).ret);
+            inCraft=pOnServer.inCraft;
+            currentMassIndex=pOnServer.currentMassIndex;
+            playerS.posToMass=pOnServer.getPlayerS().posToMass;
+            playerS.scale=pOnServer.getPlayerS().scale;
+            playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
+            playerC.pos=pOnServer.getPlayerC().pos;
+            playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
+            playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
+        }
     }
     
     public void writeIntoChat(String message){
-        new Request(id,"Main.writeIntoChat",null,message);
+        new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);
+    }
+    
+    /**
+     * gibt den Namen des Spielers zurück
+     */
+    public String getName(){
+        return name;
+    }
+    
+    public int getID(){
+        return id;
+    }
+    
+    public boolean onClient(){
+        return onClient;
+    }
+    
+    public int getCurrentMassIndex(){
+        return currentMassIndex;
+    }
+    
+    public ObjectOutputStream getRequestOut(){
+        return requestOut;
+    }
+    
+    public ObjectInputStream getRequestIn(){
+        return requestIn;
+    }
+
+    public void setCurrentMassIndex(int cmi){
+        currentMassIndex=cmi;
+        if (onClient)
+            new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class, cmi);
+    }
+    
+    public boolean isOnline(){
+        return online;
+    }
+    
+    public void setOnline(boolean b){ //wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout()
+        this.online=b;
     }
 }

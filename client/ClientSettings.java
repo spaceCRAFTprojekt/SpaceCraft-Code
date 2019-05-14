@@ -7,4 +7,6 @@ public abstract class ClientSettings{
     public static long TASK_RESOLVE_PERIOD=1;
     public static boolean PRINT_COMMUNICATION=true; //nur weil es nervig ist, ständig Zeug aus-und einkommentieren zu müssen
     public static VektorI INV_SIZE=new VektorI(10,4);  // größe des Spielerinventars  (in Slots)
+    public static String SERVER_ADDRESS="localhost";
+    public static int SERVER_PORT=30000;
 }

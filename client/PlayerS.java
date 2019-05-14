@@ -55,7 +55,7 @@ public class PlayerS implements Serializable
             case Shortcuts.space_focus_current_mass: 
                 focussedMassIndex=player.getCurrentMassIndex();
                 if (player.onClient())
-                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 popupmenu.show(player.getFrame(),300,300);
                 popupmenu.setVisible(true);
                 break;
@@ -79,7 +79,7 @@ public class PlayerS implements Serializable
                     diff.y = -diff.y;   // die Y Achse ist umgedreht
                     this.posToMass = posToMass.add(diff);
                     if (player.onClient())
-                        new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
                 }
                 lastDragPosition = new VektorI(e.getX(), e.getY());
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
@@ -90,9 +90,9 @@ public class PlayerS implements Serializable
                 else{
                     pos=posToMass.add(getFocussedMassPos());
                 }
-                focussedMassIndex=((Integer) new Request(player.getID(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                focussedMassIndex=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
                 if (player.onClient())
-                    new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 break;
             case 'r': lastDragPosition = null;
                 break;
@@ -104,14 +104,14 @@ public class PlayerS implements Serializable
         scale = scale * Math.pow(2,amountOfClicks);
         if (scale == 0)scale = 1;
         if (player.onClient())
-            new Request(player.getID(),"Main.synchronizePlayerSVariable",null,"scale",Double.class,scale);
+            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"scale",Double.class,scale);
     }
     
     public VektorD getFocussedMassPos(){
         if (focussedMassIndex==-1){
             return null;
         }
-        VektorD focussedMassPos=(VektorD) (new Request(player.getID(),"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
+        VektorD focussedMassPos=(VektorD) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
         return focussedMassPos;
     }
     
@@ -136,9 +136,9 @@ public class PlayerS implements Serializable
         g2.setColor(Color.BLACK);
         g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
         
-        ArrayList<VektorD> poss=(ArrayList<VektorD>) (new Request(this.player.getID(),"Space.getAllPos",ArrayList.class).ret);
-        ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player.getID(),"Space.getAllOrbits",ArrayList.class).ret);
-        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),"Space.getAllRadii",ArrayList.class).ret);
+        ArrayList<VektorD> poss=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllPos",ArrayList.class).ret);
+        ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllOrbits",ArrayList.class).ret);
+        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
         
         int accuracy = 100;
         for (int i=0;i<poss.size();i++){
@@ -168,7 +168,7 @@ public class PlayerS implements Serializable
             }
         }
         
-        String[] chat=(String[]) new Request(player.getID(),"Main.getChatContent",String[].class,5).ret;
+        String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
         g2.setColor(Color.WHITE);
         g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
         for (int i=0;i<chat.length;i++){

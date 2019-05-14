@@ -58,14 +58,18 @@ public class PlayerC implements Serializable
         this.timer=new Timer();
         timer.schedule(new TimerTask(){
                 public void run(){
-                    repaint();
+                    if (player.onClient() && player.isOnline()){
+                        repaint();
+                    }
                 }
             },0,ClientSettings.PLAYERC_TIMER_PERIOD);
         timer.schedule(new TimerTask(){
                 public void run(){
-                    synchronizeWithServer();
+                    if (player.onClient() && player.isOnline()){
+                        synchronizeWithServer();
+                    }
                 }
-            },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
+            },ClientSettings.SYNCHRONIZE_REQUEST_PERIOD,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -82,9 +86,9 @@ public class PlayerC implements Serializable
         this.sandboxIndex = sandboxIndex;
         this.pos = pos;
         if (player.onClient()){
-            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,onPlanet);
-            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,sandboxIndex);
-            new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,onPlanet);
+            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,sandboxIndex);
+            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
         }
     }
 
@@ -112,7 +116,7 @@ public class PlayerC implements Serializable
                 break;
             }
             if (player.onClient())
-                new Request(player.getID(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
             //System.out.println(pos.toString());
         }
     }
@@ -132,10 +136,10 @@ public class PlayerC implements Serializable
             VektorI sPos=getPosToPlayer(clickPos,blockBreite);
             if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
-                Boolean success=(Boolean) (new Request(player.getID(),"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
-                Boolean success=(Boolean) (new Request(player.getID(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
             }
         }
     }
@@ -180,7 +184,7 @@ public class PlayerC implements Serializable
         VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
         //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
-        int[][] mapIDs=(int[][]) (new Request(player.getID(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner).ret);
+        int[][] mapIDs=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner).ret);
         ColorModel cm=ColorModel.getRGBdefault();
         BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
         //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
@@ -225,7 +229,7 @@ public class PlayerC implements Serializable
         }
         
         Graphics2D g2=image.createGraphics();
-        String[] chat=(String[]) new Request(player.getID(),"Main.getChatContent",String[].class,5).ret;
+        String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
         g2.setColor(Color.WHITE);
         g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
         for (int i=0;i<chat.length;i++){
@@ -243,8 +247,7 @@ public class PlayerC implements Serializable
     }
     
     public void synchronizeWithServer(){
-        if (player.isOnline())
-            player.synchronizeWithServer();
+        player.synchronizeWithServer();
     }
     
     public boolean isOnPlanet(){

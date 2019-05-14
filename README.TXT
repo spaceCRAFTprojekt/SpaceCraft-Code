@@ -47,5 +47,8 @@ History:
  06.05.2019 v0.2.1_LG * Ich warte ...
  06.05.2019 v0.2.2_LG * 
  12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util; 
+ 14.05.2019 v0.2.4_LG * Umstieg auf Sockets (unvollständig, Tasks fehlen noch und aus irgendeinem Grund 
+                        kann man nur für ein Frame in die Space-Darstellung wechseln (ist auf irgendeine obskure Weise vom Default-Wert
+                        für inCraft abhängig), Space-Zeichnen ist sehr langsam)
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

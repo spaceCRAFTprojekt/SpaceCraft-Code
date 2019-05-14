@@ -1,6 +1,9 @@
 package client;
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.net.Socket;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
@@ -10,7 +13,6 @@ import java.io.Serializable;
      * Main.newPlayer(String name)
      * Main.login()
      * Main.logout()
-     * Main.retrieveBlockImages()
      * Main.returnFromMenu(String menuName, Object[] menuParams)
      * Main.synchronizePlayerVariable(String varname, Class class, Object value)
      * Main.synchronizePlayerSVariable(String varname, Class class, Object value)
@@ -31,14 +33,11 @@ import java.io.Serializable;
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
  */
 public class Request implements Serializable{
-    public static ArrayList<Request> requests=new ArrayList<Request>();
     public int playerID;
     public String todo;
     public Object[] params;
     public Object ret;
     public Class retClass;
-    public boolean finished; //Wenn diese Variable auf true gesetzt wird, hört der Thread auf zu warten.
-    public Thread thread; //der wartende Thread
     /**
      * Player p stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
      * Konvention: todo=Klassenname+"."+Methodenname
@@ -53,46 +52,42 @@ public class Request implements Serializable{
      * (dieser hat dann auch keinen Rückgabewert) (z.B. Main.synchronizePlayerVariable).
      * Da alle Request-Methoden, auf die gewartet wird, also ein Rückgabeobjekt haben müssen, ist hiermit Konvention, 
      * dass es bei eigentlichen void-Methoden ein Boolean (Objekt) ist (wird true, wenn der Request erfolgreich war).
-     * Bis dieser Request notify'd wird (passiert, wenn kein Fehler auftritt, in server.RequestResolver), wartet der Thread sonst.
      * Übergabewerte der Methode im Server: playerID, params, wobei alle primitiven Parameter zu Objekten konvertiert werden (Arrays sind keine primitiven Objekte.).
      * Über den Nutzen von retClass lässt sich streiten.
      */
-    public Request(int playerID, String todo, Class retClass, Object... params){
-        //System.out.println("new Request: "+todo);
-        //https://www.javamex.com/tutorials/wait_notify_how_to.shtml
-        if (retClass!=null){
-            synchronized(this){
-                this.playerID=playerID;
-                this.todo=todo;
-                this.retClass=retClass;
-                this.params=params;
-                this.thread=Thread.currentThread();
-                this.finished=false;
-                requests.add(this);
-                try{
-                    boolean br=false;
-                    while(!br){
-                        //System.out.println("Waiting...");
-                        this.wait();
-                        if (this.finished==true){
-                            br=true;
-                        }
-                    }
-                    //System.out.println("Finished with waiting");
-                }
-                catch(InterruptedException e){
-                    //System.out.println("Interrupted");
-                }
-            }
-        }
-        else{ //wartet nicht
+    public Request(int playerID, ObjectOutputStream socketOut, ObjectInputStream socketIn, String todo, Class retClass, Object... params){
+        if (ClientSettings.PRINT_COMMUNICATION)
+            System.out.println("new Request: "+todo);
+        if (socketOut!=null && socketIn!=null){
             this.playerID=playerID;
             this.todo=todo;
             this.retClass=retClass;
             this.params=params;
-            this.thread=Thread.currentThread();
-            this.finished=false;
-            requests.add(this);
+            if (retClass!=null){
+                try{
+                    synchronized(socketIn){
+                        synchronized(socketOut){
+                            socketOut.writeObject(this);
+                            socketOut.flush();
+                        }
+                        ret=socketIn.readObject();
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("Exception when creating request ("+todo+"): "+e);
+                }
+            }
+            else{ //wartet nicht
+                try{
+                    synchronized(socketOut){
+                        socketOut.writeObject(this);
+                        socketOut.flush();
+                    }
+                }
+                catch(Exception e){
+                    System.out.println("Exception when creating request ("+todo+"): "+e);
+                }
+            }
         }
     }
     

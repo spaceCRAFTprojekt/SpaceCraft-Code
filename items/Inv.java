@@ -1,6 +1,6 @@
 package items;
 import util.geom.*;
-
+import java.io.Serializable;
 
 /**
  * Write a description of class Inv here.
@@ -8,7 +8,7 @@ import util.geom.*;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class Inv
+public class Inv implements Serializable
 {
     Stack[][]stacks;
     public Inv(VektorI size){

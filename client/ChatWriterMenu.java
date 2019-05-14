@@ -16,12 +16,13 @@ public class ChatWriterMenu extends Menu{
                 closeMenu();
             }
         };
-        addKeyListener(new KeyAdapter(){
+        KeyAdapter kl=new KeyAdapter(){
             public void keyTyped(KeyEvent e){
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     mb.onClick();
                 }
             }
-        });
+        };
+        addKeyListener(kl);
     }
 }
