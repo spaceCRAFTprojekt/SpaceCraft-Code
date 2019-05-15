@@ -377,7 +377,7 @@ public class Main implements Serializable
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, true);
+        Player p=new Player(id, name, false);
         players.add(p);
         return id;
     }
