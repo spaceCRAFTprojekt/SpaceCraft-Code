@@ -16,8 +16,6 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-
-import client.menus.*;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
@@ -78,8 +76,6 @@ public class Player implements Serializable
         this.frame.addMouseMotionListener(l);
         this.frame.addWindowListener(l);
         this.frame.addMouseWheelListener(l);
-        //!!
-        playerS.makeFrame(frame);
     }
     
     public void disposeFrame(){
@@ -180,8 +176,6 @@ public class Player implements Serializable
         inCraft = false;
         if (onClient)
             new Request(id,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
-        this.frame.getOverlayPanelS().setVisible(true);
-        this.frame.getOverlayPanelC().setVisible(false);
         repaint();
     }
     
@@ -194,8 +188,6 @@ public class Player implements Serializable
         inCraft = true;
         if (onClient)
             new Request(id,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
-        this.frame.getOverlayPanelS().setVisible(false);
-        this.frame.getOverlayPanelC().setVisible(true);
         repaint();
     }
     

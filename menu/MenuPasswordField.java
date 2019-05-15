@@ -1,20 +1,20 @@
 package menu;
 import util.geom.VektorI;
-import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 import java.awt.Color;
 import java.awt.Font;
 
 /**
  * Vereinfachung für eine Textbox
  */
-public class MenuTextField extends JTextField{
+public class MenuPasswordField extends JPasswordField{
     private Menu m;
     /**
      * Constructor for objects of class MenuTextbox
      */
-    public MenuTextField(Menu m, String text, VektorI pos, VektorI size)
+    public MenuPasswordField(Menu m, String text, VektorI pos, VektorI size)
     {
-        // Erstellt ein neues Textfeld
+        // Erstellt ein neues Passwort-Textfeld
         super();
         this.m = m;
         setBounds(pos.x, pos.y,size.x,size.y);  // Position und Größe
@@ -27,5 +27,4 @@ public class MenuTextField extends JTextField{
         m.contentPane.add(this); // und fügt ihn zur Pane hinzu
         
     }
-    
 }

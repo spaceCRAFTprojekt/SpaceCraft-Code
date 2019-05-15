@@ -16,8 +16,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-
-import client.menus.*;
 /**
  * ein Spieler in der Craft Ansicht
  */
@@ -36,7 +34,7 @@ public class PlayerC implements Serializable
     public int[][] mapIDCache;
     public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches
     
-    private PlayerInv inv;
+    private Inv inv;
     public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos, Frame frame)
     {
         this.player = player;
@@ -46,17 +44,18 @@ public class PlayerC implements Serializable
         //muss man hier auch schon synchronisieren?  ka ~ unknown
         
         // Inventar:
-        inv = new PlayerInv();
-        
+        inv = new Inv(ClientSettings.INV_SIZE);
+        inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
+        inv.setStack(new VektorI(3,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),90));
+        inv.setStack(new VektorI(7,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),34));
+        inv.addStack(new Stack(new CraftItem(2, "", BlocksC.images.get(2)),34));
+        inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
         mapIDCache=null;
         mapIDCachePos=null;
     }
 
     private void makeTexture(){
         texture = ImageTools.get('C',"player_texture");
-        
-        
-        
     }
 
     private void timerSetup(){
@@ -155,13 +154,6 @@ public class PlayerC implements Serializable
     
     // und die Methoden, die für diese Events gebraucht werden
     public void openInventory(){
-        //Just for testing purpose ~unknown
-        if (inv == null)return;
-        inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
-        inv.setStack(new VektorI(3,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),90));
-        inv.setStack(new VektorI(7,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),34));
-        inv.addStack(new Stack(new CraftItem(2, "", BlocksC.images.get(2)),34));
-        inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
         new InventoryMenu(player, this.inv);
     }
     

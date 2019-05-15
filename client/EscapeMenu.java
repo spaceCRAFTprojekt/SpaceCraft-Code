@@ -1,7 +1,4 @@
-package client.menus;
-
-import client.*;
-
+package client;
 import javax.swing.*;
 import util.geom.VektorI;
 import menu.*;
@@ -14,7 +11,7 @@ public class EscapeMenu extends PlayerMenu {
     private JButton restart;
     private JButton logout;
     private JButton exit;
-    
+    public StartMenu startmenu;
     //Constructor 
     public EscapeMenu(Player p){
         super(p,"Pause", new VektorI(225, 320));
@@ -38,6 +35,7 @@ public class EscapeMenu extends PlayerMenu {
 
     public void logout(){
         getPlayer().logout();
+        startmenu = new StartMenu();
         dispose();
     }
     

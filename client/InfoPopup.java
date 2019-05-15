@@ -24,7 +24,6 @@ public class InfoPopup extends JPanel
         this.setSize(100,100);
         this.setLayout(null);
         this.setBounds(300,300,100,100);
-        this.setEnabled(false);
         /*
         addWindowListener(new WindowAdapter() {
                 public void WindowClosing(WindowEvent e) {
@@ -39,7 +38,7 @@ public class InfoPopup extends JPanel
         pause.setBounds(60,19,30,30);  // Position und Größe
         pause.setBackground(new Color(214,217,223));
         pause.setForeground(new Color(0,0,0));
-        pause.setEnabled(false);
+        pause.setEnabled(true);
         pause.setFont(new Font("SansSerif",0,30));
         pause.setText("Pause");
         pause.setVisible(true);
@@ -50,7 +49,7 @@ public class InfoPopup extends JPanel
         exit.setBounds(30,170,150,35);  // Position und Größe
         exit.setBackground(Color.GRAY);
         exit.setForeground(new Color(0,0,0));
-        exit.setEnabled(false);
+        exit.setEnabled(true);
         exit.setFont(new Font("sansserif",0,12));
         exit.setText("Spiel beenden");
         exit.setVisible(true);
