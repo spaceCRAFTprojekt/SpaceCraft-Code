@@ -16,6 +16,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+
+import client.menus.*;
 /**
  * ein Spieler in der Craft Ansicht
  */

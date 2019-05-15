@@ -1,4 +1,7 @@
-package client;
+package client.menus;
+
+import client.*;
+
 import javax.swing.*;
 import util.geom.VektorI;
 import menu.*;

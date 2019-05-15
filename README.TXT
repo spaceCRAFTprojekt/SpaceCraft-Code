@@ -48,4 +48,6 @@ History:
  12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util;
  13.05.2019 v0.2.4_LG * Cache der Map im Player
  13.05.2019 v0.2.5_MH * Merge v0.1.10_MH: StartMenu, LoginMenu; PlayerMenu; Menu geändert; in menu neue sachen hinzugefügt
+ 15.05.2019 v0.2.6_AK * Die Menus jetzt im Package client.menus; PaintPanel und OverLayPanels
+ 
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
