@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
+ * Wenn ein neuer Socket erstellt wird, muss er zuallererst einen boolean senden, damit der Server weiß, was es für ein Client ist.
+ * True steht für Request-Client, false für Task-Client.
  * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exit()
      * Main.exitIfNoPlayers()

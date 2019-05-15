@@ -1,32 +1,33 @@
 package client;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-/**
- * recht ähnlich zu server.RequestResolver
- */
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.EOFException;
 public class TaskResolver{
     Player p;
-    Timer t;
+    ObjectOutputStream out; //eigentlich sinnlos, da Tasks ja nie etwas zurückgeben
+    ObjectInputStream in;
+    volatile boolean open; //kann nicht einfach p.isOnline() sein, da ja vor dem Login p.isOnline() falsch ist, der Thread aber trotzdem laufen sollte
     public TaskResolver(Player p){
         this.p=p;
-        t=new Timer();
-        t.schedule(new TimerTask(){
+        this.out=p.getTaskOut();
+        this.in=p.getTaskIn();
+        this.open=true;
+        new Thread("TaskResolverThread-"+p.getID()){
             public void run(){
-                while(Task.tasks.size()>0){
+                while(true){
+                    if (!open){
+                        return;
+                    }
                     try{
-                        for (int i=0;i<Task.tasks.size();i++){
-                            Task task=Task.tasks.get(i);
-                            if (task.playerID==p.getID()){
-                                Task.tasks.remove(i);
-                                resolveTask(task);
-                            }
-                        }
+                        Task task=(Task) in.readObject();
+                        resolveTask(task);
                     }
                     catch(Exception e){
-                        if (e instanceof InvocationTargetException){
+                        if (e instanceof EOFException){}
+                        else if (e instanceof InvocationTargetException){
                             System.out.println("InvocationTargetException when resolving task: "+e.getCause());
                         }
                         else{
@@ -35,7 +36,7 @@ public class TaskResolver{
                     }
                 }
             }
-        },ClientSettings.TASK_RESOLVE_PERIOD,ClientSettings.TASK_RESOLVE_PERIOD);
+        }.start();
     }
     
     public void resolveTask(Task task) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
@@ -50,12 +51,7 @@ public class TaskResolver{
         }
         Class[] parameterTypes=new Class[params.length];
         for (int i=0;i<params.length;i++){
-            //if (params[i]!=null){
-                parameterTypes[i]=params[i].getClass();
-            /*}
-            else{
-                parameterTypes[i]=Object.class;
-            }*/
+            parameterTypes[i]=params[i].getClass();
         }
         if (className.equals("Player")){
             Method method=Player.class.getMethod(methodName,parameterTypes);
@@ -65,5 +61,9 @@ public class TaskResolver{
         else{
             throw new IllegalArgumentException("className = "+className+", methodName = "+methodName);
         }
+    }
+    
+    public void close(){
+        open=false;
     }
 }

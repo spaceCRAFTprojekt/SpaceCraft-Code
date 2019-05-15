@@ -51,5 +51,6 @@ History:
                         kann man nur für ein Frame in die Space-Darstellung wechseln (ist auf irgendeine obskure Weise vom Default-Wert
                         für inCraft abhängig), Space-Zeichnen ist sehr langsam)
  15.05.2019 v0.2.5_LG * Bugfix der Space-Zeichnung, Weiterentwicklung der Sockets
+ 15.05.2019 v0.2.6_LG * Weiterentwicklung der Sockets
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

@@ -30,6 +30,9 @@ public class Player implements Serializable
     private transient Socket requestSocket;
     private transient ObjectOutputStream requestOut;
     private transient ObjectInputStream requestIn;
+    private transient Socket taskSocket;
+    private transient ObjectOutputStream taskOut;
+    private transient ObjectInputStream taskIn;
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     //Warum ist das transient? Ich fände es sehr sinnvoll, das zu serialisieren. -LG
@@ -67,7 +70,13 @@ public class Player implements Serializable
     public static Player newPlayer(String name){
         try{
             Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
-            int id=(Integer) (new Request(-1,new ObjectOutputStream(s.getOutputStream()),new ObjectInputStream(s.getInputStream()),"Main.newPlayer",Integer.class,name).ret); //Kopie des Players am Server
+            ObjectOutputStream newPlayerOut=new ObjectOutputStream(s.getOutputStream());
+            synchronized(newPlayerOut){
+                newPlayerOut.flush();
+                newPlayerOut.writeBoolean(true); //Request-Client
+            }
+            ObjectInputStream newPlayerIn=new ObjectInputStream(s.getInputStream());
+            int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name).ret); //Kopie des Players am Server
             if (id!=-1){
                 s.close();
                 return new Player(id,name,true); //Player hier am Client
@@ -112,7 +121,6 @@ public class Player implements Serializable
     }
     
     public void taskResolverSetup(){
-        Task.tasks=new ArrayList<Task>(); //nicht gut, wenn alle die gleiche ArrayList verwenden
         this.tr=new TaskResolver(this);
     }
     
@@ -121,7 +129,16 @@ public class Player implements Serializable
         this.requestOut=new ObjectOutputStream(requestSocket.getOutputStream());
         this.requestIn=new ObjectInputStream(requestSocket.getInputStream());
         synchronized(requestOut){
+            requestOut.writeBoolean(true); //Der Server muss ja wissen, was der Client eigentlich will. True steht für requestClient, false für TaskClient.
             requestOut.flush();
+        }
+        this.taskSocket=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+        this.taskOut=new ObjectOutputStream(taskSocket.getOutputStream());
+        this.taskIn=new ObjectInputStream(taskSocket.getInputStream());
+        synchronized(taskOut){
+            taskOut.writeBoolean(false); //Task-Client
+            taskOut.writeInt(id); //zur Identifizierung
+            taskOut.flush();
         }
     }
     
@@ -129,6 +146,11 @@ public class Player implements Serializable
         requestSocket.close();
         requestOut=null;
         requestIn=null;
+        tr.close();
+        tr=null;
+        taskSocket.close();
+        taskOut=null;
+        taskIn=null;
     }
     
     public void login(){
@@ -157,12 +179,12 @@ public class Player implements Serializable
         if (onClient){
             Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.logout",Boolean.class).ret);
             if (success){
+                this.online = false;
                 try{
                     socketClose();
                 }
                 catch(Exception e){}
                 closeMenu();
-                this.online = false;
                 disposeFrame();
                 //Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
             }
@@ -410,6 +432,14 @@ public class Player implements Serializable
     
     public ObjectInputStream getRequestIn(){
         return requestIn;
+    }
+    
+    public ObjectOutputStream getTaskOut(){
+        return taskOut;
+    }
+    
+    public ObjectInputStream getTaskIn(){
+        return taskIn;
     }
 
     public void setCurrentMassIndex(int cmi){

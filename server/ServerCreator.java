@@ -1,8 +1,8 @@
 package server;
 import client.Request;
+import client.Task;
 import client.ClientSettings;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
@@ -10,13 +10,14 @@ import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.EOFException;
-public class RequestResolver{
+public class ServerCreator{
     Main main;
-    Timer t;
-    public RequestResolver(Main main){
+    ArrayList<ObjectOutputStream> taskOutputStreams;
+    public ServerCreator(Main main){
         this.main=main;
+        this.taskOutputStreams=new ArrayList<ObjectOutputStream>();
         try{
-            new Thread(){
+            new Thread("ClientConnectionThread"){
                 public ServerSocket server=new ServerSocket(Settings.SERVER_PORT);
                 public void run(){
                     while(true){
@@ -27,36 +28,44 @@ public class RequestResolver{
                                 out.flush();
                             }
                             ObjectInputStream in=new ObjectInputStream(client.getInputStream());
-                            new Thread(){
-                                public void run(){
-                                    while(true){
-                                        try{
-                                            Request req=(Request) in.readObject();
-                                            if (req.retClass!=null){
-                                                Object ret=resolveRequest(req);
-                                                synchronized(out){
-                                                    //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
-                                                    out.reset();
-                                                    out.writeObject(ret);
-                                                    out.flush();
+                            boolean isRequestClient=in.readBoolean(); //sonst: taskClient
+                            if (isRequestClient){
+                                new Thread("requestClientThread"){
+                                    public void run(){
+                                        while(true){
+                                            //sollte eigentlich aufhören, wenn der Client geschlossen wird, aber das funktioniert aus irgendeinem Grund nicht
+                                            try{
+                                                Request req=(Request) in.readObject();
+                                                if (req.retClass!=null){
+                                                    Object ret=resolveRequest(req);
+                                                    synchronized(out){
+                                                        //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
+                                                        out.reset();
+                                                        out.writeObject(ret);
+                                                        out.flush();
+                                                    }
+                                                }
+                                                else{
+                                                    resolveRequest(req);
                                                 }
                                             }
-                                            else{
-                                                resolveRequest(req);
-                                            }
-                                        }
-                                        catch(Exception e){
-                                            if (e instanceof EOFException){}
-                                            else if (e instanceof InvocationTargetException){
-                                                System.out.println("InvocationTargetException when resolving request: "+e.getCause());
-                                            }
-                                            else{
-                                                System.out.println("Exception when resolving request: "+e);
+                                            catch(Exception e){
+                                                if (e instanceof EOFException){}
+                                                else if (e instanceof InvocationTargetException){
+                                                    System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                                                }
+                                                else{
+                                                    System.out.println("Exception when resolving request: "+e);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            }.start();
+                                }.start();
+                            }
+                            else{
+                                int playerID=in.readInt();
+                                taskOutputStreams.add(playerID,out);
+                            }
                         }
                         catch(Exception e){
                             System.out.println("Exception when waiting for clients: "+e);
@@ -112,5 +121,22 @@ public class RequestResolver{
             throw new IllegalArgumentException("className = "+className+", methodName = "+methodName);
         }
         return req.ret;
+    }
+    
+    public void sendTask(int playerID, Task task){
+        try{
+            ObjectOutputStream tos=taskOutputStreams.get(playerID);
+            synchronized(tos){
+                tos.reset();
+                tos.writeObject(task);
+                tos.flush();
+            }
+        }
+        catch(IndexOutOfBoundsException e){
+            System.out.println("Player "+playerID+" is not online, so cannot retrieve any tasks.");
+        }
+        catch(Exception e){
+            System.out.println("Exception when sending Task: "+e);
+        }
     }
 }

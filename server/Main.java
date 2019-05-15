@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
  */
 public class Main implements Serializable
 {
+    public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
+    
     static String spacefilename="space"; //sollteen die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";
@@ -40,7 +42,7 @@ public class Main implements Serializable
     // normalerweise nur ein Spieler
     private transient ArrayList<String> chat=new ArrayList<String>();
     private transient Space space;
-    private transient RequestResolver rr;
+    private transient ServerCreator sc;
 
     /**
      * "Lasset die Spiele beginnen" ~ Kim Jong Un
@@ -64,9 +66,8 @@ public class Main implements Serializable
             file.delete();
         }catch(Exception e){}
         Main m = new Main();    
-            
+        main=m;
         return m;
-        
     }
     
     public static void main(String[]Args){
@@ -80,7 +81,7 @@ public class Main implements Serializable
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        requestResolverSetup();
+        serverCreatorSetup();
         space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
     }
     
@@ -154,7 +155,7 @@ public class Main implements Serializable
      * AK
      */
     public Object readResolve() throws ObjectStreamException{
-        requestResolverSetup();
+        serverCreatorSetup();
         String folder=Settings.GAMESAVE_FOLDER;
         if (!new File(folder).isDirectory()){
             System.out.println("Folder "+folder+" does not exist.");
@@ -224,10 +225,10 @@ public class Main implements Serializable
     }
     
     /**
-     * Der Request-Resolver ist ein Bindeglied zwischen Server und Client. Diese Funktion ist wichtig.
+     * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig.
      */
-    public void requestResolverSetup(){
-        this.rr=new RequestResolver(this);
+    public void serverCreatorSetup(){
+        this.sc=new ServerCreator(this);
     }
     
     /**
@@ -236,7 +237,7 @@ public class Main implements Serializable
     public void repaint()
     {
         for (int i = 0; i<players.size();i++){
-            new Task(i,"Player.repaint");
+            newTask(i,"Player.repaint");
         }
     }
     
@@ -280,15 +281,21 @@ public class Main implements Serializable
         for (int i=0;i<players.size();i++){
             if (players.get(i).isOnline()){
                 players.get(i).logout(); //Server-Kopie des Players
-                new Task(i,"Player.logoutTask"); //Player im Client
+                newTask(i,"Player.logoutTask"); //Player im Client
+                sc.taskOutputStreams.remove(i);
             }
         }
         Serializer.serialize(this);
         System.exit(0);
     }
     
-    public RequestResolver getRequestResolver(){
-        return rr;
+    public ServerCreator getServerCreator(){
+        return sc;
+    }
+    
+    public void newTask(int playerID, String todo, Object... params){
+        Task task=new Task(todo, params);
+        sc.sendTask(playerID,task);
     }
     
     //Ab hier Request-Funktionen
@@ -312,6 +319,7 @@ public class Main implements Serializable
     
     public Boolean logout(Integer playerID){
         players.get(playerID).setOnline(false); //siehe login(Integer playerID)
+        sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
     
