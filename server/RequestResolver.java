@@ -21,7 +21,8 @@ public class RequestResolver{
                     }
                     catch(Exception e){
                         if (e instanceof InvocationTargetException){
-                            System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                            System.out.println("InvocationTargetException when resolving request: "+e.getCause()+" ");
+                            e.printStackTrace();
                         }
                         else{
                             System.out.println("Exception when resolving request: "+e);

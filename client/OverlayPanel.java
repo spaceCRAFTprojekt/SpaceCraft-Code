@@ -22,7 +22,6 @@ public abstract class OverlayPanel extends JPanel
         this.setEnabled(false);
         this.setOpaque(false);
         this.p = p;
-        frame.getLayeredPane().add(this, new Integer(1)); // = new Integer(200) => Über dem PaintPanel new Integer(0) 
-        // see: https://docs.oracle.com/javase/8/docs/api/javax/swing/JLayeredPane.html#FRAME_CONTENT_LAYER
+        frame.getLayeredPane().add(this, new Integer(1)); //=> Über dem PaintPanel
     }
 }

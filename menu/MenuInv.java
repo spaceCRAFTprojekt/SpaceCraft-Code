@@ -23,7 +23,7 @@ public class MenuInv extends JPanel
     public static int iconSize = 50; // Pixel
     public static int border = iconSize/12;  //in Pixel: Abstand zweier Slots
     private transient ItemImage[][]slots;
-    private transient Inv inv;
+    public transient Inv inv;
     private transient VektorI draggedItemPos = null;
     /**
      * Ich hatte keinen Block einen Konstruktor zu beschreiben xD
@@ -31,8 +31,7 @@ public class MenuInv extends JPanel
     public MenuInv(Menu m, Inv inv){
         super();
         this.inv = inv;
-        VektorI size = inv.getSize(); // Argh!! call to super must be first statement in constructor. Nix Super!!!
-
+        VektorI size = getInvSize();  // Achtung nicht ändern, weil getSize() wird im MenuHotbar überschrieben
         this.setSize(size.x*iconSize, size.y*iconSize);
         this.setLayout(new GridLayout(inv.getSizeY(), inv.getSizeX()));   // Warum Y vor X??? Liebe Java Entwickler, so ein Fehler muss doch auffallen! Arrrrrrrrrrrrrrrrrrgh!!!
         this.setVisible(true);
@@ -42,7 +41,7 @@ public class MenuInv extends JPanel
         slots = new ItemImage[size.x][size.y];
         initSlots(size);
 
-        m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu
+        if(m != null)m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu
     }
     
     public MenuInv(Menu m, Inv inv, VektorI pos){
@@ -63,7 +62,7 @@ public class MenuInv extends JPanel
      * Diese Methode bräuchte mehr Liebe (falls mal jemand Zeit hat)
      */
     public void updateSlots(){
-        VektorI size = inv.getSize();
+        VektorI size = getInvSize();
         for(int y = 0; y < size.y; y++){
             for(int x = 0; x < size.x; x++){
                 this.remove(slots[x][y]);
@@ -87,6 +86,10 @@ public class MenuInv extends JPanel
 
     public Inv getInv(){
         return inv;
+    }
+    
+    public VektorI getInvSize(){
+        return inv.getSize();
     }
 
 }
