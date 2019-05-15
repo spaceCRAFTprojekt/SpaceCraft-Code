@@ -34,8 +34,12 @@ public class RequestResolver{
                                             Request req=(Request) in.readObject();
                                             if (req.retClass!=null){
                                                 Object ret=resolveRequest(req);
-                                                out.writeObject(ret);
-                                                out.flush();
+                                                synchronized(out){
+                                                    //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
+                                                    out.reset();
+                                                    out.writeObject(ret);
+                                                    out.flush();
+                                                }
                                             }
                                             else{
                                                 resolveRequest(req);

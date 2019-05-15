@@ -68,6 +68,7 @@ public class Request implements Serializable{
                 try{
                     synchronized(socketIn){
                         synchronized(socketOut){
+                            socketOut.reset();
                             socketOut.writeObject(this);
                             socketOut.flush();
                         }
@@ -81,7 +82,8 @@ public class Request implements Serializable{
             else{ //wartet nicht
                 try{
                     synchronized(socketOut){
-                        socketOut.writeObject(this);
+                        socketOut.reset();
+                        socketOut.writeUnshared(this);
                         socketOut.flush();
                     }
                 }

@@ -19,7 +19,7 @@ public class NoteblockMenu extends Menu{
         mb = new MenuButton(this, "Save", new VektorI(170,260), new VektorI(100, 30)){
             public void onClick(){
                 Object[] menuParams={onPlanet,sandboxIndex,pos,mta.getText()};
-                Boolean success=(Boolean) (new Request(getPlayer().getID(),getPlayer().getRequestOut(),getPlayer().getRequestIn(),"Main.returnFromMenu",Boolean.class,"NoteblockMenu",menuParams).ret);
+                new Request(getPlayer().getID(),getPlayer().getRequestOut(),getPlayer().getRequestIn(),"Main.returnFromMenu",null,"NoteblockMenu",menuParams);
                 closeMenu();
             }
         };

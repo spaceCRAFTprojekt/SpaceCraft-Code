@@ -345,7 +345,7 @@ public class Main implements Serializable
             Field f=pc.getDeclaredField(varname);
             f.set(p,value);
         }
-        catch(IndexOutOfBoundsException e){}
+        catch(IndexOutOfBoundsException e){} //Warum das? Ich habe es selbst geschrieben und wieder vergessen. -LG
     }
     
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
