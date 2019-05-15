@@ -155,9 +155,10 @@ public class Space implements Serializable
      */
     public ArrayList<ArrayList<VektorD>> getAllOrbits(Integer playerID){
         ArrayList<ArrayList<VektorD>> ret=new ArrayList<ArrayList<VektorD>>();
+        int accuracy=100;
         for (int i=0;i<masses.size();i++){
             ret.add(new ArrayList<VektorD>());
-            for (int j=0;j<masses.get(i).o.pos.size();j++){
+            for (int j=0;j<masses.get(i).o.pos.size();j=j+accuracy){
                 ret.get(i).add(masses.get(i).o.pos.get(j));
             }
         }

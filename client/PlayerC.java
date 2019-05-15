@@ -85,7 +85,7 @@ public class PlayerC implements Serializable
         this.onPlanet=onPlanet;
         this.sandboxIndex = sandboxIndex;
         this.pos = pos;
-        if (player.onClient()){
+        if (player.isOnline() && player.onClient()){
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,onPlanet);
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,sandboxIndex);
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
@@ -115,7 +115,7 @@ public class PlayerC implements Serializable
                 case Shortcuts.open_inventory: openInventory();
                 break;
             }
-            if (player.onClient())
+            if (player.isOnline() && player.onClient())
                 new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
             //System.out.println(pos.toString());
         }
@@ -136,10 +136,14 @@ public class PlayerC implements Serializable
             VektorI sPos=getPosToPlayer(clickPos,blockBreite);
             if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
-                Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                if (player.isOnline() && player.onClient()){
+                    Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                }
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
                 //System.out.println("Tried to place block at "+sPos.toString());
-                Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                if (player.isOnline() && player.onClient()){
+                    Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                }
             }
         }
     }
@@ -181,65 +185,67 @@ public class PlayerC implements Serializable
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
-        VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-        //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
-        int[][] mapIDs=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner).ret);
-        ColorModel cm=ColorModel.getRGBdefault();
-        BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
-        //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
-        int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-
-        Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
-        for (int x = 0; x<=ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
-            for (int y = 0; y<=ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
-                BufferedImage img=BlocksC.images.get(mapIDs[x][y]);
-                if (img!=null){
-                    Hashtable<String,Object> properties=new Hashtable<String,Object>();
-                    String[] prns=image.getPropertyNames();
-                    if (prns!=null){
-                        for (int i=0;i<prns.length;i++){
-                            properties.put(prns[i],image.getProperty(prns[i]));
+        if (player.isOnline() && player.onClient()){
+            VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+            VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+            //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
+            int[][] mapIDs=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,upperLeftCorner,bottomRightCorner).ret);
+            ColorModel cm=ColorModel.getRGBdefault();
+            BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
+            //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
+            int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+    
+            Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
+            for (int x = 0; x<=ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
+                for (int y = 0; y<=ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
+                    BufferedImage img=BlocksC.images.get(mapIDs[x][y]);
+                    if (img!=null){
+                        Hashtable<String,Object> properties=new Hashtable<String,Object>();
+                        String[] prns=image.getPropertyNames();
+                        if (prns!=null){
+                            for (int i=0;i<prns.length;i++){
+                                properties.put(prns[i],image.getProperty(prns[i]));
+                            }
+                        }
+                        BufferedImage img2=new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties);
+                        Graphics gr=img2.getGraphics();
+                        gr.drawImage(img,0,0,blockBreite,blockBreite,null);
+                        blockImages.put(mapIDs[x][y],img2);
+                    }
+                    else{
+                        Hashtable<String,Object> properties=new Hashtable<String,Object>();
+                        blockImages.put(mapIDs[x][y],new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties));
+                    }
+                }
+            }
+    
+            for (int x = 0; x<ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
+                for (int y = 0; y<ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
+                    int id = mapIDs[x][y];
+                    if(id != -1){ //Luft
+                        BufferedImage img=blockImages.get(id);
+                        int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+                        for (int i=0;i<blockBreite;i++){
+                            int index = (y*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + x*blockBreite;
+                            System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
                         }
                     }
-                    BufferedImage img2=new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties);
-                    Graphics gr=img2.getGraphics();
-                    gr.drawImage(img,0,0,blockBreite,blockBreite,null);
-                    blockImages.put(mapIDs[x][y],img2);
-                }
-                else{
-                    Hashtable<String,Object> properties=new Hashtable<String,Object>();
-                    blockImages.put(mapIDs[x][y],new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties));
                 }
             }
-        }
-
-        for (int x = 0; x<ClientSettings.PLAYERC_FIELD_OF_VIEW.x; x++){
-            for (int y = 0; y<ClientSettings.PLAYERC_FIELD_OF_VIEW.y; y++){
-                int id = mapIDs[x][y];
-                if(id != -1){ //Luft
-                    BufferedImage img=blockImages.get(id);
-                    int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-                    for (int i=0;i<blockBreite;i++){
-                        int index = (y*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + x*blockBreite;
-                        System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
-                    }
-                }
+            
+            Graphics2D g2=image.createGraphics();
+            String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+            for (int i=0;i<chat.length;i++){
+                g2.drawString(chat[i],20,i*16+8);
             }
+            
+            g.setColor(new Color(0,0,0,1));
+            g.drawImage(image,0,0,new Color(0,0,0,255),null);
+            
+            g.drawImage(texture, (screenSize.x-20)/2, (screenSize.y-32)/2,40, 64, null);
         }
-        
-        Graphics2D g2=image.createGraphics();
-        String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
-        for (int i=0;i<chat.length;i++){
-            g2.drawString(chat[i],20,i*16+8);
-        }
-        
-        g.setColor(new Color(0,0,0,1));
-        g.drawImage(image,0,0,new Color(0,0,0,255),null);
-        
-        g.drawImage(texture, (screenSize.x-20)/2, (screenSize.y-32)/2,40, 64, null);
     }
 
     public void repaint(){

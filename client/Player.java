@@ -105,7 +105,8 @@ public class Player implements Serializable
                 System.out.println("Exception when creating socket: "+e);
             }
         }
-        this.taskResolverSetup();
+        if (onClient)
+            this.taskResolverSetup();
         return this;
     }
     
@@ -141,7 +142,6 @@ public class Player implements Serializable
             taskResolverSetup();
             Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class).ret);
             if (success){
-                //synchronizeWithServer();
                 this.online = true;
                 makeFrame();
             }
@@ -192,7 +192,7 @@ public class Player implements Serializable
     {
         if (!inCraft)return; // wenn der Spieler schon in der Space Ansicht ist, dann wird nichts getan
         inCraft = false;
-        if (onClient)
+        if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
         repaint();
     }
@@ -204,7 +204,7 @@ public class Player implements Serializable
     {
         if (inCraft)return; // wenn der Spieler schon in der Craft Ansicht ist, dann wird nichts getan
         inCraft = true;
-        if (onClient)
+        if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
         repaint();
     }
@@ -264,8 +264,9 @@ public class Player implements Serializable
      * schließt das gesamte Spiel
      */
     public void exit(){
-        logout();
-        Boolean exited=(Boolean) (new Request(id,requestOut,requestIn,"Main.exit",Boolean.class).ret);
+        if (online && onClient){
+            Boolean exited=(Boolean) (new Request(id,requestOut,requestIn,"Main.exit",Boolean.class).ret);
+        }
     }
     
     /**
@@ -379,7 +380,8 @@ public class Player implements Serializable
     }
     
     public void writeIntoChat(String message){
-        new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);
+        if (online && onClient)
+            new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);
     }
     
     /**
@@ -411,7 +413,7 @@ public class Player implements Serializable
 
     public void setCurrentMassIndex(int cmi){
         currentMassIndex=cmi;
-        if (onClient)
+        if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class, cmi);
     }
     

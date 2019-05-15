@@ -36,10 +36,11 @@ public class Request implements Serializable{
     public int playerID;
     public String todo;
     public Object[] params;
-    public Object ret;
+    public volatile Object ret;
     public Class retClass;
     /**
-     * Player p stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
+     * Der Player mit der gegebenen PlayerID stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
+     * Es sollte jedes Mal überprüft werden, ob der Player überhaupt auf dem Client und online ist.
      * Konvention: todo=Klassenname+"."+Methodenname
      * ret=irgendein Rückgabewert (der formale Rückgabewert ist void)
      * (    <IrgendeineKlasse> obj = <IrgendeinKonstruktorOderNull>;
