@@ -8,4 +8,5 @@ public abstract class ClientSettings{
     public static VektorI INV_SIZE=new VektorI(10,4);  // größe des Spielerinventars  (in Slots)
     public static String SERVER_ADDRESS="localhost";
     public static int SERVER_PORT=30000;
+    public static String PLAYER_SAVE_FOLDER="client_playersaves";
 }

@@ -73,9 +73,10 @@ public class PlayerC implements Serializable
     }
 
     Object readResolve() throws ObjectStreamException{
-        if (player.isOnline() && player.onClient()){
+        if (player.onClient()){
             this.makeTexture();
-            this.timerSetup();
+            if (player.isOnline())
+                this.timerSetup();
         }
         return this;
     }

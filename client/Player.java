@@ -106,14 +106,15 @@ public class Player implements Serializable
     }
     
     public Object readResolve() throws ObjectStreamException{
-        if (onClient && online){
-            this.makeFrame();
+        if (onClient){
             try{
                 this.socketSetup();
             }
             catch(Exception e){
                 System.out.println("Exception when creating socket: "+e);
             }
+            if (online)
+                this.makeFrame();
         }
         return this;
     }

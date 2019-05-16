@@ -30,7 +30,7 @@ public class Main implements Serializable
 {
     public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
     
-    static String spacefilename="space"; //sollteen die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
+    static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";
     static String planetCfilename="planetC";
@@ -94,8 +94,7 @@ public class Main implements Serializable
      */
     private Object writeReplace() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
-        new File(folder).mkdirs();
-       
+        
         ArrayList<ShipC> shipCs=ShipC.shipCs; //Schiffe
         for (int i=0;i<shipCs.size();i++){
             try{
@@ -221,6 +220,8 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println("Main: 5: "+e+": "+e.getMessage());
         }
+        this.chat=new ArrayList<String>();
+        main=this;
         return this;
     }
     
@@ -286,6 +287,7 @@ public class Main implements Serializable
             }
         }
         Serializer.serialize(this);
+        main=null;
         System.exit(0);
     }
     

@@ -21,6 +21,7 @@ import java.io.IOException;
  */
 public class Serializer{
     public static void serialize(Main main){
+        new File(Settings.GAMESAVE_FOLDER).mkdirs();
         try{
             FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+"main.ser");
             //nur eine (fast) leere Datei wird dorthin geschrieben, lässt sich das nicht vermeiden?
@@ -28,7 +29,7 @@ public class Serializer{
             oos.writeObject(main);
         }
         catch(Exception e){
-            
+            System.out.println("Exception when serializing: "+e);
         }
     }
     
