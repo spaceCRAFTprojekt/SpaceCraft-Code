@@ -39,7 +39,6 @@ public class PlayerC implements Serializable
         this.player = player;
         setSandbox(onPlanet, sandboxIndex, pos);
         makeTexture();
-        timerSetup();
         //muss man hier auch schon synchronisieren?  ka ~ unknown
         
         // Inventar:
@@ -55,7 +54,7 @@ public class PlayerC implements Serializable
         texture = ImageTools.get('C',"player_texture");
     }
 
-    private void timerSetup(){
+    public void timerSetup(){ //wird von Player.login aufgerufen
         this.timer=new Timer();
         timer.schedule(new TimerTask(){
                 public void run(){
@@ -74,8 +73,10 @@ public class PlayerC implements Serializable
     }
 
     Object readResolve() throws ObjectStreamException{
-        this.makeTexture();
-        this.timerSetup();
+        if (player.isOnline() && player.onClient()){
+            this.makeTexture();
+            this.timerSetup();
+        }
         return this;
     }
 

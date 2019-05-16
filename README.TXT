@@ -52,5 +52,6 @@ History:
                         für inCraft abhängig), Space-Zeichnen ist sehr langsam)
  15.05.2019 v0.2.5_LG * Bugfix der Space-Zeichnung, Weiterentwicklung der Sockets
  15.05.2019 v0.2.6_LG * Weiterentwicklung der Sockets
+ 16.05.2019 v0.2.7_LG * Bugfix mit ReadResolve und Socket
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

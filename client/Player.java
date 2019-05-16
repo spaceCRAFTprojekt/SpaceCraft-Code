@@ -115,13 +115,7 @@ public class Player implements Serializable
                 System.out.println("Exception when creating socket: "+e);
             }
         }
-        if (onClient)
-            this.taskResolverSetup();
         return this;
-    }
-    
-    public void taskResolverSetup(){
-        this.tr=new TaskResolver(this);
     }
     
     public void socketSetup() throws UnknownHostException, IOException{
@@ -140,6 +134,7 @@ public class Player implements Serializable
             taskOut.writeInt(id); //zur Identifizierung
             taskOut.flush();
         }
+        this.tr=new TaskResolver(this);
     }
     
     public void socketClose() throws IOException{
@@ -162,11 +157,11 @@ public class Player implements Serializable
             catch(Exception e){
                 System.out.println("Exception when creating socket: "+e);
             }
-            taskResolverSetup();
             Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class).ret);
             if (success){
                 this.online = true;
                 makeFrame();
+                playerC.timerSetup();
             }
             else{
                 System.out.println("No success when trying to log in");

@@ -21,17 +21,21 @@ public class TaskResolver{
                     if (!open){
                         return;
                     }
-                    try{
-                        Task task=(Task) in.readObject();
-                        resolveTask(task);
-                    }
-                    catch(Exception e){
-                        if (e instanceof EOFException){}
-                        else if (e instanceof InvocationTargetException){
-                            System.out.println("InvocationTargetException when resolving task: "+e.getCause());
+                    else{
+                        try{
+                            Task task=(Task) in.readObject();
+                            resolveTask(task);
                         }
-                        else{
-                            System.out.println("Exception when resolving task: "+e);
+                        catch(Exception e){
+                            if (e instanceof EOFException){}
+                            else if (e instanceof InvocationTargetException){
+                                System.out.println("InvocationTargetException when resolving task: "+e.getCause());
+                            }
+                            else{
+                                //beim Schließen gibt es aus irgendeinem Grund SocketExceptions (Socket geschlossen), obwohl eigentlich 
+                                //erst der TaskResolver geschlossen wird, dann der Socket (das macht aber nicht viel).
+                                System.out.println("Exception when resolving task: "+e);
+                            }
                         }
                     }
                 }
