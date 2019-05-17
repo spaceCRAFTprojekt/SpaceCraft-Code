@@ -25,7 +25,7 @@ public class PlayerS implements Serializable
     public int focussedMassIndex;
     private transient VektorI lastDragPosition = null;
     
-    private transient JPopupMenu popupmenu;
+    public transient OverlayPanelS opS;
     
     public PlayerS(Player player, VektorD pos, int focussedMassIndex)
     {
@@ -33,14 +33,10 @@ public class PlayerS implements Serializable
         this.posToMass=pos;
         this.focussedMassIndex=focussedMassIndex;
         //muss man hier auch schon synchronisieren?
-        
-        popupmenu = new JPopupMenu("Edit");   
-         JMenuItem cut = new JMenuItem("Cut");  
-         JMenuItem copy = new JMenuItem("Copy");  
-         JMenuItem paste = new JMenuItem("Paste");  
-         popupmenu.add(cut); popupmenu.add(copy); popupmenu.add(paste);        
-          //player.getFrame().add(popupmenu);
-        //player.getFrame().setLayout(null);
+    }
+    
+    public void makeFrame(Frame frame){
+
     }
     
     /**
@@ -54,10 +50,9 @@ public class PlayerS implements Serializable
         switch(e.getKeyCode()){
             case Shortcuts.space_focus_current_mass: 
                 focussedMassIndex=player.getCurrentMassIndex();
-                if (player.isOnline() && player.onClient())
+                if (player.onClient())
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
-                popupmenu.show(player.getFrame(),300,300);
-                popupmenu.setVisible(true);
+                // ist das notwendig? Muss der Server den fokusierten Planeten kennen?
                 break;
         }
     }
@@ -78,10 +73,16 @@ public class PlayerS implements Serializable
                     VektorD diff = lastDragPosition.subtract(thisDragPosition).toDouble().multiply(1/scale);
                     diff.y = -diff.y;   // die Y Achse ist umgedreht
                     this.posToMass = posToMass.add(diff);
-                    if (player.isOnline() && player.onClient())
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
+                    if (player.isOnline() && player.onClient()){
+                        //focussedMassIndex=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                        //new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
+                    }
+                    lastDragPosition = new VektorI(e.getX(), e.getY());
                 }
-                lastDragPosition = new VektorI(e.getX(), e.getY());
+                // @Linus: Ich weiß du sollst dir nicht zu viele Pausen nehmen, damit Spacecraft noch fertig wird, aber in diesem CASE wäre 
+                // eine kleine BREAK in der du feststellst, dass du eine BREAK vergessen hast nützlich. Mit anderen Worten: Da gehört ein break hin:
+                // ~ unknown
+                break;  // :)
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
                 VektorD pos;
                 if (focussedMassIndex==-1){ //stimmt das so?
@@ -90,10 +91,16 @@ public class PlayerS implements Serializable
                 else{
                     pos=posToMass.add(getFocussedMassPos());
                 }
-                if (player.isOnline() && player.onClient()){
-                    focussedMassIndex=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                // das hätte ich auch clientside berechnet:
+                // und das komische ist, dass die Methode irgendwas verändert!!!
+                int focussedMassIndexNew=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                // das hab ich eingefügt (Alex)
+                if (focussedMassIndexNew != -1)focussedMassIndex = focussedMassIndexNew;
+                System.out.println("new focussedMass:" + focussedMassIndex);
+                if (player.onClient())
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
-                }
+                // und das ist auch eine schöne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal
+                // zum Server schicken lassen, um es mit dem Server zu synchronisieren xD
                 break;
             case 'r': lastDragPosition = null;
                 break;
@@ -178,7 +185,8 @@ public class PlayerS implements Serializable
             }
             
             g.drawImage(img, 0,0, Color.BLACK, null);
-            //popupmenu.paint(g);
+            //p.repaint();
+            //player.getFrame().getOverlayPanelS().add(new InfoPopup());
         }
     }
 }

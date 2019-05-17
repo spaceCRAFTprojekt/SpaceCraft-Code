@@ -3,7 +3,6 @@ SpaceCraft
 
 DoTo:
 > Grafik halbe Blöcke
-> Caching von Blöcken
 > Caching von Planetenbahnen
 > Inventar
 > Mehr Blöcke
@@ -52,6 +51,14 @@ History:
                         für inCraft abhängig), Space-Zeichnen ist sehr langsam)
  15.05.2019 v0.2.5_LG * Bugfix der Space-Zeichnung, Weiterentwicklung der Sockets
  15.05.2019 v0.2.6_LG * Weiterentwicklung der Sockets
- 16.05.2019 v0.2.7_LG * Bugfix mit ReadResolve und Socket
+ 16.05.2019 v0.2.7_LG * Bugfix mit ReadResolve und Socket, static Main Main.main
+ 
+ 12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util;
+ 13.05.2019 v0.2.4_LG * Cache der Map im Player
+ 13.05.2019 v0.2.5_MH * Merge v0.1.10_MH: StartMenu, LoginMenu; PlayerMenu; Menu geändert; in menu neue sachen hinzugefügt
+ 15.05.2019 v0.2.6_AK * Die Menus jetzt im Package client.menus; PaintPanel und OverLayPanels; PlayerTexture als JComponent; 
+                        TextureSelectMenu; ImageTools.resize()
+ 17.05.2019 v0.2.8_LG * Zusammenfassen von v0.2.6_AK mit v0.2.7_LG
+
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

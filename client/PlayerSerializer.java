@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 public class PlayerSerializer{
+    //sollte noch nicht verwendet werden
     static String filename="player";
     static String fileEnding=".ser";
     public static void serialize(Player player){

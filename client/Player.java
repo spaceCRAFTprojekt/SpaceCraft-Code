@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import util.geom.*;
 import menu.*;
+import client.menus.*;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -63,7 +64,7 @@ public class Player implements Serializable
         this.inCraft=true;
         //der Spawnpunkt muss nochmal überdacht werden
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
-        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50),frame);
+        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50));
         //muss man hier auch schon synchronisieren?
     }
     
@@ -97,6 +98,11 @@ public class Player implements Serializable
         this.frame.addMouseMotionListener(l);
         this.frame.addWindowListener(l);
         this.frame.addMouseWheelListener(l);
+        //!!
+        playerS.makeFrame(frame);
+        playerC.makeFrame(frame);
+        this.frame.getOverlayPanelS().setVisible(!inCraft);
+        this.frame.getOverlayPanelC().setVisible(inCraft);
     }
     
     public void disposeFrame(){
@@ -213,6 +219,8 @@ public class Player implements Serializable
         inCraft = false;
         if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft",Boolean.class, inCraft);
+        this.frame.getOverlayPanelS().setVisible(true);
+        this.frame.getOverlayPanelC().setVisible(false);
         repaint();
     }
     
@@ -225,6 +233,8 @@ public class Player implements Serializable
         inCraft = true;
         if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
+        this.frame.getOverlayPanelS().setVisible(true);
+        this.frame.getOverlayPanelC().setVisible(false);
         repaint();
     }
     

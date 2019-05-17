@@ -27,4 +27,9 @@ public abstract class ImageTools
             return null;
         }
     }
+	public static BufferedImage resize(BufferedImage img, VektorI size){
+        BufferedImage imgNew = new BufferedImage(size.x, size.y, BufferedImage.TYPE_4BYTE_ABGR);
+        imgNew.getGraphics().drawImage(img, 0, 0, size.x, size.y, null);
+        return imgNew;
+    }
 }
