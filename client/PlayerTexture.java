@@ -5,6 +5,7 @@ import javax.swing.JComponent;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.AbstractMap.SimpleEntry;
 import util.ImageTools;
@@ -16,7 +17,7 @@ import util.geom.*;
  * Die SpielerTexturen müssen im Ordner texturesC sein.
  * Bezeichnung: player_texture_<name>
  */
-public class PlayerTexture extends JComponent
+public class PlayerTexture extends JComponent implements Serializable
 {
     public static HashMap<Integer, SimpleEntry> textures = new HashMap<Integer, SimpleEntry>();
     static{

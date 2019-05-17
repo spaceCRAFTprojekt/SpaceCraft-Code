@@ -20,6 +20,7 @@ public class Frame extends JFrame{
     private PaintPanel pp;  // auf dieses Panel wird gepaintet
     private OverlayPanelC opC;  
     private OverlayPanelS opS; 
+    private OverlayPanelA opA; 
     /**
      * Neuer Frame eines Spielers
      */
@@ -45,6 +46,7 @@ public class Frame extends JFrame{
 
         opC = new OverlayPanelC(this,p,screenSize);
         opS = new OverlayPanelS(this,p,screenSize);
+        opA = new OverlayPanelA(this,p,screenSize);
     }
 
     /**
@@ -69,6 +71,10 @@ public class Frame extends JFrame{
 
     public OverlayPanelC getOverlayPanelC(){
         return opC;
+    }
+    
+    public OverlayPanelA getOverlayPanelA(){
+        return opA;
     }
 
         // Grafik:

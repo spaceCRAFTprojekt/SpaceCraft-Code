@@ -44,6 +44,7 @@ public class Player implements Serializable
     private PlayerC playerC;
     private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
     public int currentMassIndex;
+    public OverlayPanelA opA;
     //transiente Variablen werden nicht synchronisiert
     
     /**
@@ -103,6 +104,7 @@ public class Player implements Serializable
         playerC.makeFrame(frame);
         this.frame.getOverlayPanelS().setVisible(!inCraft);
         this.frame.getOverlayPanelC().setVisible(inCraft);
+        this.opA = frame.getOverlayPanelA();
     }
     
     public void disposeFrame(){
@@ -233,8 +235,8 @@ public class Player implements Serializable
         inCraft = true;
         if (online && onClient)
             new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"inCraft", Boolean.class, inCraft);
-        this.frame.getOverlayPanelS().setVisible(true);
-        this.frame.getOverlayPanelC().setVisible(false);
+        this.frame.getOverlayPanelS().setVisible(false);
+        this.frame.getOverlayPanelC().setVisible(true);
         repaint();
     }
     

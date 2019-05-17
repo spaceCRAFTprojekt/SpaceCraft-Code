@@ -78,6 +78,7 @@ public class PlayerS implements Serializable
                         //new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
                     }
                     lastDragPosition = new VektorI(e.getX(), e.getY());
+                    System.out.println("Stelle 1");
                 }
                 // @Linus: Ich weiß du sollst dir nicht zu viele Pausen nehmen, damit Spacecraft noch fertig wird, aber in diesem CASE wäre 
                 // eine kleine BREAK in der du feststellst, dass du eine BREAK vergessen hast nützlich. Mit anderen Worten: Da gehört ein break hin:
@@ -101,8 +102,10 @@ public class PlayerS implements Serializable
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 // und das ist auch eine schöne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal
                 // zum Server schicken lassen, um es mit dem Server zu synchronisieren xD
+                System.out.println("Stelle 2");
                 break;
             case 'r': lastDragPosition = null;
+                System.out.println("Stelle 3");
                 break;
         }
     }   

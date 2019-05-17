@@ -58,7 +58,8 @@ History:
  13.05.2019 v0.2.5_MH * Merge v0.1.10_MH: StartMenu, LoginMenu; PlayerMenu; Menu geändert; in menu neue sachen hinzugefügt
  15.05.2019 v0.2.6_AK * Die Menus jetzt im Package client.menus; PaintPanel und OverLayPanels; PlayerTexture als JComponent; 
                         TextureSelectMenu; ImageTools.resize()
- 17.05.2019 v0.2.8_LG * Zusammenfassen von v0.2.6_AK mit v0.2.7_LG
+ 17.05.2019 v0.3.0_LG * Zusammenfassen von v0.2.6_AK mit v0.2.7_LG
+ 17.05.2019 v0.3.1_AK * 
 
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.

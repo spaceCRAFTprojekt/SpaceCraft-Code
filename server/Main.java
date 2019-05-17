@@ -76,7 +76,7 @@ public class Main implements Serializable
     
     /**
      * Konstruktor
-     * erstellt ein neues Spiel und einen neuen Spieler
+     * erstellt ein neues Spiel und keinen neuen Spieler
      */
     private Main()
     {
@@ -226,7 +226,7 @@ public class Main implements Serializable
     }
     
     /**
-     * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig.
+     * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig. ~Schnux Sonst wär sie wahrscheinlich nicht da ~unknown
      */
     public void serverCreatorSetup(){
         this.sc=new ServerCreator(this);

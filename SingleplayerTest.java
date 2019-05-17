@@ -15,4 +15,7 @@ public class SingleplayerTest{
     public void exit(){
         main.exit();
     }
+    public static void main(String[]Args){new SingleplayerTest();}
+        
+    
 }
