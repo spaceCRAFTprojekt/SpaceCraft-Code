@@ -18,6 +18,8 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
+
+import blocks.*;
 /**
  * Der Server.
  * Enthält die main-Methode

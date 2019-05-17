@@ -1,12 +1,14 @@
-package server;
+package blocks;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.awt.image.BufferedImage;
 
 /**
  * hier wird je ein Objekt jedes Blocks gespeichert (z.B.: Erde, Sand, Stein, Wasser)
  * Soll nie initialisiert werden!
  * 
- * v0.0.6 AK * Alles geändert  (auch in Mapgen anpassen)!!!
+ * v0.0.6 AK * Alles geändert
  */
 public abstract class Blocks
 {
@@ -24,14 +26,19 @@ public abstract class Blocks
     /**
      * gibt den Block mit der id zuück
      */
-    static Block get(int id){
+    public static Block get(int id){
         return blocks.get(id);
+    }
+    public static BufferedImage getTexture(int id){
+        Block block = get(id);
+        if(block != null)return block.getImage();
+        else return null;
     }
     /**
      * gibt den Block mit dem Namen name zurück.
      * Wenn möglich besser get(int id) verwenden, da dafür weniger Rechenzeit benötigt wird!
      */
-    static Block get(String name){
+    public static Block get(String name){
         for (Entry<Integer, Block> entry : blocks.entrySet()) {
             if (entry.getValue().getName() == name) {
                 return entry.getValue();

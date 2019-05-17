@@ -4,6 +4,7 @@ import java.util.Timer;
 import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import blocks.*;
 /**
  * Die Sandbox eines Schiffs
  */

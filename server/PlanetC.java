@@ -5,6 +5,7 @@ import java.util.TimerTask;
 import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import blocks.*;
 /**
  * Die Sandbox eines Planeten
  */

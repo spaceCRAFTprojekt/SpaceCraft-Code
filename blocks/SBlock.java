@@ -1,4 +1,6 @@
-package server;
+package blocks;
+
+import server.*;
 import util.geom.*;
 /**
  * für alle Blöcke, die mehr als eine dekorative Funktion haben

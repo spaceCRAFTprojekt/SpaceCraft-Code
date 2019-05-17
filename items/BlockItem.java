@@ -1,6 +1,6 @@
 package items;
 
-import client.BlocksC;
+import blocks.*;
 
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
@@ -26,7 +26,7 @@ public class BlockItem extends Item implements Serializable
     
     @Override
     public BufferedImage getInventoryImage(){
-        if(super.getInventoryImage() == null)return BlocksC.images.get(blockID);
+        if(super.getInventoryImage() == null)return Blocks.getTexture(blockID);
         return super.getInventoryImage();  // falls das InvBild nicht das gleiche wie die Block Textur ist
     }
 }

@@ -1,4 +1,5 @@
-package server;
+package blocks;
+
 import java.util.ArrayList;
 import util.geom.*;
 import util.ImageTools;

@@ -1,18 +1,22 @@
 package server;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Timer;
+import util.geom.*;
+
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ColorModel;
 import java.awt.Color;
-import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+
 import client.ClientSettings;
+import blocks.*;
 /**
  * Eine virtuelle Umgebung aus Blöcken
  * 
@@ -111,7 +115,7 @@ public abstract class Sandbox implements Serializable
         Boolean success=new Boolean(false);
         try{
             if (map[pos.x][pos.y] == null){
-                placeBlock(Blocks.get(104), pos, playerID);
+                placeBlock(Blocks.blocks.get(104), pos, playerID);
             }else{
                 ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, playerID);
                 System.out.println("Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");

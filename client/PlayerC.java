@@ -18,6 +18,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import blocks.*;
 /**
  * ein Spieler in der Craft Ansicht
  */
@@ -166,11 +167,13 @@ public class PlayerC implements Serializable
     public void openInventory(){
         //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? LG
         if (inv == null)return;
+        /*
         inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
         inv.setStack(new VektorI(3,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),90));
         inv.setStack(new VektorI(7,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),34));
         inv.addStack(new Stack(new CraftItem(2, "", BlocksC.images.get(2)),34));
         inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
+        */
         new InventoryMenu(player, this.inv);
     }
     
@@ -230,7 +233,7 @@ public class PlayerC implements Serializable
                 for (int x = 0; x<=ClientSettings.PLAYERC_FIELD_OF_VIEW.x*2; x++){
                     for (int y = 0; y<=ClientSettings.PLAYERC_FIELD_OF_VIEW.y*2; y++){
                         try{
-                            BufferedImage img=BlocksC.images.get(mapIDCache[x][y]);
+                            BufferedImage img=Blocks.getTexture(mapIDCache[x][y]);
                             if (img!=null){
                                 Hashtable<String,Object> properties=new Hashtable<String,Object>();
                                 String[] prns=image.getPropertyNames();

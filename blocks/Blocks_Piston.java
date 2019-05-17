@@ -1,10 +1,19 @@
-package server;
+package blocks;
+
 import util.geom.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-public class Blocks_Piston extends DirBlock
+
+import server.Sandbox;
+import server.Settings;
+
+/*
+ *       0       ist ein Platzhalter für getDir()
+ * 
+ */
+public class Blocks_Piston extends SBlock
 {
     public Blocks_Piston(int id){
         super(id, "Piston", "blocks_piston_off");
@@ -18,7 +27,7 @@ public class Blocks_Piston extends DirBlock
     public void switchOn(Sandbox sb, VektorI pos){
         ArrayList<VektorI> connectedBlocks = getConnectedBlocks(sb, pos);
         if (connectedBlocks == null)return;
-        VektorI dir = new VektorI(getDir(sb, pos)).multiply(-1);
+        VektorI dir = new VektorI(     0     ).multiply(-1);
         for(int i = connectedBlocks.size()-1; i >= 0; i--){
             VektorI pos2 = connectedBlocks.get(i);
             VektorI pos3 = pos2.add(dir);
@@ -31,7 +40,7 @@ public class Blocks_Piston extends DirBlock
     }
     
     public static VektorI getPos2(Sandbox sb, VektorI pos){
-        return pos.add(new VektorI(getDir(sb, pos)).multiply(-1));
+        return pos.add(new VektorI(      0      ).multiply(-1));
     }
     
     public static ArrayList<VektorI> getConnectedBlocks(Sandbox sb, VektorI pos){
@@ -55,7 +64,7 @@ public class Blocks_Piston extends DirBlock
         return blocks;
     }
     
-    DirBlock pistonOn = new DirBlock(301, "piston_on", "blocks_piston_on"){
+    SBlock pistonOn = new SBlock(301, "piston_on", "blocks_piston_on"){
             @Override
             public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
@@ -74,7 +83,7 @@ public class Blocks_Piston extends DirBlock
             public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
         };
         
-    DirBlock pistonFront = new DirBlock(302, "piston_front", "blocks_piston_front"){
+    SBlock pistonFront = new SBlock(302, "piston_front", "blocks_piston_front"){
             @Override
             public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
                 return false;
