@@ -165,7 +165,7 @@ public class PlayerC implements Serializable
     
     // und die Methoden, die für diese Events gebraucht werden
     public void openInventory(){
-        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? LG
+        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // よく私は知らない、よくあなたが知っている ~unknown
         if (inv == null)return;
         /*
         inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));

@@ -12,7 +12,7 @@ DoTo:
 Regeln:
 * Alle Klassen und Methoden werden (auf Deutsch) genau beschrieben (Getter und Setter nicht zwingend)
 * Variablennamen etc. auf Englisch
-* Kommentare auf Deutsch
+* Kommentare auf Deutsch, Englisch, Französisch oder Japanisch (aber nur wenn es witzig ist!)
 * Nur die Klassen importieren die wirklich benötigt werden (nicht z.B.: import java.awt.*;)
 * Änderungen in Klassen von allgemeiner Relevanz mit Versionsdatum, Person und Beschreibung notieren!
 
@@ -57,9 +57,15 @@ History:
  13.05.2019 v0.2.4_LG * Cache der Map im Player
  13.05.2019 v0.2.5_MH * Merge v0.1.10_MH: StartMenu, LoginMenu; PlayerMenu; Menu geändert; in menu neue sachen hinzugefügt
  15.05.2019 v0.2.6_AK * Die Menus jetzt im Package client.menus; PaintPanel und OverLayPanels; PlayerTexture als JComponent; 
-                        TextureSelectMenu; ImageTools.resize()
+                        TextureSelectMenu; ImageTools.resize(); Lustige Wortspiele mit case und break
  17.05.2019 v0.3.0_LG * Zusammenfassen von v0.2.6_AK mit v0.2.7_LG
- 17.05.2019 v0.3.1_AK * kleine Bugfixes (siehe Issues auf Github), Blöcke Client und Serverseitig 
+ 17.05.2019 v0.3.1_AK * kleine Bugfixes (siehe Issues auf Github), Blöcke Client und Serverseitig, Auf Linus Fragen im Code geantwortet
 
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
+ 
+Hinweis:
+ Schnux = Käptn ( = Linus)
+ unknown = Alex
+ maxx = Max
+ Benny = Benedikt

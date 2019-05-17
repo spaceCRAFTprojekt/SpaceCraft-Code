@@ -23,7 +23,8 @@ public class Block implements Serializable
     //private transient Item item = null; // falls der Block ein Item hat
     //private transient BufferedImage inventoryImage = null; // falls im Inv ein anderes Bild angezeigt werden soll
     //private transient Item drops = null;
-    
+    private transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
+    private transient boolean breakment_brediction = true; //  "  gebreakt " " ; goodest EnglisCh
     
     /**
      * nur static möglich, nicht in-Game (wegen der Bilder für den Client)
