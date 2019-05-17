@@ -1,9 +1,10 @@
-package client;
+package client.menus;
 import menu.*;
 import util.geom.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-public class ChatWriterMenu extends Menu{
+import client.Player;
+public class ChatWriterMenu extends PlayerMenu{
     MenuTextArea mta;
     MenuButton mb;
     public ChatWriterMenu(Player p){
@@ -16,12 +17,13 @@ public class ChatWriterMenu extends Menu{
                 closeMenu();
             }
         };
-        addKeyListener(new KeyAdapter(){
+        KeyAdapter kl=new KeyAdapter(){
             public void keyTyped(KeyEvent e){
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     mb.onClick();
                 }
             }
-        });
+        };
+        addKeyListener(kl);
     }
 }

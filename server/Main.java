@@ -28,7 +28,9 @@ import java.lang.reflect.Field;
  */
 public class Main implements Serializable
 {
-    static String spacefilename="space"; //sollteen die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
+    public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
+    
+    static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";
     static String planetCfilename="planetC";
@@ -40,7 +42,7 @@ public class Main implements Serializable
     // normalerweise nur ein Spieler
     private transient ArrayList<String> chat=new ArrayList<String>();
     private transient Space space;
-    private transient RequestResolver rr;
+    private transient ServerCreator sc;
 
     /**
      * "Lasset die Spiele beginnen" ~ Kim Jong Un
@@ -64,9 +66,8 @@ public class Main implements Serializable
             file.delete();
         }catch(Exception e){}
         Main m = new Main();    
-            
+        main=m;
         return m;
-        
     }
     
     public static void main(String[]Args){
@@ -80,7 +81,7 @@ public class Main implements Serializable
     private Main()
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        requestResolverSetup();
+        serverCreatorSetup();
         space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
     }
     
@@ -93,8 +94,7 @@ public class Main implements Serializable
      */
     private Object writeReplace() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
-        new File(folder).mkdirs();
-       
+        
         ArrayList<ShipC> shipCs=ShipC.shipCs; //Schiffe
         for (int i=0;i<shipCs.size();i++){
             try{
@@ -154,7 +154,7 @@ public class Main implements Serializable
      * AK
      */
     public Object readResolve() throws ObjectStreamException{
-        requestResolverSetup();
+        serverCreatorSetup();
         String folder=Settings.GAMESAVE_FOLDER;
         if (!new File(folder).isDirectory()){
             System.out.println("Folder "+folder+" does not exist.");
@@ -220,15 +220,16 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println("Main: 5: "+e+": "+e.getMessage());
         }
+        this.chat=new ArrayList<String>();
+        main=this;
         return this;
     }
     
     /**
-     * Der Request-Resolver ist ein Bindeglied zwischen Server und Client. Diese Funktion ist wichtig.
+     * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig.
      */
-    public void requestResolverSetup(){
-        Request.requests=new ArrayList<Request>();
-        this.rr=new RequestResolver(this);
+    public void serverCreatorSetup(){
+        this.sc=new ServerCreator(this);
     }
     
     /**
@@ -237,7 +238,7 @@ public class Main implements Serializable
     public void repaint()
     {
         for (int i = 0; i<players.size();i++){
-            new Task(i,"Player.repaint");
+            newTask(i,"Player.repaint");
         }
     }
     
@@ -281,11 +282,22 @@ public class Main implements Serializable
         for (int i=0;i<players.size();i++){
             if (players.get(i).isOnline()){
                 players.get(i).logout(); //Server-Kopie des Players
-                new Task(i,"Player.logoutTask"); //Player im Client
+                newTask(i,"Player.logoutTask"); //Player im Client
+                sc.taskOutputStreams.remove(i);
             }
         }
         Serializer.serialize(this);
+        main=null;
         System.exit(0);
+    }
+    
+    public ServerCreator getServerCreator(){
+        return sc;
+    }
+    
+    public void newTask(int playerID, String todo, Object... params){
+        Task task=new Task(todo, params);
+        sc.sendTask(playerID,task);
     }
     
     //Ab hier Request-Funktionen
@@ -309,15 +321,8 @@ public class Main implements Serializable
     
     public Boolean logout(Integer playerID){
         players.get(playerID).setOnline(false); //siehe login(Integer playerID)
+        sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
-    }
-    
-    public HashMap<Integer,BufferedImage> retrieveBlockImages(Integer playerID){
-        HashMap<Integer,BufferedImage> ret=new HashMap<Integer,BufferedImage>();
-        for (HashMap.Entry<Integer,Block> entry : Blocks.blocks.entrySet()) {
-            ret.put(entry.getKey(),entry.getValue().getImage());
-        }
-        return ret;
     }
     
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
@@ -339,31 +344,38 @@ public class Main implements Serializable
         return new Boolean(false);
     }
     
-    //ab hier unfertig
     /**
      * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
     public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
-        Player p=players.get(playerID);
-        Class pc=Player.class;
-        //tatsächliches Setzen der Variable mit reflect.Field. Unfertig.
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
+            Player p=players.get(playerID);
+            Class pc=Player.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){} //Warum das? Ich habe es selbst geschrieben und wieder vergessen. -LG
     }
     
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        PlayerS p=players.get(playerID).getPlayerS();
-        Class pc=PlayerS.class;
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            PlayerS p=players.get(playerID).getPlayerS();
+            Class pc=PlayerS.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){}
     }
     
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
-        PlayerC p=players.get(playerID).getPlayerC();
-        Class pc=PlayerC.class;
-        Field f=pc.getDeclaredField(varname);
-        f.set(p,value);
+        try{
+            PlayerC p=players.get(playerID).getPlayerC();
+            Class pc=PlayerC.class;
+            Field f=pc.getDeclaredField(varname);
+            f.set(p,value);
+        }
+        catch(IndexOutOfBoundsException e){}
     }
     
     /**
@@ -377,7 +389,7 @@ public class Main implements Serializable
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, true);
+        Player p=new Player(id, name, false);
         players.add(p);
         return id;
     }

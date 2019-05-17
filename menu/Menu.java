@@ -26,15 +26,14 @@ import client.Player;
  * v0.1.8_AK Umschreiben als abstracte Klasse
  */
 public abstract class Menu extends JFrame {
-    protected Player p;
     JPanel contentPane;
     //Constructor 
-    public Menu(Player p, String title, VektorI size){
+    public Menu(String title, VektorI size){
         this.setSize(size.x, size.y);
     
         this.setTitle(title);
-        this.p=p;
-        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		this.setSize(size.x,size.y);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 closeMenu();
@@ -49,7 +48,6 @@ public abstract class Menu extends JFrame {
         this.add(contentPane);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        p.openMenu(this);
         
         initComponents();
     }
@@ -57,11 +55,6 @@ public abstract class Menu extends JFrame {
     public void initComponents(){}
     
     public void closeMenu(){
-        p.removeMenu();
         dispose();
-    }
-    
-    public Player getPlayer(){
-        return p;
     }
 }

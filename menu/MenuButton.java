@@ -15,7 +15,7 @@ public abstract class MenuButton extends JButton
     /**
      * Constructor for objects of class MenuButton
      */
-    public MenuButton(Menu m, String text, VektorI pos, VektorI size)
+    public MenuButton(Menu m, String text, VektorI pos, VektorI size, int fontSize)
     {
         // Erstellt einen neuen Button
         super();
@@ -24,7 +24,7 @@ public abstract class MenuButton extends JButton
         setBackground(Color.GRAY);
         setForeground(new Color(0,0,0));
         setEnabled(true);
-        setFont(new Font("sansserif",0,MenuSettings.MENU_FONT_SIZE));
+        setFont(new Font("sansserif",0,fontSize));
         setText(text);
         setVisible(true);
         m.contentPane.add(this); // und fügt ihn zur Pane hinzu
@@ -34,6 +34,10 @@ public abstract class MenuButton extends JButton
                     onClick();
                 }
             });
+    }
+	
+	public MenuButton(Menu m, String text, VektorI pos, VektorI size){
+        this(m,text,pos,size,MenuSettings.MENU_FONT_SIZE);
     }
 
     public abstract void onClick();

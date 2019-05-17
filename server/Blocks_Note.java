@@ -24,6 +24,6 @@ public class Blocks_Note extends SBlock
         Meta meta = sb.getMeta(pos);
         String text = (String)meta.get("text");
         Object[] menuParams={pos,text};
-        new Task(playerID,"Player.showMenu","NoteblockMenu",menuParams);
+        Main.main.newTask(playerID,"Player.showMenu","NoteblockMenu",menuParams);
     }
 }

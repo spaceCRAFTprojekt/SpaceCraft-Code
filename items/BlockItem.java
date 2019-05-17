@@ -3,12 +3,13 @@ package items;
 import client.BlocksC;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * Ein item, das mit einem Block verlinkt ist
- * Achtung : di blockID != id
+ * Achtung : die blockID != id
  */
-public class BlockItem extends Item
+public class BlockItem extends Item implements Serializable
 {
     
     private transient int blockID;

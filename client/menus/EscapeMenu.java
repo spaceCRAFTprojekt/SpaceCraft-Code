@@ -1,12 +1,13 @@
-package client;
+package client.menus;
 import javax.swing.*;
 import util.geom.VektorI;
 import menu.*;
+import client.Player;
 /**
  * Wird angezeigt, wenn man esc drügggt...  // es ist kurz vor 0 Uhr; ich kann nicht mehr schreiben
  * Gibt die Möglichkeit das Spiel zu beenden oder weiterzuspielen
  */
-public class EscapeMenu extends Menu {
+public class EscapeMenu extends PlayerMenu {
     private JLabel pause;
     private JButton restart;
     private JButton logout;
@@ -39,7 +40,6 @@ public class EscapeMenu extends Menu {
     }
     
     public void exit(){
-        getPlayer().logout();
         getPlayer().exit();
         dispose();
     }

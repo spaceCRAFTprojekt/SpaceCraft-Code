@@ -1,7 +1,7 @@
 package items;
 
 import java.awt.image.BufferedImage;
-
+import java.io.Serializable;
 
 /**
  * Write a description of class Stack here.
@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class Stack
+public class Stack implements Serializable
 {
     public static int maxCount = 99;
     

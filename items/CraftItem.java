@@ -1,10 +1,11 @@
 package items;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * 
  */
-public class CraftItem extends Item
+public class CraftItem extends Item implements Serializable
 {
     private transient String name;
     

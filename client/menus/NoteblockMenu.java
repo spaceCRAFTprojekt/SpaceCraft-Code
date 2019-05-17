@@ -1,9 +1,11 @@
-package client;
+package client.menus;
+
+import client.*;
 import menu.*;
 import util.geom.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-public class NoteblockMenu extends Menu{
+public class NoteblockMenu extends PlayerMenu{
     MenuTextArea mta;
     MenuButton mb;
     String text;
@@ -18,10 +20,10 @@ public class NoteblockMenu extends Menu{
         int sandboxIndex=p.getPlayerC().getSandboxIndex();
         mb = new MenuButton(this, "Save", new VektorI(170,260), new VektorI(100, 30)){
             public void onClick(){
-                Object[] menuParams={onPlanet,sandboxIndex,pos,text,mta.getText()};
-                Boolean success=(Boolean) (new Request(getPlayer().getID(),"Main.returnFromMenu",Boolean.class,"NoteblockMenu",menuParams).ret);
+                Object[] menuParams={onPlanet,sandboxIndex,pos,mta.getText()};
+                Boolean success=(Boolean) (new Request(getPlayer().getID(),getPlayer().getRequestOut(),getPlayer().getRequestIn(),"Main.returnFromMenu",Boolean.class,"NoteblockMenu",menuParams).ret);
                 closeMenu();
             }
         };
     }
-}
+} 
