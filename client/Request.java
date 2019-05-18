@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
      * Main.exit()
      * Main.exitIfNoPlayers()
      * Main.newPlayer(String name)
+     * Main.getPlayer(String name)
      * Main.login()
      * Main.logout()
      * Main.returnFromMenu(String menuName, Object[] menuParams)

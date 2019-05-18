@@ -12,7 +12,6 @@ public class EscapeMenu extends PlayerMenu {
     private JButton restart;
     private JButton logout;
     private JButton exit;
-    
     //Constructor 
     public EscapeMenu(Player p){
         super(p,"Pause", new VektorI(225, 320));
@@ -36,10 +35,12 @@ public class EscapeMenu extends PlayerMenu {
 
     public void logout(){
         getPlayer().logout();
+        new StartMenu();
         dispose();
     }
     
     public void exit(){
+        getPlayer().logout();
         getPlayer().exit();
         dispose();
     }

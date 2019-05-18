@@ -31,11 +31,14 @@ public class ServerCreator{
                             boolean isRequestClient=in.readBoolean(); //sonst: taskClient
                             if (isRequestClient){
                                 new Thread("requestClientThread"){
+                                    long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
+                                    Integer playerID=-1; //wird von den Requests genommen
                                     public void run(){
                                         while(true){
                                             //sollte eigentlich aufhören, wenn der Client geschlossen wird, aber das funktioniert aus irgendeinem Grund nicht
                                             try{
                                                 Request req=(Request) in.readObject();
+                                                playerID=req.playerID;
                                                 if (req.retClass!=null){
                                                     Object ret=resolveRequest(req);
                                                     synchronized(out){
@@ -48,6 +51,7 @@ public class ServerCreator{
                                                 else{
                                                     resolveRequest(req);
                                                 }
+                                                timeOfLastAction=System.currentTimeMillis();
                                             }
                                             catch(Exception e){
                                                 if (e instanceof EOFException){}
@@ -57,6 +61,13 @@ public class ServerCreator{
                                                 else{
                                                     System.out.println("Exception when resolving request: "+e);
                                                 }
+                                            }
+                                            if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
+                                                if (!playerID.equals(-1)){
+                                                    Main.main.getPlayer(playerID).logout();
+                                                    Main.main.newTask(playerID,"logoutTask");
+                                                }
+                                                return;
                                             }
                                         }
                                     }

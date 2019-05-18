@@ -74,8 +74,8 @@ public class Player implements Serializable
             Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
             ObjectOutputStream newPlayerOut=new ObjectOutputStream(s.getOutputStream());
             synchronized(newPlayerOut){
-                newPlayerOut.flush();
                 newPlayerOut.writeBoolean(true); //Request-Client
+                newPlayerOut.flush();
             }
             ObjectInputStream newPlayerIn=new ObjectInputStream(s.getInputStream());
             int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name).ret); //Kopie des Players am Server
@@ -399,15 +399,19 @@ public class Player implements Serializable
     public void synchronizeWithServer(){
         if (onClient && online){
             Player pOnServer=(Player) (new Request(id,requestOut,requestIn,"Main.retrievePlayer",Player.class).ret);
-            inCraft=pOnServer.inCraft;
-            currentMassIndex=pOnServer.currentMassIndex;
-            playerS.posToMass=pOnServer.getPlayerS().posToMass;
-            playerS.scale=pOnServer.getPlayerS().scale;
-            playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
-            playerC.pos=pOnServer.getPlayerC().pos;
-            playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
-            playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
+            synchronizeWithPlayerFromServer(pOnServer);
         }
+    }
+    
+    public void synchronizeWithPlayerFromServer(Player pOnServer){
+        inCraft=pOnServer.inCraft;
+        currentMassIndex=pOnServer.currentMassIndex;
+        playerS.posToMass=pOnServer.getPlayerS().posToMass;
+        playerS.scale=pOnServer.getPlayerS().scale;
+        playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
+        playerC.pos=pOnServer.getPlayerC().pos;
+        playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
+        playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
     }
     
     public void writeIntoChat(String message){

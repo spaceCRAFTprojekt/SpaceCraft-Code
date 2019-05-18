@@ -9,4 +9,5 @@ public abstract class Settings{
     public static double SPACE_CALC_PERIOD_INGAME=0.1; //in Sekunden, so oft werden die Bahnen mit dem newtonschen Gravitationsgesetz berechnet
     public static int CRAFT_PISTON_PUSH_LIMIT = 4;  // Anzahl der Blöcke, die ein Piston nach vorne bewegen kann
     public static int SERVER_PORT=30000;
+    public static long REQUEST_THREAD_TIMEOUT=10000;
 }

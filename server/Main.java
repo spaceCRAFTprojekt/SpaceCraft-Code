@@ -421,5 +421,13 @@ public class Main implements Serializable
         }
         return ret;
     }
+    
+    public Player getPlayer(Integer playerID, String name){ //playerID=-1
+        for(int i = 0; i<players.size(); i++){
+            //aus irgendeinem Grund geht == nicht mit Requests
+            if(players.get(i).getName().equals(name)) return players.get(i);
+        }
+        return null;
+    }
 }
 // Hallo ~unknown
