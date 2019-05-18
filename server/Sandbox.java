@@ -103,7 +103,7 @@ public abstract class Sandbox implements Serializable
 
     /**
      * Rechtsklick auf einen Block in der Welt:
-     *  wenn an der Stelle kein Block => plaziert Block
+     *  wenn an der Stelle kein Block => macht nichts!!!
      *  wenn an der Stelle ein Block => führt (wenn möglich) das onRightclick Event im Block aus
      *  
      *  @param:
@@ -111,43 +111,16 @@ public abstract class Sandbox implements Serializable
      *  * Integer playerID
      * Request-Funktion
      */
-    public Boolean rightclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
-        Boolean success=new Boolean(false);
+    public void rightclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
         try{
             if (map[pos.x][pos.y] == null){
-                placeBlock(Blocks.blocks.get(104), pos, playerID);
+                //placeBlock(Blocks.blocks.get(104), pos, playerID);
             }else{
                 ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, playerID);
                 System.out.println("Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");
             }
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
-        success=new Boolean(true);
-        return success;
-    }
-
-    /**
-     * Linksklick auf einen Block in der Welt
-     *  wenn an der Stelle ein Block => baut den Block ab
-     *  
-     *  @param:
-     *  * VektorI pos: Position des Blocks
-     *  * Integer playerID
-     * Request-Funktion
-     */
-    public Boolean leftclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex,  VektorI pos){
-        Boolean success=new Boolean(false);
-        try{
-            if (map[pos.x][pos.y] == null){
-                return success;
-            }else{
-                breakBlock(pos, playerID);
-                System.out.println("Block at "+pos.toString()+" leftclicked by Player "+playerID+"!");
-            }
-        }catch(Exception e){ //block außerhalb der Map 
-        }
-        success=new Boolean(true);
-        return success;
     }
 
     /**
@@ -162,8 +135,17 @@ public abstract class Sandbox implements Serializable
         try{
             if(!((SBlock)block).onPlace(this, pos, playerID))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
         }catch(Exception e){} // => kein SpecialBlock => kann immer plaziert werden
+        if(!block.placement_prediction)return;
         setBlock(block, pos);
         System.out.println("Block at "+pos.toString()+" placed by Player "+playerID+"!");
+    }
+    
+    /**
+     * Und das gleiche für einen Request
+     */
+    public void placeBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos, Integer BlockID){
+        Block block = Blocks.get(BlockID);
+        if(block != null)placeBlock(block, pos, playerID);
     }
 
     /**
@@ -194,6 +176,9 @@ public abstract class Sandbox implements Serializable
         map[pos.x][pos.y]= block; 
     }
 
+    
+    
+    
     /**
      * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurückgibt und löscht die Metadaten
      * @param:
@@ -207,7 +192,17 @@ public abstract class Sandbox implements Serializable
                 breakBlock(pos);
                 System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
             }
-        }catch(Exception e){breakBlock(pos);}
+        }catch(Exception e){
+            if(!getBlock(pos).breakment_prediction)return;
+            breakBlock(pos);
+        }
+    }
+
+    /**
+     * Das gleiche für ein Request
+     */
+    public void breakBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+        breakBlock(pos, playerID);
     }
 
     /**

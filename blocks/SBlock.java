@@ -43,7 +43,7 @@ public abstract class SBlock extends Block
      * int playerID: ID des Spielers
      */
     public boolean onPlace(Sandbox sb, VektorI pos, int playerID){
-        return true;
+        return placement_prediction;
     }
     
     /**
@@ -64,7 +64,7 @@ public abstract class SBlock extends Block
      * int playerID: ID des Spielers
      */
     public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
-        return true;
+        return breakment_prediction;
     }
     
     /**

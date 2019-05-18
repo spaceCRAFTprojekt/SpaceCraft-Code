@@ -46,7 +46,7 @@ public class Blocks_Piston extends SBlock
     public static ArrayList<VektorI> getConnectedBlocks(Sandbox sb, VektorI pos){
         try{
             Meta meta = sb.getMeta(pos);
-            VektorI dir = new VektorI((Integer)(meta.get("dir"))).multiply(-1);
+            VektorI dir = new VektorI(    0    ).multiply(-1);
             VektorI posNew = pos.add(dir);
             if(sb.getBlock(posNew) == null)return new ArrayList<VektorI>();
             ArrayList<VektorI> blocks = getConnectedBlocks(sb, posNew, dir, Settings.CRAFT_PISTON_PUSH_LIMIT+1);
@@ -83,13 +83,7 @@ public class Blocks_Piston extends SBlock
             public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
         };
         
-    SBlock pistonFront = new SBlock(302, "piston_front", "blocks_piston_front"){
-            @Override
-            public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
-                return false;
-            }
-
-            @Override
-            public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
-        };
+    Block pistonFront = new Block(302, "piston_front", "blocks_piston_front"){ 
+        @Override public void setProperties(){breakment_prediction = false;
+                                              placement_prediction = false;}};;
 }

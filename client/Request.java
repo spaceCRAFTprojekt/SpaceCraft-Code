@@ -27,7 +27,8 @@ import java.io.ObjectInputStream;
      * Space.getAllPos()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
-     * Sandbox.leftclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
+     * Sandbox.breakBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos) v0.3.1_AK
+     * Sandbox.placeBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
      * Sandbox.rightclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * 

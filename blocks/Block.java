@@ -16,16 +16,16 @@ public class Block implements Serializable
     private transient BufferedImage img;
     private transient String name;
     
-    private transient boolean walkable = true;  // ob ein Spieler durch z.B.: durch Bäume durchgehen kann
-    private transient int light = 0;  // ob der Block Licht ausstrahlt
-    private transient boolean light_propagates = true;   // ob der Block lichtdurchlässig ist
-    private transient boolean climbable = false;  // ob man an dem Block hochklettern kann (muss walkable false sein)
+    public transient boolean walkable = true;  // ob ein Spieler durch z.B.: durch Bäume durchgehen kann
+    public transient int light = 0;  // ob der Block Licht ausstrahlt
+    public transient boolean light_propagates = true;   // ob der Block lichtdurchlässig ist
+    public transient boolean climbable = false;  // ob man an dem Block hochklettern kann (muss walkable false sein)
     //private transient Item item = null; // falls der Block ein Item hat
     //private transient BufferedImage inventoryImage = null; // falls im Inv ein anderes Bild angezeigt werden soll
     //private transient Item drops = null;
-    private transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
-    private transient boolean breakment_brediction = true; //  "  gebreakt " " ; goodest EnglisCh
-    
+    public transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
+    public transient boolean breakment_prediction = true; //  "  gebreakt " " ; goodest EnglisCh
+    // ich hab das jetzt man alles public gemacht, weil man sonst so viele getter braucht. Natürlich kann man dann die Wert später verändern, aber wer macht das schon... ~AK
     /**
      * nur static möglich, nicht in-Game (wegen der Bilder für den Client)
      */
@@ -33,6 +33,11 @@ public class Block implements Serializable
     {
         this(id, name);
         this.img = ImageTools.get('C', imageString);
+        setProperties();
+    }
+    
+    public void setProperties(){
+        
     }
     
     public Block(int id, String name)

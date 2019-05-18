@@ -35,7 +35,7 @@ public class PlayerC implements Serializable
     private transient BufferedImage texture;
     private VektorD hitbox = new VektorD(1,2);
     public int[][] mapIDCache;
-    public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches
+    public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches ~LG relativ zu was? ~AK
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
     
@@ -147,17 +147,39 @@ public class PlayerC implements Serializable
      */
     public void mouseEvent(MouseEvent e, char type) {
         if (type == 'c'){
-            VektorI clickPos = new VektorI(e);
-            VektorI sPos=getPosToPlayer(clickPos,blockBreite);
-            if (e.getButton() == e.BUTTON1){   // rechtsklick => abbauen
+            if (!player.isOnline() || !player.onClient())return;
+            VektorI clickPos = new VektorI(e);  // Position in Pixeln am Bildschirm
+            VektorI sPos=getPosToPlayer(clickPos,blockBreite);  //Position in der Sandbox
+            VektorI cPos=getPosToCache(sPos);  // Position im mapIDCache
+            if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
-                if (player.isOnline() && player.onClient()){
-                    Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.leftclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                if(mapIDCache[cPos.x][cPos.y] == -1)return;  // wenn da kein block ist => nichts machen
+                if(Blocks.get(mapIDCache[cPos.x][cPos.y]).breakment_prediction){
+                    mapIDCache[cPos.x][cPos.y] = -1;  
                 }
-            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren
-                //System.out.println("Tried to place block at "+sPos.toString());
-                if (player.isOnline() && player.onClient()){
-                    Boolean success=(Boolean) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos).ret);
+                // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
+                // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,onPlanet,sandboxIndex,sPos);
+                
+            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
+                if(mapIDCache[cPos.x][cPos.y] == -1){
+                    //plazieren
+                    //System.out.println("Tried to place block at "+sPos.toString());
+                    int blockID = getHotbarBlockID();
+                    if(blockID == -1 || Blocks.get(blockID) == null) return;
+                    if(Blocks.get(blockID).placement_prediction){
+                        mapIDCache[cPos.x][cPos.y] = blockID;  
+                        // wenn der Block wahrscheinlich plaziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
+                        // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder entfernt
+                    }
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",Boolean.class,onPlanet,sandboxIndex,sPos, blockID);      
+                }else{
+                    //leftclick
+                    //System.out.println("Tried to leftclick block at "+sPos.toString());
+                    Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
+                    if(block instanceof SBlock){
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos);      
+                    }
                 }
             }
         }
@@ -175,6 +197,10 @@ public class PlayerC implements Serializable
         inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
         */
         new InventoryMenu(player, this.inv);
+    }
+    
+    public int getHotbarBlockID(){
+        return 300;
     }
     
     public int getBlockWidth(){
@@ -213,6 +239,16 @@ public class PlayerC implements Serializable
     public VektorI getPosToPlayer(VektorI bPos, int blockBreite){
         //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
         return (getUpperLeftCorner(pos).add(bPos.toDouble().divide(blockBreite))).toIntFloor();
+    }
+    
+    /**
+     * Gibt die Position eines Blocks in cache Array an
+     * 
+     * @param: 
+     * sPos: Position im allgemeinen Map Array (lässt sich mit getPosToPlayer() berechnen)
+     */
+    public VektorI getPosToCache(VektorI sPos){
+        return sPos.subtract(mapIDCachePos);
     }
 
     /**

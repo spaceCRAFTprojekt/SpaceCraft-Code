@@ -9,13 +9,15 @@ import java.awt.image.BufferedImage;
  * Soll nie initialisiert werden!
  * 
  * v0.0.6 AK * Alles geändert
+ * 
+ * v0.3.2_AK * mit { @Override public void setProperties(){breakment_prediction = false;}};  können Properties von Blöcken überschrieben werden
  */
 public abstract class Blocks
 {
     public static final HashMap<Integer,Block> blocks = new HashMap<Integer,Block>();
     
     static{
-        new Block(000, "stone", "blocks_stone"); 
+        new Block(000, "stone", "blocks_stone");
         new Block(001, "dirt", "blocks_dirt"); 
         new Block(002, "grass", "blocks_grass"); 
         new Blocks_Note(104); // id kann noch verändert werden
