@@ -3,6 +3,8 @@ import client.Player;
 import client.PlayerS;
 import client.PlayerC;
 import client.Request;
+import client.OtherPlayerTexture;
+import client.PlayerTexture;
 import client.Task;
 import util.geom.VektorI;
 import java.util.ArrayList;
@@ -426,6 +428,19 @@ public class Main implements Serializable
         for(int i = 0; i<players.size(); i++){
             //aus irgendeinem Grund geht == nicht mit Requests
             if(players.get(i).getName().equals(name)) return players.get(i);
+        }
+        return null;
+    }
+    
+    public OtherPlayerTexture[] getOtherPlayerTextures(Integer playerID){
+        ArrayList<OtherPlayerTexture> ret = new ArrayList<OtherPlayerTexture>();
+        int massID = players.get(playerID).getCurrentMassIndex();
+        for(int i = 0; i<players.size(); i++){
+            if(playerID != i && players.get(i).isOnline() && players.get(i).getCurrentMassIndex() == massID){ // der Spieler selbst soll natürlich nicht im Array zurückgegeben werden
+                PlayerC pC = players.get(i).getPlayerC();
+                PlayerTexture t = pC.getPlayerTexture();
+                ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos));
+            }
         }
         return null;
     }

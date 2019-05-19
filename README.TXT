@@ -62,6 +62,7 @@ History:
  17.05.2019 v0.3.1_AK * kleine Bugfixes (siehe Issues auf Github), Blöcke Client und Serverseitig, Auf Linus Fragen im Code geantwortet
  17.05.2109 v0.3.2_AK * Breakment und placement_predictions; Break und Place clientside //nettes Datum -LG
  18.05.2019 v0.3.3_LG * Merge mit v0.2.5_MH
+ 19.05.2019 v0.3.4_AK * PlayerTexture geändert
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

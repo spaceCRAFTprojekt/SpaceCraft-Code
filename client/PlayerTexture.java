@@ -43,7 +43,7 @@ public class PlayerTexture implements Serializable
     // Es wird nur die Textur gespeichert
     public int textureID;
 
-    private transient int mode = RIGHT;
+    public int mode = RIGHT;
 
     private transient int blockWidth;
 

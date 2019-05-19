@@ -215,6 +215,10 @@ public class PlayerC implements Serializable
     public void setPlayerTexture(int id){
         playerTexture.setTexture(id);
     }
+    
+    public PlayerTexture getPlayerTexture(){
+        return playerTexture;
+    }
 
 
     
