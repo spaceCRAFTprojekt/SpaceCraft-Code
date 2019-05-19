@@ -6,7 +6,7 @@ public class SingleplayerTest{
     public Player player;
     public StartMenu startmenu;
     public SingleplayerTest(){
-        main=Main.newMain(false);
+        main=Main.newMain(true);
         //startmenu = new StartMenu();
         player=Player.newPlayer("Singleplayer");
         player.login();

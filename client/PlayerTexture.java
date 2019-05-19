@@ -17,9 +17,9 @@ import util.geom.*;
  * Die SpielerTexturen müssen im Ordner texturesC sein.
  * Bezeichnung: player_texture_<name>
  */
-public class PlayerTexture extends JComponent implements Serializable
+public class PlayerTexture implements Serializable
 {
-    public static HashMap<Integer, SimpleEntry> textures = new HashMap<Integer, SimpleEntry>();
+    public static transient HashMap<Integer, SimpleEntry> textures = new HashMap<Integer, SimpleEntry>();
     static{
         textures.put(0,new SimpleEntry("default",getPlayerTexture("default")));
         textures.put(1,new SimpleEntry("Schnux",getPlayerTexture("schnux")));
@@ -34,42 +34,64 @@ public class PlayerTexture extends JComponent implements Serializable
         }
     }
 
-    public static int RIGHT = 0;
-    public static int LEFT = 1;
-    public static int WALKING_RIGHT = 2;
-    public static int WALKING_LEFT = 3;
-    public static int NUM_MODES = 2; // 2 & 3 aktuell noch nicht verfügbar
+    public static transient int RIGHT = 0;
+    public static transient int LEFT = 1;
+    public static transient int WALKING_RIGHT = 2;
+    public static transient int WALKING_LEFT = 3;
+    public static transient int NUM_MODES = 2; // 2 & 3 aktuell noch nicht verfügbar
 
-    public BufferedImage texture;
+    // Es wird nur die Textur gespeichert
+    public int textureID;
 
-    private int mode = RIGHT;
+    private transient int mode = RIGHT;
 
-    private int blockWidth;
+    private transient int blockWidth;
 
+    private transient JComponent component;
+    
     /**
      * @param: String name: Name des Texturenpakets für den Spieler, wenn "", dann wird die default Textur verwendet
      */
-    public PlayerTexture(OverlayPanelC opC, int id, VektorI screenSize ,int blockWidth){
-        this.blockWidth = blockWidth;
-
-        VektorI upperLeftCorner = screenSize.toDouble().divide(2).subtract(  new VektorD(blockWidth*0.5,blockWidth*1.5)  ) .toInt();  
-        //ich versteh das mit der 1.5 auch nicht
-        this.setBounds(upperLeftCorner.x, upperLeftCorner.y, blockWidth, blockWidth*2);
-        this.setVisible(true);
-        this.setEnabled(false);
-        opC.add(this);
+    public PlayerTexture(int id){
         setTexture(id);  // + repaint()
     }
 
+    public void makeFrame(OverlayPanelC opC, VektorI screenSize ,int blockWidth){
+        component = new JComponent(){
+            @Override
+            public void paint(Graphics g){
+                if(component == null)return;
+                try{
+                    if(mode == RIGHT)g.drawImage(getTexture(textureID), 0, 0, blockWidth, blockWidth*2, null);
+                    else g.drawImage(getTexture(textureID), blockWidth, 0, -blockWidth, blockWidth*2, null);
+                }catch(Exception e){}
+            }
+        };
+
+        resize(screenSize, blockWidth);
+        component.setVisible(true);
+        component.setEnabled(false);
+        opC.add(component);
+    }
+
+    public void resize(VektorI screenSize ,int blockWidth){
+        if(component == null)return;
+        this.blockWidth = blockWidth;
+        VektorI upperLeftCorner = screenSize.toDouble().divide(2).subtract(  new VektorD(blockWidth*0.5,blockWidth*1.5)  ) .toInt();  
+        //ich versteh das mit der 1.5 auch nicht
+        component.setBounds(upperLeftCorner.x, upperLeftCorner.y, blockWidth, blockWidth*2);
+    }
+
     public void setTexture(int id){
-        texture = getTexture(id);
-        if (texture == null)texture = getTexture(0);
-        repaint();
+        if(textures.get(id)!=null)textureID = id;
+        if(component == null)return;
+        component.repaint();
     }
 
     public void setMode(int mode){
         this.mode = mode;
-        repaint();
+        if(component == null)return;
+        component.repaint();
     }
 
     /**
@@ -81,9 +103,4 @@ public class PlayerTexture extends JComponent implements Serializable
         return ImageTools.get('C', "player_texture_"+name);
     }
 
-    @Override
-    public void paint(Graphics g){
-        if(mode == RIGHT)g.drawImage(texture, 0, 0, blockWidth, blockWidth*2, null);
-        else g.drawImage(texture, blockWidth, 0, -blockWidth, blockWidth*2, null);
-    }
 }

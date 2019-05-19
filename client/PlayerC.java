@@ -40,6 +40,8 @@ public class PlayerC implements Serializable
     public PlayerTexture playerTexture;
     
     private PlayerInv inv;
+    
+    
     public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos)
     {
         this.player = player;
@@ -51,6 +53,9 @@ public class PlayerC implements Serializable
         inv = new PlayerInv();
         mapIDCache=null;
         mapIDCachePos=null;
+        
+        //PlayerTexture
+        playerTexture = new PlayerTexture(0);
     }
 
     private void makeTexture(){
@@ -81,7 +86,7 @@ public class PlayerC implements Serializable
     
     public void makeFrame(Frame frame){
         this.opC = frame.getOverlayPanelC();
-        this.playerTexture = new PlayerTexture(opC,0,player.getScreenSize(), getBlockWidth());
+        this.playerTexture.makeFrame(opC,player.getScreenSize(), getBlockWidth());
     }
 
     Object readResolve() throws ObjectStreamException{

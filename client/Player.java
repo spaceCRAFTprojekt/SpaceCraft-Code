@@ -37,6 +37,7 @@ public class Player implements Serializable
     private transient TaskResolver tr;
     private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
     //Warum ist das transient? Ich fände es sehr sinnvoll, das zu serialisieren. -LG
+    // Späterstens wenn der Spielstand gespeichert wird ist doch der Spieler offline ?!?!
     private boolean onClient;
     public boolean inCraft;
     private transient Frame frame;
@@ -44,7 +45,7 @@ public class Player implements Serializable
     private PlayerC playerC;
     private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
     public int currentMassIndex;
-    public OverlayPanelA opA;
+    public transient OverlayPanelA opA;
     //transiente Variablen werden nicht synchronisiert
     
     /**
