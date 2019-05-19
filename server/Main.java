@@ -432,7 +432,12 @@ public class Main implements Serializable
         return null;
     }
     
-    public OtherPlayerTexture[] getOtherPlayerTextures(Integer playerID){
+    /**
+     * Warum kann ich ein scheiß Object[] nicht in ein noch blöderes OtherPlayerTexture[] casten?!?!?!
+     * Daher wird Ihnen hier ein scheiß Obejct[] zurückgeben :(  
+     */
+    public Object[] getOtherPlayerTextures(Integer playerID){
+        if(players.size() < 2)return null; // wenn es nur einen Spieler gibt (Singleplayer), dann null.
         ArrayList<OtherPlayerTexture> ret = new ArrayList<OtherPlayerTexture>();
         int massID = players.get(playerID).getCurrentMassIndex();
         for(int i = 0; i<players.size(); i++){
@@ -442,9 +447,7 @@ public class Main implements Serializable
                 ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos));
             }
         }
-        return null;
+        return (ret.toArray());
     }
-    
-
 }
 // Hallo ~unknown

@@ -1,11 +1,11 @@
 package client;
 
 import util.geom.*;
-
+import java.io.Serializable;
 /**
  * nur für den Transport der Daten zum Client
  */
-public class OtherPlayerTexture
+public class OtherPlayerTexture implements Serializable
 {
     public int playerID;
     public int mode;

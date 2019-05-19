@@ -35,7 +35,9 @@ public class PlayerC implements Serializable
     private transient BufferedImage texture;
     private VektorD hitbox = new VektorD(1,2);
     public int[][] mapIDCache;
-    public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches ~LG relativ zu was? ~AK
+    public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
+    public transient Object[] playerTextureCache = null;  // Es sind Objekte der Klasse OtherPlayerTexture. Ich kann die sch***e nicht in in ein OtherPlayerTexture[] casten!!!
+    
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
     
@@ -53,7 +55,7 @@ public class PlayerC implements Serializable
         inv = new PlayerInv();
         mapIDCache=null;
         mapIDCachePos=null;
-        
+        playerTextureCache = null;
         //PlayerTexture
         playerTexture = new PlayerTexture(0);
     }
@@ -79,6 +81,7 @@ public class PlayerC implements Serializable
                     public void run(){
                         mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
                         mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW);
+                        playerTextureCache = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class).ret);  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
                     }
                 },0,1000);
         }
@@ -235,7 +238,8 @@ public class PlayerC implements Serializable
      * @param: pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
      */
     public VektorD getUpperLeftCorner(VektorD pos){
-        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
+        // das -0.5 ist eine hässliche Lösung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
+        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,-0.5));
     }
     
     /**
@@ -259,11 +263,19 @@ public class PlayerC implements Serializable
     public VektorI getPosToCache(VektorI sPos){
         return sPos.subtract(mapIDCachePos);
     }
-
+        
+    public void updateOtherPlayerTextures(){
+        for(int i = 0; i < playerTextureCache.length; i++){
+            
+        }
+    }
+    
     /**
      * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
+        //Request r = new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class);
+        //playerTextureCache = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class).ret);
         if (player.isOnline() && player.onClient()){
             if (mapIDCache!=null && mapIDCachePos!=null){
                 VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb

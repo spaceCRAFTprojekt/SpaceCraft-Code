@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
      * Main.retrievePlayer() (id wird ja schon mitgegeben) (zur Synchronisierung)
      * Main.writeIntoChat(String message)
      * Main.getChatContent(int numLines)
+     * Main.getOtherPlayerTextures(int PlayerID)
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
      * Space.getAllPos()
