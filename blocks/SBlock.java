@@ -14,14 +14,14 @@ public abstract class SBlock extends Block
     /**
      * ...
      */
-    public SBlock(int id, String name, String imageString)
+    public SBlock(int id, String name, String imageString, boolean hasItem)
     {
-        super(id, name, imageString);
+        super(id, name, imageString, hasItem);
     }
     
-    public SBlock(int id, String name)
+    public SBlock(int id, String name, boolean hasItem)
     {
-        super(id, name);
+        super(id, name, hasItem);
     }
     
     /**

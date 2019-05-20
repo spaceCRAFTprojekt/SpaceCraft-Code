@@ -17,7 +17,7 @@ public class Blocks_Piston extends SBlock
 {
     public static final long serialVersionUID=0L;
     public Blocks_Piston(int id){
-        super(id, "Piston", "blocks_piston_off");
+        super(id, "Piston", "blocks_piston_off", true);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Blocks_Piston extends SBlock
         return blocks;
     }
     
-    SBlock pistonOn = new SBlock(301, "piston_on", "blocks_piston_on"){
+    SBlock pistonOn = new SBlock(301, "piston_on", "blocks_piston_on", false){
             @Override
             public boolean onBreak(Sandbox sb, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
@@ -84,7 +84,7 @@ public class Blocks_Piston extends SBlock
             public boolean onPlace(Sandbox sb, VektorI pos, int playerID){return false;}
         };
         
-    Block pistonFront = new Block(302, "piston_front", "blocks_piston_front"){ 
+    Block pistonFront = new Block(302, "piston_front", "blocks_piston_front", false){ 
         @Override public void setProperties(){breakment_prediction = false;
                                               placement_prediction = false;}};;
 }

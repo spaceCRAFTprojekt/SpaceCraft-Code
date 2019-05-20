@@ -11,7 +11,7 @@ public class Blocks_Note extends SBlock
     public static final long serialVersionUID=0L;
     public Blocks_Note(int id)
     {
-        super(id, "noteblock", "blocks_note");
+        super(id, "noteblock", "blocks_note", true);
     }
     
     @Override

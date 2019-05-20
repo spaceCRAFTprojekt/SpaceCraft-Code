@@ -8,7 +8,7 @@ import java.io.Serializable;
 public abstract class Item implements Serializable
 {
     public static final long serialVersionUID=0L;
-    private int id;  // nur die ID ist nicht transient => wird gespeichert
+    public int id;  // nur die ID ist nicht transient => wird gespeichert
     private transient int maxStack;
     private transient BufferedImage inventoryImage = null; // falls im Inv ein anderes Bild angezeigt werden soll
     
