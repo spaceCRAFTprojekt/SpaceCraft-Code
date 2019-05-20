@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 public class VektorL implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public long x;
     public long y;
 

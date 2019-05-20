@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class BlockItem extends Item implements Serializable
 {
-    
+    public static final long serialVersionUID=0L;
     private transient int blockID;
     
     public BlockItem(int id, int blockID){

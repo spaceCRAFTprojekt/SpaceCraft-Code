@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
  */
 public class Player implements Serializable
 {
+    public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private String name;
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList

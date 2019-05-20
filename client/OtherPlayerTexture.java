@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class OtherPlayerTexture implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public int playerID;
     public int mode;
     public int textureID;

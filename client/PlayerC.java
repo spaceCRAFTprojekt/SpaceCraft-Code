@@ -24,6 +24,7 @@ import blocks.*;
  */
 public class PlayerC implements Serializable
 {
+    public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden, müssen public sein
     private transient Timer timer;
 

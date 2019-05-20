@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class Inv implements Serializable
 {
+    public static final long serialVersionUID=0L;
     Stack[][]stacks;
     public Inv(VektorI size){
         stacks = new Stack[size.x][size.y];

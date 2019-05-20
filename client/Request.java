@@ -38,6 +38,7 @@ import java.io.ObjectInputStream;
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
  */
 public class Request implements Serializable{
+    public static final long serialVersionUID=0L;
     public int playerID;
     public String todo;
     public Object[] params;

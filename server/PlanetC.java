@@ -11,6 +11,7 @@ import blocks.*;
  */
 public class PlanetC extends Sandbox implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public static ArrayList<PlanetC> planetCs=new ArrayList<PlanetC>(); //Tabelle, die alle PlanetCs enthält, muss eigens (de-)serialisiert werden!
     private final int id;
     //Index in der planetCs-Tabelle, eine der wenigen Sachen, die serialisiert wird (außer natürlich bei den PlanetCs in der planetCs-Tabelle selbst)

@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class VektorD implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public double x;
     public double y;
 

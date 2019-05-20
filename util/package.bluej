@@ -15,6 +15,7 @@ target1.editor.x=0
 target1.editor.y=0
 target1.height=50
 target1.name=ImageTools
+target1.naviview.expanded=true
 target1.showInterface=false
 target1.type=AbstractTarget
 target1.typeParameters=

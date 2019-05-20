@@ -8,6 +8,7 @@ import java.io.Serializable;
  * selben Zeit in Space (da es ein Mehrkörperproblem ist).
  */
 public class Orbit implements Serializable{
+    public static final long serialVersionUID=0L;
     public ArrayList<VektorD> pos;
     public long t0;
     public long t1;

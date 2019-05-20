@@ -6,6 +6,7 @@ import java.io.Serializable;
  */
 public class SandboxInSandbox implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public Sandbox sandbox;
     /**
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox

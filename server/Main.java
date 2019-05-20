@@ -34,6 +34,7 @@ public class Main implements Serializable
 {
     public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
     
+    public static final long serialVersionUID=0L;
     static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";

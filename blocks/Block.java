@@ -11,6 +11,7 @@ import java.io.ObjectStreamException;
  */
 public class Block implements Serializable
 {
+    public static final long serialVersionUID=0L;
     private final int id; //Index in der blocks-Tabelle, das einzige, was serialisiert wird (alle anderen Attribute sollten "transient" sein)
     
     private transient BufferedImage img;

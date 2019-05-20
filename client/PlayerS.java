@@ -18,6 +18,7 @@ import javax.swing.*;  // test
  */
 public class PlayerS implements Serializable
 {
+    public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private Player player;
     public VektorD posToMass;

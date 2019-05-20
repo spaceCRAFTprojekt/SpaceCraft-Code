@@ -19,7 +19,9 @@ import util.geom.*;
  */
 public class PlayerTexture implements Serializable
 {
-    public static transient HashMap<Integer, SimpleEntry> textures = new HashMap<Integer, SimpleEntry>();
+    public static final long serialVersionUID=0L;
+    public static HashMap<Integer, SimpleEntry> textures = new HashMap<Integer, SimpleEntry>();
+    //statische Variablen müssen nicht auch noch transient sein -LG
     static{
         textures.put(0,new SimpleEntry("default",getPlayerTexture("default")));
         textures.put(1,new SimpleEntry("Schnux",getPlayerTexture("schnux")));

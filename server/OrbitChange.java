@@ -6,6 +6,7 @@ import java.io.Serializable;
  */
 public class OrbitChange implements Serializable
 {
+    public static final long serialVersionUID=0L;
     VektorD F;
     long t0; //inGame-Zeiten
     long t1;

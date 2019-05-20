@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.io.Serializable;
 public abstract class Mass implements Serializable
 {
+    public static final long serialVersionUID=0L;
     protected double m;
     protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
     protected VektorD vel;

@@ -10,6 +10,7 @@ import java.awt.Dimension;
  */
 public class VektorI implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public int x;
     public int y;
 

@@ -15,6 +15,7 @@ import server.Settings;
  */
 public class Blocks_Piston extends SBlock
 {
+    public static final long serialVersionUID=0L;
     public Blocks_Piston(int id){
         super(id, "Piston", "blocks_piston_off");
     }

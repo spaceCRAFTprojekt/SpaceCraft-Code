@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 public class Stack implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public static int maxCount = 99;
     
     public Item item;

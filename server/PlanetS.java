@@ -8,6 +8,7 @@ import java.io.ObjectStreamException;
  */
 public class PlanetS extends Mass implements Serializable
 {
+    public static final long serialVersionUID=0L;
     double gravity;
     int radius; // in m
     int lightSource;

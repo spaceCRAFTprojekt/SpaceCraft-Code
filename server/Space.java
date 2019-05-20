@@ -10,6 +10,7 @@ import java.io.ObjectStreamException;
  */
 public class Space implements Serializable
 {
+    public static final long serialVersionUID=0L;
     ArrayList<Mass>masses = new ArrayList<Mass>(); // hier sind alle Massen (Planeten oder Schiffe) verzeichnet
     transient Timer timer;
     long time; //Alle Zeiten in s

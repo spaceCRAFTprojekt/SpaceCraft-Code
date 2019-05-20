@@ -28,6 +28,7 @@ import blocks.*;
  */
 public abstract class Sandbox implements Serializable
 {
+    public static final long serialVersionUID=0L;
     public transient Block[][]map;
     public Meta[][]meta;
     // Sandboxen können Sandboxen enthalten (Kompositum). z.B.: Schiff auf Planet
