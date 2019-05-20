@@ -42,7 +42,7 @@ public class Request implements Serializable{
     public int playerID;
     public String todo;
     public Object[] params;
-    public volatile Object ret;
+    public volatile Object ret; //muss wahrscheinlich nicht volatile sein
     public Class retClass;
     /**
      * Der Player mit der gegebenen PlayerID stellt den Request, dass der Server todo tut, er übergibt die Parameter params.

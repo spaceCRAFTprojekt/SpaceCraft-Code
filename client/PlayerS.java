@@ -76,26 +76,19 @@ public class PlayerS implements Serializable
                     this.posToMass = posToMass.add(diff);
                     if (player.isOnline() && player.onClient()){
                         //focussedMassIndex=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
-                        //new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"posToMass",VektorD.class,this.posToMass);
                     }
                     lastDragPosition = new VektorI(e.getX(), e.getY());
-                    System.out.println("Stelle 1");
+                    //System.out.println("Stelle 1");
                 }
                 // @Linus: Ich weiß du sollst dir nicht zu viele Pausen nehmen, damit Spacecraft noch fertig wird, aber in diesem CASE wäre 
                 // eine kleine BREAK in der du feststellst, dass du eine BREAK vergessen hast nützlich. Mit anderen Worten: Da gehört ein break hin:
                 // ~ unknown
                 break;  // :)
             case 'p': lastDragPosition = new VektorI(e.getX(), e.getY());
-                VektorD pos;
-                if (focussedMassIndex==-1){ //stimmt das so?
-                    pos=posToMass;
-                }
-                else{
-                    pos=posToMass.add(getFocussedMassPos());
-                }
                 // das hätte ich auch clientside berechnet:
                 // und das komische ist, dass die Methode irgendwas verändert!!!
-                int focussedMassIndexNew=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
+                int focussedMassIndexNew=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,lastDragPosition,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
                 // das hab ich eingefügt (Alex)
                 if (focussedMassIndexNew != -1)focussedMassIndex = focussedMassIndexNew;
                 System.out.println("new focussedMass:" + focussedMassIndex);
@@ -103,10 +96,10 @@ public class PlayerS implements Serializable
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 // und das ist auch eine schöne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal
                 // zum Server schicken lassen, um es mit dem Server zu synchronisieren xD
-                System.out.println("Stelle 2");
+                //System.out.println("Stelle 2");
                 break;
             case 'r': lastDragPosition = null;
-                System.out.println("Stelle 3");
+                //System.out.println("Stelle 3");
                 break;
         }
     }   

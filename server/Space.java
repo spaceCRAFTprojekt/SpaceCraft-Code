@@ -88,21 +88,24 @@ public class Space implements Serializable
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
      */
-    public Integer getFocussedMassIndex(Integer playerID, VektorD pos, VektorD posToNull, VektorI screenSize, Double scale){
+    public Integer getFocussedMassIndex(Integer playerID, VektorI posClick, VektorD posToNull, VektorI screenSize, Double scale){
+        posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
+        posClick=posClick.subtract(screenSize.divide(2));
+        System.out.println(posClick);
+        posClick=posClick.divide(scale);
+        VektorI posClickToNull=posClick.add(posToNull.toInt());
         Integer ret=new Integer(-1);
         for (int i=0;i<masses.size();i++){
             if (masses.get(i)!=null){
-                VektorD posRel=masses.get(i).getPos().subtract(posToNull);
-                posRel=posRel.multiply(scale);
-                int r=2;
+                VektorD posPlanet=masses.get(i).getPos();
+                double r=2;
                 if (masses.get(i) instanceof PlanetS){
-                    r=(int)Math.round(((double)((PlanetS) masses.get(i)).getRadius()));
+                    r=((PlanetS) masses.get(i)).getRadius()*scale;
                 }
-                r=(int)(r*scale);
-                VektorD posPix = screenSize.toDouble().multiply(0.5).add(posRel);
-                int distance = (int)Math.round(posPix.subtract(pos).getLength());
+                double distance=posPlanet.subtract(posClickToNull.toDouble()).getLength()*scale;
                 if (distance < r+20){
                     ret=new Integer(i);
+                    return ret;
                 }
             }
         }
