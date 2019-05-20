@@ -33,14 +33,14 @@ public class PlayerC implements Serializable
     public VektorD pos;
     public boolean onPlanet; //sonst: auf einem Schiff
     public int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
-    private transient BufferedImage texture;
-    private VektorD hitbox = new VektorD(1,2);
+    @Deprecated private VektorD hitbox = new VektorD(1,2);
     public int[][] mapIDCache;
     public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
-    public transient Object[] playerTextureCache = null;  // Es sind Objekte der Klasse OtherPlayerTexture. Ich kann die sch***e nicht in in ein OtherPlayerTexture[] casten!!!
+    //Verschoben in OtherPlayerTexturePanel: public transient Object[] playerTextureCache = null;  // Es sind Objekte der Klasse OtherPlayerTexture. Ich kann die sch***e nicht in in ein OtherPlayerTexture[] casten!!!
     
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
+    public transient OtherPlayerTexturesPanel otherPlayerTexturesPanel;
     
     private PlayerInv inv;
     
@@ -56,13 +56,13 @@ public class PlayerC implements Serializable
         inv = new PlayerInv();
         mapIDCache=null;
         mapIDCachePos=null;
-        playerTextureCache = null;
+        //playerTextureCache = null;
         //PlayerTexture
         playerTexture = new PlayerTexture(0);
     }
 
     private void makeTexture(){
-        texture = ImageTools.get('C',"player_texture");
+
     }
 
     public void timerSetup(){ //wird von Player.login aufgerufen
@@ -82,7 +82,8 @@ public class PlayerC implements Serializable
                     public void run(){
                         mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
                         mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW);
-                        playerTextureCache = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class).ret);  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
+                        Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
+                        otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
                     }
                 },0,1000);
         }
@@ -91,6 +92,7 @@ public class PlayerC implements Serializable
     public void makeFrame(Frame frame){
         this.opC = frame.getOverlayPanelC();
         this.playerTexture.makeFrame(opC,player.getScreenSize(), getBlockWidth());
+        this.otherPlayerTexturesPanel = new OtherPlayerTexturesPanel(opC, this, player.getScreenSize());
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -132,9 +134,9 @@ public class PlayerC implements Serializable
                 break;
                 case Shortcuts.move_down: pos.y=pos.y + 1;
                 break;
-                case Shortcuts.move_left: pos.x=pos.x - 1;  playerTexture.setMode(PlayerTexture.LEFT);
+                case Shortcuts.move_left: pos.x=pos.x - 1;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();
                 break;
-                case Shortcuts.move_right: pos.x=pos.x + 1;  playerTexture.setMode(PlayerTexture.RIGHT);
+                case Shortcuts.move_right: pos.x=pos.x + 1;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
                 break;
                 case Shortcuts.open_inventory: openInventory();
                 break;
@@ -223,6 +225,13 @@ public class PlayerC implements Serializable
     public PlayerTexture getPlayerTexture(){
         return playerTexture;
     }
+    
+    /**
+     * geht nicht
+     */
+    public void synchronizePlayerTexture(){
+        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"playerTexture",PlayerTexture.class,playerTexture);
+    }
 
 
     
@@ -234,9 +243,16 @@ public class PlayerC implements Serializable
     /*********4. Methoden für Ansicht und Grafikausgabe*********************************************************************************************************
     /***********************************************************************************************************************************************************
 
+     /**
+     * Gibt die obere linken Ecke (int Blöcken) der aktuellen Spieleransicht an
+     */
+    public VektorD getUpperLeftCorner(){
+        return getUpperLeftCorner(pos);
+    }
+   
     /**
-     * Gibt die obere rechte Ecke (int Blöcken) der Spieleransicht an
-     * @param: pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
+     * Gibt die obere linken Ecke (int Blöcken) der Spieleransicht an
+     * @param: pos: Position des Spielers relativ zur oberen linken Ecke der Sandbox
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         // das -0.5 ist eine hässliche Lösung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
@@ -263,12 +279,6 @@ public class PlayerC implements Serializable
      */
     public VektorI getPosToCache(VektorI sPos){
         return sPos.subtract(mapIDCachePos);
-    }
-        
-    public void updateOtherPlayerTextures(){
-        for(int i = 0; i < playerTextureCache.length; i++){
-            
-        }
     }
     
     /**

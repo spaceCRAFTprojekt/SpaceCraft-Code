@@ -43,7 +43,7 @@ History:
                         Player Login; rewrite öffnen und schließen von Menus; PlayerS Grafik mit BufferedImage
  06.05.2019 v0.2.0_LG * Server/Client-System. Server und Client kommunizieren nur über Tasks (Server->Client) und Requests(Client->Server)
                         Player müssen synchronisiert werden.
- 06.05.2019 v0.2.1_LG * Ich warte ...
+ 06.05.2019 v0.2.1_LG * Ich warte ... ~ AK
  06.05.2019 v0.2.2_LG * 
  12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util; 
  14.05.2019 v0.2.4_LG * Umstieg auf Sockets (unvollständig, Tasks fehlen noch und aus irgendeinem Grund 
@@ -62,14 +62,15 @@ History:
  17.05.2019 v0.3.1_AK * kleine Bugfixes (siehe Issues auf Github), Blöcke Client und Serverseitig, Auf Linus Fragen im Code geantwortet
  17.05.2109 v0.3.2_AK * Breakment und placement_predictions; Break und Place clientside //nettes Datum -LG
  18.05.2019 v0.3.3_LG * Merge mit v0.2.5_MH
- 19.05.2019 v0.3.4_AK * PlayerTexture geändert
- 20.05.2019 v0.3.5_LG * SerialVersionUIDs: Wann immer sich etwas Serialisierungs-relevantes in einer Klasse ändert, 
-                        muss dieser Wert um 1 erhöht werden.
+ 19.05.2019 v0.3.4_AK * PlayerTexture geändert; Hässliche Lösung für #26; OtherPlayerTextures; Name von Spielern; kleine Bugfixes (LG)
+ 20.05.2019 v0.3.5_LG * SerialVersionUIDs: Wann immer etwas Serialisierungs-relevantes in einer Klasse gemacht werden, muss
+                        das um 1 erhöht werden.
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:
- Schnux = Käptn ( = Linus)
- unknown = Alex
- maxx = Max
- Benny = Benedikt
+ LG = Schnux = Käptn ( = Linus)
+ AK = unknown = Alex
+ MH = maxx = Max
+ BB = Benny = Benedikt
+ FG = Floh
