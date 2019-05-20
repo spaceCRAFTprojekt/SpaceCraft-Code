@@ -48,7 +48,7 @@ public class PlayerTexture implements Serializable
     private transient int blockWidth;
 
     private transient JComponent component;
-    
+
     /**
      * @param: String name: Name des Texturenpakets für den Spieler, wenn "", dann wird die default Textur verwendet
      */
@@ -61,10 +61,7 @@ public class PlayerTexture implements Serializable
             @Override
             public void paint(Graphics g){
                 if(component == null)return;
-                try{
-                    if(mode == RIGHT)g.drawImage(getTexture(textureID), 0, 0, blockWidth, blockWidth*2, null);
-                    else g.drawImage(getTexture(textureID), blockWidth, 0, -blockWidth, blockWidth*2, null);
-                }catch(Exception e){}
+                PlayerTexture.paint(g,textureID, mode, blockWidth, new VektorI(0,0));
             }
         };
 
@@ -92,6 +89,13 @@ public class PlayerTexture implements Serializable
         this.mode = mode;
         if(component == null)return;
         component.repaint();
+    }
+
+    public static void paint(Graphics g, int textureID, int mode, int blockWidth, VektorI pos){
+        try{
+            if(mode == RIGHT)g.drawImage(getTexture(textureID), pos.x, pos.y, blockWidth, blockWidth*2, null);
+            else g.drawImage(getTexture(textureID), blockWidth+pos.x, pos.y, -blockWidth, blockWidth*2, null);
+        }catch(Exception e){}
     }
 
     /**

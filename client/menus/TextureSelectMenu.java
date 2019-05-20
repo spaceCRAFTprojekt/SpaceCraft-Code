@@ -32,6 +32,7 @@ public class TextureSelectMenu extends PlayerMenu
             b.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent evt) {
                     p.getPlayerC().setPlayerTexture( Integer.parseInt(b.getName()) );
+                    p.getPlayerC().synchronizePlayerTexture();
                     closeMenu();
                 }
             });

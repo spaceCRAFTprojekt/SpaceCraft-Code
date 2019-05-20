@@ -57,6 +57,7 @@ public class ServerCreator{
                                                 if (e instanceof EOFException){}
                                                 else if (e instanceof InvocationTargetException){
                                                     System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                                                    e.printStackTrace();
                                                 }
                                                 else{
                                                     System.out.println("Exception when resolving request: "+e);

@@ -33,14 +33,14 @@ import blocks.*;
 public class Main implements Serializable
 {
     public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
-    
+
     static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
     static String shipCfilename="shipC";
     static String planetCfilename="planetC";
     static String blocksfilename="blocks";
     static String fileEnding=".ser";
-    
+
     private transient ArrayList<Player> players = new ArrayList<Player>();
     // Kopie der Player, muss synchronisiert werden!
     // normalerweise nur ein Spieler
@@ -57,27 +57,27 @@ public class Main implements Serializable
     public static Main newMain(boolean useOldData){
         String folder=Settings.GAMESAVE_FOLDER;
         if (useOldData && new File(folder+File.separator+spacefilename+fileEnding).exists() &&
-                          new File(folder+File.separator+playersfilename+fileEnding).exists() &&
-                          new File(folder+File.separator+planetCfilename+"0"+fileEnding).exists() &&
-                          new File(folder+File.separator+"main.ser").exists()){ //mindestens einer
+        new File(folder+File.separator+playersfilename+fileEnding).exists() &&
+        new File(folder+File.separator+planetCfilename+"0"+fileEnding).exists() &&
+        new File(folder+File.separator+"main.ser").exists()){ //mindestens einer
             try{
                 return Serializer.deserialize();
             }
             catch(Exception e){}
         }
         try{
-        for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
-            file.delete();
+            for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
+                file.delete();
         }catch(Exception e){}
         Main m = new Main();    
         main=m;
         return m;
     }
-    
+
     public static void main(String[]Args){
         newMain(false);
     }
-    
+
     /**
      * Konstruktor
      * erstellt ein neues Spiel und keinen neuen Spieler
@@ -88,7 +88,7 @@ public class Main implements Serializable
         serverCreatorSetup();
         space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
     }
-    
+
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG
@@ -98,7 +98,7 @@ public class Main implements Serializable
      */
     private Object writeReplace() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
-        
+
         ArrayList<ShipC> shipCs=ShipC.shipCs; //Schiffe
         for (int i=0;i<shipCs.size();i++){
             try{
@@ -113,7 +113,7 @@ public class Main implements Serializable
                 System.out.println(e+": "+e.getMessage());
             }
         }
-        
+
         ArrayList<PlanetC> planetCs=PlanetC.planetCs; //Planeten
         for (int i=0;i<planetCs.size();i++){
             try{
@@ -128,7 +128,7 @@ public class Main implements Serializable
                 System.out.println(e+": "+e.getMessage());
             }
         }
-        
+
         try{ //Space
             FileOutputStream spo=new FileOutputStream(folder+File.separator+spacefilename+fileEnding);
             ObjectOutputStream spoO=new ObjectOutputStream(spo);
@@ -137,7 +137,7 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println(e+": "+e.getMessage());
         }
-        
+
         try{ //Player
             FileOutputStream plo=new FileOutputStream(folder+File.separator+playersfilename+fileEnding);
             ObjectOutputStream ploO=new ObjectOutputStream(plo);
@@ -148,7 +148,7 @@ public class Main implements Serializable
         }
         return this;
     }
-    
+
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
@@ -164,7 +164,7 @@ public class Main implements Serializable
             System.out.println("Folder "+folder+" does not exist.");
             return null;
         }
-        
+
         for (int i=0;i<Integer.MAX_VALUE;i++){  //Schiffe
             try{
                 if (new File(folder+File.separator+shipCfilename+i+fileEnding).exists()){
@@ -185,7 +185,7 @@ public class Main implements Serializable
                 System.out.println("Main: 2: "+e+": "+e.getMessage());
             }
         }
-        
+
         for (int i=0;i<Integer.MAX_VALUE;i++){  //Planeten
             try{
                 if (new File(folder+File.separator+planetCfilename+i+fileEnding).exists()){
@@ -206,7 +206,7 @@ public class Main implements Serializable
                 System.out.println("Main: 3: "+e+": "+e.getMessage());
             }
         }
-        
+
         try{  // Space
             FileInputStream spi=new FileInputStream(folder+File.separator+spacefilename+fileEnding);
             ObjectInputStream spiO=new ObjectInputStream(spi);
@@ -215,7 +215,7 @@ public class Main implements Serializable
         catch(Exception e){
             System.out.println("Main: 4: "+e+": "+e.getMessage());
         }
-        
+
         try{  //Players
             FileInputStream pli=new FileInputStream(folder+File.separator+playersfilename+fileEnding);
             ObjectInputStream pliO=new ObjectInputStream(pli);
@@ -228,14 +228,14 @@ public class Main implements Serializable
         main=this;
         return this;
     }
-    
+
     /**
      * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig. ~Schnux Sonst wär sie wahrscheinlich nicht da ~unknown
      */
     public void serverCreatorSetup(){
         this.sc=new ServerCreator(this);
     }
-    
+
     /**
      * gibt !!! zu Testzwecken !!! den Bildschirm aller Spieler neu aus
      */
@@ -245,14 +245,14 @@ public class Main implements Serializable
             newTask(i,"Player.repaint");
         }
     }
-    
+
     /**
      * gibt das Space Objekt zurück
      */
     public Space getSpace(){
         return space;
     }
-    
+
     /**
      * gibt das Spieler Objekt mit dem Namen name zurück
      * wenn der Spieler nicht vorhanden ist: null
@@ -263,21 +263,21 @@ public class Main implements Serializable
         }
         return null;
     }
-    
+
     public Player getPlayer(int id){
         if (id>=0 && id<players.size()){
             return players.get(id);
         }
         return null;
     }
-    
+
     public void exitIfNoPlayers(){
         for(int i = 0; i<players.size();i++){
             if(players.get(i).isOnline())return; // wenn ein Spieler online ist abbrechen
         }
         exit(); // sonst Spiel beenden
     }
-    
+
     /**
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
@@ -287,48 +287,48 @@ public class Main implements Serializable
             if (players.get(i).isOnline()){
                 players.get(i).logout(); //Server-Kopie des Players
                 newTask(i,"Player.logoutTask"); //Player im Client
-                sc.taskOutputStreams.remove(i);
+                sc.taskOutputStreams.remove(0);
             }
         }
         Serializer.serialize(this);
         main=null;
         System.exit(0);
     }
-    
+
     public ServerCreator getServerCreator(){
         return sc;
     }
-    
+
     public void newTask(int playerID, String todo, Object... params){
         Task task=new Task(todo, params);
         sc.sendTask(playerID,task);
     }
-    
+
     //Ab hier Request-Funktionen
-    
+
     public Boolean exit(Integer playerID){
         Boolean exited=new Boolean(true);
         exit();
         return exited;
     }
-    
+
     public Boolean exitIfNoPlayers(Integer playerID){
         Boolean exited=new Boolean(true);
         exitIfNoPlayers();
         return exited;
     }
-    
+
     public Boolean login(Integer playerID){
         players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
         return new Boolean(true);
     }
-    
+
     public Boolean logout(Integer playerID){
         players.get(playerID).setOnline(false); //siehe login(Integer playerID)
         sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
-    
+
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         if (menuName.equals("NoteblockMenu")){
             Sandbox sb;
@@ -347,7 +347,7 @@ public class Main implements Serializable
         }
         return new Boolean(false);
     }
-    
+
     /**
      * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
@@ -361,7 +361,7 @@ public class Main implements Serializable
         }
         catch(IndexOutOfBoundsException e){} //Warum das? Ich habe es selbst geschrieben und wieder vergessen. -LG
     }
-    
+
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerS p=players.get(playerID).getPlayerS();
@@ -371,7 +371,7 @@ public class Main implements Serializable
         }
         catch(IndexOutOfBoundsException e){}
     }
-    
+
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerC p=players.get(playerID).getPlayerC();
@@ -381,7 +381,7 @@ public class Main implements Serializable
         }
         catch(IndexOutOfBoundsException e){}
     }
-    
+
     /**
      * neuer Spieler (vorerst nur zu Testzwecken)
      * Request-Funktion!
@@ -397,18 +397,18 @@ public class Main implements Serializable
         players.add(p);
         return id;
     }
-    
+
     /**
      * Gibt die Kopie des Players hier vom Server zurück. Zur Synchronisierung (siehe Player.synchronizeWithServer)
      */
     public Player retrievePlayer(Integer playerID){
         return players.get(playerID);
     }
-    
+
     public void writeIntoChat(Integer playerID, String message){
         chat.add(players.get(playerID).getName()+": "+message);
     }
-    
+
     public String[] getChatContent(Integer playerID, Integer numLines){
         //die letzten (numLines) Zeilen
         String[] ret=new String[numLines];
@@ -423,7 +423,7 @@ public class Main implements Serializable
         }
         return ret;
     }
-    
+
     public Player getPlayer(Integer playerID, String name){ //playerID=-1
         for(int i = 0; i<players.size(); i++){
             //aus irgendeinem Grund geht == nicht mit Requests
@@ -431,20 +431,23 @@ public class Main implements Serializable
         }
         return null;
     }
-    
+
     /**
      * Warum kann ich ein scheiß Object[] nicht in ein noch blöderes OtherPlayerTexture[] casten?!?!?!
      * Daher wird Ihnen hier ein scheiß Obejct[] zurückgeben :(  
      */
-    public Object[] getOtherPlayerTextures(Integer playerID){
+    public Object[] getOtherPlayerTextures(Integer playerID, VektorI upperLeftCorner, VektorI bottomRightCorner){
         if(players.size() < 2)return null; // wenn es nur einen Spieler gibt (Singleplayer), dann null.
         ArrayList<OtherPlayerTexture> ret = new ArrayList<OtherPlayerTexture>();
         int massID = players.get(playerID).getCurrentMassIndex();
         for(int i = 0; i<players.size(); i++){
-            if(playerID != i && players.get(i).isOnline() && players.get(i).getCurrentMassIndex() == massID){ // der Spieler selbst soll natürlich nicht im Array zurückgegeben werden
+            if(playerID != i && players.get(i).isOnline() && players.get(i).getCurrentMassIndex() == massID){  // der Spieler selbst soll natürlich nicht im Array zurückgegeben werden
                 PlayerC pC = players.get(i).getPlayerC();
-                PlayerTexture t = pC.getPlayerTexture();
-                ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos));
+                VektorI pos = pC.pos.toInt();
+                if(pos.x >= upperLeftCorner.x && pos.y >= upperLeftCorner.y && pos.x <= bottomRightCorner.x && pos.y <= bottomRightCorner.y){
+                    PlayerTexture t = pC.getPlayerTexture();
+                    ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos, players.get(i).getName()));
+                }
             }
         }
         return (ret.toArray());
