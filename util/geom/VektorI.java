@@ -59,7 +59,7 @@ public class VektorI implements Serializable
      */
     public VektorI multiply(double s)
     {
-        return new VektorI((int)(s*x),(int)(s*y));
+        return new VektorI((int) (s*x),(int) (s*y));
     }
 
     /**
