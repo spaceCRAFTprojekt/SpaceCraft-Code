@@ -19,6 +19,7 @@ import java.awt.Graphics2D;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import blocks.*;
+import menu.MenuSettings;
 /**
  * ein Spieler in der Craft Ansicht
  */
@@ -347,7 +348,7 @@ public class PlayerC implements Serializable
                 Graphics2D g2=image.createGraphics();
                 String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
                 g2.setColor(Color.WHITE);
-                g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+                g2.setFont(MenuSettings.MENU_FONT);
                 for (int i=0;i<chat.length;i++){
                     g2.drawString(chat[i],20,i*16+8);
                 }
