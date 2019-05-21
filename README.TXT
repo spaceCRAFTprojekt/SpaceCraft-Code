@@ -65,6 +65,7 @@ History:
  19.05.2019 v0.3.4_AK * PlayerTexture geändert; Hässliche Lösung für #26; OtherPlayerTextures; Name von Spielern; kleine Bugfixes (LG)
  20.05.2019 v0.3.5_LG * SerialVersionUIDs: Wann immer etwas Serialisierungs-relevantes in einer Klasse gemacht werden, muss
                         das um 1 erhöht werden.
+ 21.05.2019 v0.3.6_MH * Schriftarten hinzugefügt und damit die Menus verschönert
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

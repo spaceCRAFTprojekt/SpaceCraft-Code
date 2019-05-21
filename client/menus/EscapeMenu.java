@@ -17,7 +17,7 @@ public class EscapeMenu extends PlayerMenu {
         super(p,"Pause", new VektorI(225, 320));
         
         // erstellt ein neues Label
-        pause = new MenuLabel(this, "Pause", new VektorI(60,30) ,new VektorI(90,30), 30);
+        pause = new MenuLabel(this, "Pause", new VektorI(60,30) ,new VektorI(90,30), MenuSettings.MENU_HEAD_FONT);
         
         // Erstellt einen neuen Button
         restart = new MenuButton(this, "Weiter", new VektorI(30,120), new VektorI(150, 35)){

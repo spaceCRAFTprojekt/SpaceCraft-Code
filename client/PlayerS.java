@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Font;
 import javax.swing.*;  // test
+import menu.MenuSettings;
 /**
  * ein Spieler in der Space Ansicht
  * test
@@ -176,7 +177,7 @@ public class PlayerS implements Serializable
             
             String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
             g2.setColor(Color.WHITE);
-            g2.setFont(new Font(Font.SERIF,Font.PLAIN,12));
+            g2.setFont(MenuSettings.MENU_FONT);
             for (int i=0;i<chat.length;i++){
                 g2.drawString(chat[i],20,i*16+8);
             }
