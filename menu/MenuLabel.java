@@ -12,8 +12,7 @@ public class MenuLabel extends JLabel
     /**
      * Constructor for objects of class MenuLabel
      */
-    public MenuLabel(Menu m, String text, VektorI pos,VektorI size, int fontSize)
-    {
+    public MenuLabel(Menu m, String text, VektorI pos,VektorI size, Font font){
         // Erstellt ein neues Label
         super();
         this.m = m;
@@ -21,11 +20,13 @@ public class MenuLabel extends JLabel
         setBackground(Color.GRAY);
         setForeground(new Color(0,0,0));
         setEnabled(true);
-        if (fontSize == -1)fontSize = MenuSettings.MENU_FONT_SIZE;
-        setFont(new Font("sansserif",0,fontSize));
+        setFont(font);
         setText(text);
         setVisible(true);
         m.contentPane.add(this); // und fügt es zur Pane hinzu
+    }
+    public MenuLabel(Menu m, String text, VektorI pos,VektorI size){
+        this(m, text, pos, size, MenuSettings.MENU_FONT);
     }
 }
 

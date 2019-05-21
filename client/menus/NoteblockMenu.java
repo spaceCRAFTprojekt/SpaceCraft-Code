@@ -14,7 +14,7 @@ public class NoteblockMenu extends PlayerMenu{
         super(p,"Note-Block", new VektorI(300,340));
         this.text=text;
         this.pos=pos;
-        new MenuLabel(this, "Notes:", new VektorI(10,10), new VektorI(100,30), -1);
+        new MenuLabel(this, "Notes:", new VektorI(10,10), new VektorI(100,30));
         mta = new MenuTextArea(this,text,new VektorI(10,40),new VektorI(260,210));
         boolean onPlanet=p.getPlayerC().isOnPlanet();
         int sandboxIndex=p.getPlayerC().getSandboxIndex();

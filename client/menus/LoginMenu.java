@@ -20,8 +20,13 @@ public class LoginMenu extends Menu{
     private JPasswordField pw;
     private JButton back;
     public LoginMenu(){
-        super("Login", new VektorI(290, 180));
-        login = new MenuButton(this, "Login", new VektorI(10,80) , new VektorI(120,40), 20){
+        super("Login", new VektorI(380, 180));
+        new MenuLabel(this, "Benutzername", new VektorI(10,20), new VektorI(80,20));
+        name = new MenuTextField(this, "", new VektorI(100,20), new VektorI(250,20));
+        new MenuLabel(this, "Passwort", new VektorI(10,50), new VektorI(80,20));
+        pw = new MenuPasswordField(this, "", new VektorI(100,50), new VektorI(250,20));
+
+        login = new MenuButton(this, "Login", new VektorI(10,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 closeMenu();
                 try{
@@ -50,12 +55,11 @@ public class LoginMenu extends Menu{
                     System.out.println("Exception when creating socket: "+e);
                 }
             }};
-        back = new MenuButton(this, "Zurück", new VektorI(140,80) , new VektorI(120,40), 20){
+        back = new MenuButton(this, "Zurück", new VektorI(230,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 closeMenu();
                 new StartMenu();
             }};
-        name = new MenuTextField(this, "Benutzername", new VektorI(10,20), new VektorI(250,20));
-        pw = new MenuPasswordField(this, "Passwort", new VektorI(10,50), new VektorI(250,20));
+
     }
 } 

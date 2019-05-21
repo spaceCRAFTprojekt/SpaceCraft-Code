@@ -14,9 +14,9 @@ public class StartMenu extends Menu{
     private JButton playbutton;
     public StartMenu(){
         super("Hauptmenü", new VektorI(440, 460));
-        label1 = new MenuLabel(this, "Hier könnte ihre Werbung stehen", new VektorI(10,10) ,new VektorI(250,30), 15);
+        label1 = new MenuLabel(this, "Hier könnte ihre Werbung stehen", new VektorI(10,10) ,new VektorI(250,30));
         worldlist = new MenuList(this, new String[]{"localhost:30000"}, new VektorI(10,50) ,new VektorI(250,350), 15);
-        playbutton = new MenuButton(this, "Spielen", new VektorI(280,360) , new VektorI(120,40), 20){
+        playbutton = new MenuButton(this, "Spielen", new VektorI(280,360) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 String str=(String) worldlist.getSelectedValue();
                 if (str!=null){
