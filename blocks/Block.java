@@ -22,7 +22,7 @@ public class Block implements Serializable
     public transient int light = 0;  // ob der Block Licht ausstrahlt
     public transient boolean light_propagates = true;   // ob der Block lichtdurchlässig ist
     public transient boolean climbable = false;  // ob man an dem Block hochklettern kann (muss walkable false sein)
-    private transient Item item = null; // falls der Block ein Item hat
+    public transient Item item = null; // falls der Block ein Item hat
 
     public transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
     public transient boolean breakment_prediction = true; //  "  gebreakt " " ; goodest EnglisCh

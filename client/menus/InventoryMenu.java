@@ -13,7 +13,7 @@ import util.geom.*;
  * 
  * Abkürzung InvMenu leider schon belegt
  */
-public class InventoryMenu extends PlayerMenu
+public class InventoryMenu extends InvMenu  // wer macht da immer PlayerMenu draus??
 {
     private transient MenuInv mi;
     private transient MenuButton button_player_texture;

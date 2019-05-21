@@ -17,6 +17,7 @@ public abstract class Blocks
     public static final HashMap<Integer,Block> blocks = new HashMap<Integer,Block>();
     
     static{
+        //System.out.println("static");
         new Block(000, "stone", "blocks_stone", true);
         new Block(001, "dirt", "blocks_dirt", true); 
         new Block(002, "grass", "blocks_grass", true); 
