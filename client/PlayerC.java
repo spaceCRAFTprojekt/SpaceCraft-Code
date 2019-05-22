@@ -81,8 +81,8 @@ public class PlayerC implements Serializable
                 },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
             timer.schedule(new TimerTask(){
                     public void run(){
-                        mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
-                        mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW);
+                        mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
+                        mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
                         Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
                         otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
                     }
@@ -131,13 +131,13 @@ public class PlayerC implements Serializable
             //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
             //braucht eigentlich noch einen posInsideOfBounds request o.Ä.
             switch(e.getKeyCode()){
-                case Shortcuts.move_up: pos.y=pos.y - 1;
+                case Shortcuts.move_up: pos.y=pos.y - 0.5;
                 break;
-                case Shortcuts.move_down: pos.y=pos.y + 1;
+                case Shortcuts.move_down: pos.y=pos.y + 0.5;
                 break;
-                case Shortcuts.move_left: pos.x=pos.x - 1;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();
+                case Shortcuts.move_left: pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();
                 break;
-                case Shortcuts.move_right: pos.x=pos.x + 1;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
+                case Shortcuts.move_right: pos.x=pos.x + 0.5;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
                 break;
                 case Shortcuts.open_inventory: openInventory();
                 break;
@@ -232,7 +232,7 @@ public class PlayerC implements Serializable
     }
     
     /**
-     * geht nicht
+     * geht nicht oder doch?
      */
     public void synchronizePlayerTexture(){
         new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"playerTexture",PlayerTexture.class,playerTexture);
@@ -294,17 +294,22 @@ public class PlayerC implements Serializable
         //playerTextureCache = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class).ret);
         if (player.isOnline() && player.onClient()){
             if (mapIDCache!=null && mapIDCachePos!=null){
-                VektorI upperLeftCorner = getUpperLeftCorner(pos).toInt();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
+                VektorD fieldOfView=ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble();
+                VektorI upperLeftCorner = getUpperLeftCorner(pos).toIntFloor();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
                 VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
                 //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
+                int minX=(int) Math.floor(pos.x-fieldOfView.x/2)-1; //keine Ahnung, warum die -1 und +1
+                int maxX=(int) Math.ceil(pos.x+fieldOfView.x/2)+1;
+                int minY=(int) Math.floor(pos.y-fieldOfView.y/2)-1;
+                int maxY=(int) Math.ceil(pos.y+fieldOfView.y/2)+1;
                 ColorModel cm=ColorModel.getRGBdefault();
-                BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster(ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite,ClientSettings.PLAYERC_FIELD_OF_VIEW.y*blockBreite),false,new Hashtable<String,Object>());
+                BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster((maxX-minX)*blockBreite,(maxY-minY)*blockBreite),false,new Hashtable<String,Object>());
                 //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
                 int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     
                 Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
-                for (int x = 0; x<=ClientSettings.PLAYERC_FIELD_OF_VIEW.x*2; x++){
-                    for (int y = 0; y<=ClientSettings.PLAYERC_FIELD_OF_VIEW.y*2; y++){
+                for (int x = 0; x<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x; x++){
+                    for (int y = 0; y<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y; y++){
                         try{
                             BufferedImage img=Blocks.getTexture(mapIDCache[x][y]);
                             if (img!=null){
@@ -328,9 +333,8 @@ public class PlayerC implements Serializable
                         catch(ArrayIndexOutOfBoundsException e){}
                     }
                 }
-        
-                for (int x = (int) pos.x-ClientSettings.PLAYERC_FIELD_OF_VIEW.x/2; x<=(int) pos.x+ClientSettings.PLAYERC_FIELD_OF_VIEW.x/2; x++){
-                    for (int y = (int) pos.y-ClientSettings.PLAYERC_FIELD_OF_VIEW.y/2; y<=(int) pos.y+ClientSettings.PLAYERC_FIELD_OF_VIEW.y/2; y++){
+                for (int x = minX ; x<=maxX; x++){
+                    for (int y = minY; y<=maxY; y++){
                         try{
                             int id = mapIDCache[x-mapIDCachePos.x][y-mapIDCachePos.y];
                             if(id != -1){ //Luft
@@ -338,9 +342,9 @@ public class PlayerC implements Serializable
                                 if (img!=null){
                                     int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
                                     for (int i=0;i<blockBreite;i++){
-                                        int index = ((y-(int) pos.y+ClientSettings.PLAYERC_FIELD_OF_VIEW.y/2)*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + (x-(int) pos.x+ClientSettings.PLAYERC_FIELD_OF_VIEW.x/2)*blockBreite;
+                                        int index = ((y-minY)*blockBreite + i)*(maxX-minX)*blockBreite + (x-minX)*blockBreite;
                                         //((y-mapIDCachePos.y)*blockBreite + i)*ClientSettings.PLAYERC_FIELD_OF_VIEW.x*blockBreite + (x-mapIDCachePos.x)*blockBreite;
-                                        System.arraycopy(imgData,i*blockBreite,oldImageData,Math.min(index,oldImageData.length-blockBreite-1),blockBreite);
+                                        System.arraycopy(imgData,i*blockBreite,oldImageData,index,blockBreite);
                                     }
                                 }
                             }
@@ -356,9 +360,15 @@ public class PlayerC implements Serializable
                 for (int i=0;i<chat.length;i++){
                     g2.drawString(chat[i],20,i*16+8);
                 }
-    
-                g.setColor(new Color(0,0,0,1));  
+                
+                g.setColor(new Color(0,0,0,1));
                 Color background = new Color(180,230,255,255);// hier kann der Hintergrund verändert werden
+                int drawX=(int) ((minX-pos.x+((fieldOfView.x)/2))*blockBreite);
+                int drawY=(int) ((minY-pos.y+((fieldOfView.y)/2))*blockBreite);
+                int width=(int) (fieldOfView.x*blockBreite);
+                int height=(int) (fieldOfView.y*blockBreite);
+                //System.out.println(drawX+" "+drawY+" "+width+" "+height+" "+image.getWidth()+" "+image.getHeight());
+                image=image.getSubimage(-drawX,-drawY,width,height);
                 g.drawImage(image,0,0,background,null);
             }
         }
