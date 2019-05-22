@@ -26,7 +26,7 @@ public class PlanetC extends Sandbox implements Serializable
         setMap(Mapgen.generateMap("earthlike", size, planetS.radius));
     }
     
-    public PlanetC(Block[][] map, ArrayList<Sandbox> subsandboxes, PlanetS planetS, Timer spaceTimer){
+    public PlanetC(Block[][] map, ArrayList<SandboxInSandbox> subsandboxes, PlanetS planetS, Timer spaceTimer){
         super(map,subsandboxes,spaceTimer);
         this.id=planetCs.size();
         planetCs.add(id,this);

@@ -147,6 +147,9 @@ public class ServerCreator{
         catch(IndexOutOfBoundsException e){
             System.out.println("Player "+playerID+" is not online, so cannot retrieve any tasks.");
         }
+        catch(NullPointerException e){
+            System.out.println("Player "+playerID+" is not online, so cannot retrieve any tasks.");
+        }
         catch(Exception e){
             System.out.println("Exception when sending Task: "+e);
         }

@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 
 import client.ClientSettings;
+import client.SubsandboxTransferData;
 import blocks.*;
 /**
  * Eine virtuelle Umgebung aus Blöcken
@@ -31,13 +32,13 @@ public abstract class Sandbox implements Serializable
     public static final long serialVersionUID=0L;
     public transient Block[][]map;
     public Meta[][]meta;
-    // Sandboxen können Sandboxen enthalten (Kompositum). z.B.: Schiff auf Planet
-    protected transient ArrayList<Sandbox> subsandboxes = new ArrayList<Sandbox>();
+    // Sandboxen können Sandboxen enthalten, z.B.: Schiff auf Planet
+    protected transient ArrayList<SandboxInSandbox> subsandboxes = new ArrayList<SandboxInSandbox>();
     protected transient Timer spaceTimer; //nur eine Referenz
 
     /***********************************************************************************************************************************************************
     /*********1. Methoden zum Erstellen der Sandbox*************************************************************************************************************
-    /***********************************************************************************************************************************************************
+    /***********************************************************************************************************************************************************/
 
     /**
      * erstellt eine neue Sandbox
@@ -50,7 +51,7 @@ public abstract class Sandbox implements Serializable
         this.spaceTimerSetup();
     }
 
-    public Sandbox(Block[][] map, ArrayList<Sandbox> subsandboxes, Timer spaceTimer){
+    public Sandbox(Block[][] map, ArrayList<SandboxInSandbox> subsandboxes, Timer spaceTimer){
         this.map=map;
         
         this.subsandboxes=subsandboxes;
@@ -83,8 +84,8 @@ public abstract class Sandbox implements Serializable
     /**
      * Fügt eine Sandbox hinzu
      */
-    public void addSandbox(Sandbox sbNeu){
-        if(sbNeu!=null)subsandboxes.add(sbNeu);
+    public void addSandbox(Sandbox sbNeu, VektorD offsetPos){
+        if(sbNeu!=null)subsandboxes.add(new SandboxInSandbox(sbNeu,offsetPos));
     }
 
     /**
@@ -94,13 +95,13 @@ public abstract class Sandbox implements Serializable
         if(sbR!=null)subsandboxes.remove(sbR);
     }
 
-    public ArrayList<Sandbox> getSubsandboxes(){
+    public ArrayList<SandboxInSandbox> getSubsandboxes(){
         return subsandboxes;
     }
-
+    
     /***********************************************************************************************************************************************************
     /*********2. Methoden für Blöcke (setBlock(),...)***********************************************************************************************************
-    /***********************************************************************************************************************************************************
+    /***********************************************************************************************************************************************************/
 
     /**
      * Rechtsklick auf einen Block in der Welt:
@@ -258,20 +259,34 @@ public abstract class Sandbox implements Serializable
 
     /***********************************************************************************************************************************************************
     /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
-    /***********************************************************************************************************************************************************
+    /***********************************************************************************************************************************************************/
+    public SubsandboxTransferData[] getAllSubsandboxTransferData(Integer playerID, Boolean onPlanet, Integer sandboxIndex){
+        SubsandboxTransferData[] ret=new SubsandboxTransferData[subsandboxes.size()];
+        boolean isPlanet;
+        int index;
+        VektorD offset;
+        for (int i=0;i<subsandboxes.size();i++){
+            if (subsandboxes.get(i).sandbox instanceof PlanetC){
+                isPlanet=true;
+                index=PlanetC.planetCs.indexOf((PlanetC) subsandboxes.get(i).sandbox);
+            }
+            else{
+                isPlanet=false;
+                index=ShipC.shipCs.indexOf((ShipC) subsandboxes.get(i).sandbox);
+            }
+            offset=subsandboxes.get(i).offset;
+            ret[i]=new SubsandboxTransferData(isPlanet,index,offset);
+        }
+        return ret;
+    }
 
     /***********************************************************************************************************************************************************
     /*********4. Methoden für Ansicht und Grafikausgabe*********************************************************************************************************
-    /***********************************************************************************************************************************************************
+    /***********************************************************************************************************************************************************/
 
     /**
      * Gibt die obere rechte Ecke (int Blöcken) der Spieleransicht an
      * @param: pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
-     * 
-     * @Benny:
-     * Das hat Linus programmiert. Die Bilder aller Blöcke werden zuerst zusammengeführt in ein großes Bild und dann nur dieses Bild "gezeichnet". 
-     * Das ist deutlich schneller als jedes Bild einzeln zu zeichen. Bitte setz dich mit Linus (König der Kommentare) in Verbindung um das zu verstehen
-     * und zu verbessern. Man kann z.B. zur Zeit nur ganze Koordianten darstellen...
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
@@ -286,8 +301,9 @@ public abstract class Sandbox implements Serializable
             for (int y=upperLeftCorner.y;y<=bottomRightCorner.y;y++){
                 int i=x-upperLeftCorner.x;
                 int j=y-upperLeftCorner.y;
-                if (x>=0 && y>=0 && x<map.length && y<map[0].length && map[x][y]!=null)
+                if (x>=0 && y>=0 && x<map.length && y<map[0].length && map[x][y]!=null){
                     ret[i][j]=map[x][y].getID();
+                }
                 else
                     ret[i][j]=-1; //Luft
             }

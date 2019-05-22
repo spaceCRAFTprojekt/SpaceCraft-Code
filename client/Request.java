@@ -33,6 +33,7 @@ import java.io.ObjectInputStream;
      * Sandbox.placeBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
      * Sandbox.rightclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
+     * Sandbox.getAllSubsandboxTransferData(Boolean onPlanet, Integer sandboxIndex)
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.

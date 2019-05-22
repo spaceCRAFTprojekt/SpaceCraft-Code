@@ -67,6 +67,8 @@ History:
                         das um 1 erhöht werden.
  21.05.2019 v0.3.6_MH * Schriftarten hinzugefügt und damit die Menus verschönert
  22.05.2019 v0.3.7_LG * kleine Änderungen: Items, massChanges (ungetestet)
+                        Craft: Fließkommakoordinaten-Darstellung (noch nicht wirklich getestet)
+                        Subsandbox-Zeichnen (noch ohne Interaktionen!)
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

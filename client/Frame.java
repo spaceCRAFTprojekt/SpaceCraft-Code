@@ -87,8 +87,6 @@ public class Frame extends JFrame{
             pp.repaint();
             //opC.repaint();
             g.setColor(java.awt.Color.BLACK);
-            g.drawLine((int) (getSize().getWidth()/2),0,(int) (getSize().getWidth()/2),(int) (getSize().getHeight()));
-            g.drawLine(0,(int) (getSize().getHeight()/2),(int) (getSize().getWidth()),(int) (getSize().getHeight()/2));
         }
         //if (p!= null && g!= null)
         //    p.paint(g, getScreenSize());

@@ -35,8 +35,11 @@ public class PlayerC implements Serializable
     public boolean onPlanet; //sonst: auf einem Schiff
     public int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
     @Deprecated private VektorD hitbox = new VektorD(1,2);
-    public int[][] mapIDCache;
-    public VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
+    public transient int[][] mapIDCache;
+    public transient VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
+    public transient SubsandboxTransferData[] subData;
+    public transient int[][][] subMapIDCache;
+    public transient VektorI[] subMapIDCachePos;
     //Verschoben in OtherPlayerTexturePanel: public transient Object[] playerTextureCache = null;  // Es sind Objekte der Klasse OtherPlayerTexture. Ich kann die sch***e nicht in in ein OtherPlayerTexture[] casten!!!
     
     public transient OverlayPanelC opC;
@@ -57,6 +60,9 @@ public class PlayerC implements Serializable
         inv = new PlayerInv();
         mapIDCache=null;
         mapIDCachePos=null;
+        subData=null;
+        subMapIDCache=null;
+        subMapIDCachePos=null;
         //playerTextureCache = null;
         //PlayerTexture
         playerTexture = new PlayerTexture(0);
@@ -81,10 +87,20 @@ public class PlayerC implements Serializable
                 },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
             timer.schedule(new TimerTask(){
                     public void run(){
-                        mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
-                        mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
-                        Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
-                        otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
+                        if (player.isOnline()){
+                            mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
+                            mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
+                            Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
+                            otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
+                            subData=(SubsandboxTransferData[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxTransferData",SubsandboxTransferData[].class,onPlanet,sandboxIndex).ret);
+                            subMapIDCache=new int[subData.length][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y];
+                            subMapIDCachePos=new VektorI[subData.length];
+                            for (int i=0;i<subData.length;i++){
+                                VektorD posRel=pos.subtract(subData[i].offset);
+                                subMapIDCache[i]=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,subData[i].isPlanet,subData[i].index,posRel.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),posRel.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
+                                subMapIDCachePos[i]=posRel.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
+                            }
+                        }
                     }
                 },0,1000);
         }
@@ -295,9 +311,6 @@ public class PlayerC implements Serializable
         if (player.isOnline() && player.onClient()){
             if (mapIDCache!=null && mapIDCachePos!=null){
                 VektorD fieldOfView=ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble();
-                VektorI upperLeftCorner = getUpperLeftCorner(pos).toIntFloor();  // obere linke Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-                VektorI bottomRightCorner = upperLeftCorner.add(ClientSettings.PLAYERC_FIELD_OF_VIEW);  // untere rechte Ecke der Spieleransicht relativ zur oberen linken Ecke der sb
-                //System.out.println("UpperLeftCorner: "+ upperLeftCorner.toString()+ " BottomRightCorner: " + bottomRightCorner.toString());
                 int minX=(int) Math.floor(pos.x-fieldOfView.x/2)-1; //keine Ahnung, warum die -1 und +1
                 int maxX=(int) Math.ceil(pos.x+fieldOfView.x/2)+1;
                 int minY=(int) Math.floor(pos.y-fieldOfView.y/2)-1;
@@ -354,6 +367,73 @@ public class PlayerC implements Serializable
                 }
                 
                 Graphics2D g2=image.createGraphics();
+                //Zeichnen von Subsandboxen, recht ähnlich zu dem Zeichnen der Sandbox oberhalb
+                if (subData!=null && subMapIDCache!=null && subMapIDCachePos!=null){
+                    for (int i=0;i<subData.length;i++){
+                        SubsandboxTransferData sd=subData[i];
+                        int[][] smic=subMapIDCache[i];
+                        VektorI smicp=subMapIDCachePos[i];
+                        if (sd!=null && smic!=null && smicp!=null){
+                            VektorD posRel=pos.subtract(sd.offset);
+                                        
+                            int minXSub=(int) Math.floor(posRel.x-fieldOfView.x/2)-1;
+                            int maxXSub=(int) Math.ceil(posRel.x+fieldOfView.x/2)+1;
+                            int minYSub=(int) Math.floor(posRel.y-fieldOfView.y/2)-1;
+                            int maxYSub=(int) Math.ceil(posRel.y+fieldOfView.y/2)+1;
+                            ColorModel subCm=ColorModel.getRGBdefault();
+                            BufferedImage subImage=new BufferedImage(subCm,subCm.createCompatibleWritableRaster((maxX-minX)*blockBreite,(maxY-minY)*blockBreite),false,new Hashtable<String,Object>());
+                            int[] oldSubImageData = ((DataBufferInt) subImage.getRaster().getDataBuffer()).getData();
+                
+                            Hashtable<Integer,BufferedImage> subBlockImages=new Hashtable<Integer,BufferedImage>();
+                            for (int x = 0; x<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x; x++){
+                                for (int y = 0; y<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y; y++){
+                                    try{
+                                        BufferedImage img=Blocks.getTexture(smic[x][y]);
+                                        if (img!=null){
+                                            Hashtable<String,Object> properties=new Hashtable<String,Object>();
+                                            String[] prns=image.getPropertyNames();
+                                            if (prns!=null){
+                                                for (int j=0;j<prns.length;j++){
+                                                    properties.put(prns[j],image.getProperty(prns[j]));
+                                                }
+                                            }
+                                            BufferedImage img2=new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties);
+                                            Graphics gr=img2.getGraphics();
+                                            gr.drawImage(img,0,0,blockBreite,blockBreite,null);
+                                            subBlockImages.put(smic[x][y],img2);
+                                        }
+                                        else{
+                                            Hashtable<String,Object> properties=new Hashtable<String,Object>();
+                                            blockImages.put(smic[x][y],new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties));
+                                        }
+                                    }
+                                    catch(ArrayIndexOutOfBoundsException e){}
+                                }
+                            }
+                            for (int x = minXSub ; x<=maxXSub; x++){
+                                for (int y = minYSub; y<=maxYSub; y++){
+                                    try{
+                                        int id = smic[x-smicp.x][y-smicp.y];
+                                        if(id != -1){
+                                            BufferedImage img=subBlockImages.get(id);
+                                            if (img!=null){
+                                                int[] imgData=((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+                                                for (int j=0;j<blockBreite;j++){
+                                                    int index = ((y-minYSub)*blockBreite + j)*(maxXSub-minXSub)*blockBreite + (x-minXSub)*blockBreite;
+                                                    System.arraycopy(imgData,j*blockBreite,oldSubImageData,index,blockBreite);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch(ArrayIndexOutOfBoundsException e){}
+                                }
+                            }
+                            g2.drawImage(subImage,0,0,new Color(255,255,255,0),null); //unfertig
+                        }
+                    }
+                }
+                
+                //Chat
                 String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
                 g2.setColor(Color.WHITE);
                 g2.setFont(MenuSettings.MENU_FONT);

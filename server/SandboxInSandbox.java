@@ -1,5 +1,5 @@
 package server;
-import util.geom.VektorI;
+import util.geom.VektorD;
 import java.io.Serializable;
 /**
  * Enthält eine Sandbox und die Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
@@ -11,9 +11,9 @@ public class SandboxInSandbox implements Serializable
     /**
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
      */
-    public VektorI offset;
+    public VektorD offset;
 
-    public SandboxInSandbox(Sandbox sandbox, VektorI offset)
+    public SandboxInSandbox(Sandbox sandbox, VektorD offset)
     {
         this.sandbox = sandbox;
         this.offset = offset;

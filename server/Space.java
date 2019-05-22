@@ -23,9 +23,13 @@ public class Space implements Serializable
     public Space(long inGameDTime)
     {
         timer=new Timer();
-        masses.add(new PlanetS(1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer));
-        masses.add(new PlanetS(200000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",100,10,0,timer));
-        masses.add(new ShipS(20L,new VektorD(500,0),new VektorD(0,10),timer));
+        PlanetS erde=new PlanetS(1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer);
+        masses.add(erde);
+        PlanetS mond=new PlanetS(200000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",10,10,0,timer);
+        masses.add(mond);
+        ShipS schiff=new ShipS(20L,new VektorD(500,0),new VektorD(0,10),timer);
+        masses.add(schiff);
+        erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(0,0));
         time=0;
         inGameTime=0;
         this.inGameDTime=inGameDTime;

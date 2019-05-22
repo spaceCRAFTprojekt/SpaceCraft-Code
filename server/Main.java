@@ -171,7 +171,7 @@ public class Main implements Serializable
                     ObjectInputStream sbiO=new ObjectInputStream(sbi);
                     Block[][] map=(Block[][]) sbiO.readObject();
                     Meta[][] meta=(Meta[][]) sbiO.readObject();
-                    ArrayList<Sandbox> subsandboxes=(ArrayList<Sandbox>) sbiO.readObject();
+                    ArrayList<SandboxInSandbox> subsandboxes=(ArrayList<SandboxInSandbox>) sbiO.readObject();
                     ShipS shipS=null; //siehe unten warum
                     Timer spaceTimer=null;
                     new ShipC(map,subsandboxes,shipS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein
@@ -192,7 +192,7 @@ public class Main implements Serializable
                     ObjectInputStream sbiO=new ObjectInputStream(sbi);
                     Block[][] map=(Block[][]) sbiO.readObject();
                     Meta[][] meta=(Meta[][]) sbiO.readObject();
-                    ArrayList<Sandbox> subsandboxes=(ArrayList<Sandbox>) sbiO.readObject();
+                    ArrayList<SandboxInSandbox> subsandboxes=(ArrayList<SandboxInSandbox>) sbiO.readObject();
                     PlanetS planetS=null; //Der PlanetS wird erst später (mit Space) hinzugefügt, um ein Problem mit einer zirkulären Referenz zu vermeiden.
                     Timer spaceTimer=null; //dito // ????
                     new PlanetC(map,subsandboxes,planetS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
  * Die Space Variante eines Raumschiffs
+ * Unfertig!
  */
 public class ShipS extends Mass implements Serializable
 {
