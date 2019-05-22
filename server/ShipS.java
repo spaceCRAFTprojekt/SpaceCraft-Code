@@ -11,6 +11,7 @@ public class ShipS extends Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
     public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>(); //werden nie gelöscht, nicht gut
+    public ArrayList<MassChange> massChanges = new ArrayList<MassChange>();
     
     /**
      * Erstellt einen neuen Raumschiffs

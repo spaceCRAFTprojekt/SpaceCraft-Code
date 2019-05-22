@@ -211,6 +211,10 @@ public class PlayerC implements Serializable
         new InventoryMenu(player, this.inv);
     }
     
+    public PlayerInv getInv(){
+        return inv; //von LG zum Testen, auch wenn ich eigentlich keine Ahnung vom inv habe
+    }
+    
     public int getHotbarBlockID(){
         return 300;
     }
@@ -257,7 +261,7 @@ public class PlayerC implements Serializable
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         // das -0.5 ist eine hässliche Lösung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
-        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,-0.5));
+        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) );
     }
     
     /**
@@ -269,7 +273,7 @@ public class PlayerC implements Serializable
      */
     public VektorI getPosToPlayer(VektorI bPos, int blockBreite){
         //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
-        return (getUpperLeftCorner(pos).add(bPos.toDouble().divide(blockBreite))).toIntFloor();
+        return (getUpperLeftCorner(pos).add(bPos.toDouble().divide(blockBreite))).toInt();
     }
     
     /**

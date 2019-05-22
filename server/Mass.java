@@ -18,7 +18,9 @@ public abstract class Mass implements Serializable
         this.vel = vel;
         ArrayList<VektorD> poss=new ArrayList<VektorD>();
         poss.add(pos);
-        this.o=new Orbit(poss,0,0);
+        ArrayList<Double> masss=new ArrayList<Double>();
+        masss.add(m);
+        this.o=new Orbit(poss,masss,0,0);
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
     }

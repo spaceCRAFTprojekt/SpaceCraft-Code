@@ -2,7 +2,7 @@ package server;
 import client.Request;
 import client.Task;
 import client.ClientSettings;
-import java.util.ArrayList;
+import java.util.Hashtable;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
@@ -12,10 +12,10 @@ import java.io.ObjectInputStream;
 import java.io.EOFException;
 public class ServerCreator{
     Main main;
-    ArrayList<ObjectOutputStream> taskOutputStreams;
+    Hashtable<Integer,ObjectOutputStream> taskOutputStreams;
     public ServerCreator(Main main){
         this.main=main;
-        this.taskOutputStreams=new ArrayList<ObjectOutputStream>();
+        this.taskOutputStreams=new Hashtable<Integer,ObjectOutputStream>();
         try{
             new Thread("ClientConnectionThread"){
                 public ServerSocket server=new ServerSocket(Settings.SERVER_PORT);
@@ -76,7 +76,7 @@ public class ServerCreator{
                             }
                             else{
                                 int playerID=in.readInt();
-                                taskOutputStreams.add(playerID,out);
+                                taskOutputStreams.put(playerID,out);
                             }
                         }
                         catch(Exception e){

@@ -9,7 +9,6 @@ import client.Task;
 import util.geom.VektorI;
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.HashMap;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
@@ -287,7 +286,7 @@ public class Main implements Serializable
             if (players.get(i).isOnline()){
                 players.get(i).logout(); //Server-Kopie des Players
                 newTask(i,"Player.logoutTask"); //Player im Client
-                sc.taskOutputStreams.remove(0);
+                sc.taskOutputStreams.remove(i);
             }
         }
         Serializer.serialize(this);

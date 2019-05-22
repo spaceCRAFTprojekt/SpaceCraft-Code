@@ -64,6 +64,10 @@ public class Frame extends JFrame{
     public Dimension getScreenSizeD(){
         return this.getSize();
     }
+    
+    public PaintPanel getPaintPanel(){
+        return pp;
+    }
 
     public OverlayPanelS getOverlayPanelS(){
         return opS;

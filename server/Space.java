@@ -175,22 +175,25 @@ public class Space implements Serializable
     public void calcOrbits(long dtime){ //irgendetwas hier oder in der Verwendung der Orbits ist falsch
         ArrayList<VektorD>[] poss=new ArrayList[masses.size()]; //Positionslisten
         ArrayList<VektorD>[] vels=new ArrayList[masses.size()]; //Geschwindigkeitslisten
+        ArrayList<Double>[]masss=new ArrayList[masses.size()]; //Massenlisten, für Schiffe mit MassChanges
         for (int i=0;i<masses.size();i++){
             poss[i]=new ArrayList<VektorD>();
             poss[i].add(masses.get(i).getPos()); //erste Position, Zeit 0
             vels[i]=new ArrayList<VektorD>();
             vels[i].add(masses.get(i).getVel());
+            masss[i]=new ArrayList<Double>();
+            masss[i].add(masses.get(i).getMass());
         }
         for (double t=0;t<dtime;t=t+Settings.SPACE_CALC_PERIOD_INGAME){
             int k=(int) Math.round(t/Settings.SPACE_CALC_PERIOD_INGAME); //zeitlicher Index in poss und vels
             //k sollte immer kleiner als Double.MAX_VALUE sein
             for (int i=0;i<masses.size();i++){ //Masse, deren Orbit berechnet wird
-                double m2=masses.get(i).getMass();
+                double m2=masss[i].get(k);
                 VektorD pos2=poss[i].get(k);
                 if (pos2!=null){
                     VektorD Fg=new VektorD(0,0);
                     for (int j=0;j<masses.size();j++){
-                        double m1=masses.get(j).getMass();
+                        double m1=masss[j].get(k);
                         VektorD pos1=poss[j].get(k);
                         if (pos1.x!=pos2.x || pos1.y!=pos2.y){
                             VektorD posDiff=pos1.subtract(pos2);
@@ -267,11 +270,22 @@ public class Space implements Serializable
                         vels[i].add(dx.divide(Settings.SPACE_CALC_PERIOD_INGAME));
                         //System.out.println(dx+" "+pos2.add(dx));
                     }
+                    double mass=masss[i].get(k);
+                    if (masses.get(i) instanceof ShipS){
+                        for (int j=0;j<((ShipS) masses.get(i)).massChanges.size();j++){
+                            MassChange mc=((ShipS) masses.get(i)).massChanges.get(j);
+                            if (t+inGameTime>=mc.t0 && t+inGameTime<mc.t1){
+                                double dm=mc.dMass/(mc.t1-mc.t0)*(Settings.SPACE_CALC_PERIOD_INGAME);
+                                mass=mass+dm;
+                            }
+                        }
+                    }
+                    masss[i].add(mass);
                 }
             }
         }
         for (int i=0;i<masses.size();i++){
-            Orbit o=new Orbit(poss[i],inGameTime,inGameTime+dtime);
+            Orbit o=new Orbit(poss[i],masss[i],inGameTime,inGameTime+dtime);
             masses.get(i).setOrbit(o);
         }
     }

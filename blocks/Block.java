@@ -44,7 +44,9 @@ public class Block implements Serializable
     {
         this.id=id;
         this.name = name;
-        Blocks.blocks.put(id,this);
+        synchronized(Blocks.blocks){
+            Blocks.blocks.put(id,this);
+        }
         setProperties();
         if(hasItem){
             item = new BlockItem(id);

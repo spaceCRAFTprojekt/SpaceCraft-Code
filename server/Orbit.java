@@ -10,10 +10,12 @@ import java.io.Serializable;
 public class Orbit implements Serializable{
     public static final long serialVersionUID=0L;
     public ArrayList<VektorD> pos;
+    public ArrayList<Double> mass;
     public long t0;
     public long t1;
-    public Orbit(ArrayList<VektorD> pos, long t0, long t1){
+    public Orbit(ArrayList<VektorD> pos, ArrayList<Double> mass, long t0, long t1){
         this.pos=pos;
+        this.mass=mass;
         //Zeiten im Spiel, nicht reale Zeiten
         this.t0=t0; //dieser Orbit ist gültig von t0 bis t1
         this.t1=t1;
@@ -46,5 +48,12 @@ public class Orbit implements Serializable{
         else{
             return (pos.get(i).toDouble().subtract(pos.get(i-1).toDouble())).divide(Settings.SPACE_CALC_PERIOD_INGAME);
         }//*/
+    }
+    public double getMass(long t){
+        if (t0>t || t1<=t){
+            return -1;
+        }
+        int i=(int) Math.round((t-t0)/Settings.SPACE_CALC_PERIOD_INGAME);
+        return mass.get(i);
     }
 }
