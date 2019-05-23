@@ -69,7 +69,7 @@ History:
  22.05.2019 v0.3.7_LG * kleine Änderungen: Items, massChanges (ungetestet)
                         Craft: Fließkommakoordinaten-Darstellung (noch nicht wirklich getestet)
                         Subsandbox-Zeichnen (noch ohne Interaktionen!)
-                        
+ 23.05.2019 v0.3.7_BB * getPosToCache mit Double hinzugefügt und grobe Kollison hinzugefügt(wird verfeinert)                       
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:
