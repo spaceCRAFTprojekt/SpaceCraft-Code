@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=OverlayPanel
+comment0.text=\r\n\ Auf\ diesem\ Panel\ sind\ alle\ JComponents\ von\ Space\ oder\ Craft\ (es\ wird\ jeweils\ ein\ Objekt\ f\u00FCr\ Space\ und\ Craft\ erstellt)\r\n
+comment1.params=frame\ p\ screenSize
+comment1.target=OverlayPanel(Frame,\ Player,\ util.geom.VektorI)
+comment2.params=
+comment2.target=int\ getBlockWidth()
+numComments=3

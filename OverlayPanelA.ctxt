@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=OverlayPanelA
+comment0.text=\r\n\ Das\ Overlay\ Panel\ f\u00FCr\ alle\ (Space\ und\ Craft).\ Zum\ Beispiel\ f\u00FCr\ den\ Chat\r\n
+comment1.params=frame\ p\ screenSize
+comment1.target=OverlayPanelA(Frame,\ Player,\ util.geom.VektorI)
+numComments=2

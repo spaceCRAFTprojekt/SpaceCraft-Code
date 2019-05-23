@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Task
+comment0.text=\r\n\ Tasks\ kommen\ vom\ Server\ und\ m\u00FCssen\ hier\ erledigt\ werden.\ (Falls\ jemand\ das\ hier\ hacken\ will\:\r\n\ Wie\ du\ vielleicht\ sehen\ kannst,\ stehen\ in\ den\ Player-Klassen\ ohnehin\ keine\ wichtigen\ (\=spielentscheidenden)\ Sachen.\r\n\ Du\ kannst\ also\ das\ Spiel\ f\u00FCr\ dich\ im\ Wesentlichen\ nur\ kaputt\ machen.)\r\n\ Tasks\ geben\ nichts\ zur\u00FCck\ und\ der\ Server\ wartet\ nie\ auf\ den\ Client.\r\n
+comment1.params=todo\ params
+comment1.target=Task(java.lang.String,\ java.lang.Object[])
+comment1.text=\r\n\ recht\ \u00E4hnlich\ zu\ Request\r\n\ \u00DCbergabewerte\ der\ Methode\:\ params,\ wobei\ alle\ primitiven\ Parameter\ zu\ Objekten\ konvertiert\ werden\ (Arrays\ sind\ keine\ primitiven\ Objekte.).\r\n\ Das\ sollte\ nicht\ verwendet\ werden,\ um\ einen\ Task\ zu\ erzeugen\ (w\u00FCrde\ nirgendwo\ hin\ gesendet\ werden),\ sondern\ Main.newTask.\r\n
+numComments=2

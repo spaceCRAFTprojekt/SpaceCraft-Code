@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=OtherPlayerTexture
+comment0.text=\r\n\ nur\ f\u00FCr\ den\ Transport\ der\ Daten\ zum\ Client\r\n\ nicht\ nur\ die\ Textur,\ sondern\ allgemein\ die\ Daten\ des\ Spielers\!\r\n
+comment1.params=playerID\ mode\ textureID\ pos\ name
+comment1.target=OtherPlayerTexture(int,\ int,\ int,\ util.geom.VektorD,\ java.lang.String)
+comment2.params=g\ pixPos\ blockWidth
+comment2.target=void\ paint(java.awt.Graphics,\ util.geom.VektorI,\ int)
+numComments=3

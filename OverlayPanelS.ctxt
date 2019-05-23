@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=OverlayPanelS
+comment0.text=\r\n\ OverlayPanel\ f\u00FCr\ Space\r\n
+comment1.params=frame\ p\ screenSize
+comment1.target=OverlayPanelS(Frame,\ Player,\ util.geom.VektorI)
+numComments=2

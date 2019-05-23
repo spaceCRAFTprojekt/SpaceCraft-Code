@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=TaskResolver
+comment1.params=p
+comment1.target=TaskResolver(Player)
+comment2.params=
+comment2.target=void\ run()
+comment3.params=task
+comment3.target=void\ resolveTask(Task)
+comment4.params=
+comment4.target=void\ close()
+numComments=5

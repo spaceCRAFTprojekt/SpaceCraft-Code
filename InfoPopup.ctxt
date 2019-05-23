@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=InfoPopup
+comment0.text=\r\n\ Kleines\ Infofeld\ in\ der\ SpaceAnsicht\r\n
+comment1.params=
+comment1.target=InfoPopup()
+comment2.params=evt
+comment2.target=void\ mouseClicked(java.awt.event.MouseEvent)
+numComments=3

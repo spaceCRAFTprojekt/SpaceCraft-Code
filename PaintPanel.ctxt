@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.target=PaintPanel
+comment0.text=\r\n\ Auf\ dieses\ Panel\ ist\ f\u00FCr\ die\ Grafikausgabe\ aus\ Space\ und\ Craft\ und\ ist\ "ganz\ unten"\ (sozusagen\ der\ Hintergrund,\ auf\ dem\ OverlayPanels\ sind)\r\n
+comment1.params=frame\ p\ screenSize
+comment1.target=PaintPanel(Frame,\ Player,\ util.geom.VektorI)
+comment2.params=g
+comment2.target=void\ paint(java.awt.Graphics)
+numComments=3
