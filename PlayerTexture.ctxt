@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=PlayerTexture
+comment0.text=\r\n\ Da\ der\ Spieler,\ wenn\ er\ in\ der\ Grafik\ gepaintet\ wird\ immer\ flackert,\ wird\ der\ Spieler\ als\ eigenes\ JComponent\ in\ \r\n\ das\ OverlayPanel\ gemalt\r\n\ \r\n\ Die\ SpielerTexturen\ m\u00FCssen\ im\ Ordner\ texturesC\ sein.\r\n\ Bezeichnung\:\ player_texture_<name>\r\n
+comment1.params=id
+comment1.target=java.awt.image.BufferedImage\ getTexture(int)
+comment2.params=id
+comment2.target=PlayerTexture(int)
+comment2.text=\r\n\ @param\:\ String\ name\:\ Name\ des\ Texturenpakets\ f\u00FCr\ den\ Spieler,\ wenn\ "",\ dann\ wird\ die\ default\ Textur\ verwendet\r\n
+comment3.params=opC\ screenSize\ blockWidth
+comment3.target=void\ makeFrame(OverlayPanelC,\ util.geom.VektorI,\ int)
+comment4.params=g
+comment4.target=void\ paint(java.awt.Graphics)
+comment5.params=screenSize\ blockWidth
+comment5.target=void\ resize(util.geom.VektorI,\ int)
+comment6.params=id
+comment6.target=void\ setTexture(int)
+comment7.params=mode
+comment7.target=void\ setMode(int)
+comment8.params=g\ textureID\ mode\ blockWidth\ pos
+comment8.target=void\ paint(java.awt.Graphics,\ int,\ int,\ int,\ util.geom.VektorI)
+comment9.params=name
+comment9.target=java.awt.image.BufferedImage\ getPlayerTexture(java.lang.String)
+comment9.text=\r\n\ importiert\ die\ PlayerTexturen.\r\n\ @param\:\ Name\ des\ Texturenpakets\ f\u00FCr\ den\ Spieler\ im\ textures\ Ordner\r\n\ \r\n
+numComments=10

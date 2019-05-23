@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.target=PlayerS
+comment0.text=\r\n\ ein\ Spieler\ in\ der\ Space\ Ansicht\r\n\ test\r\n
+comment1.params=player\ pos\ focussedMassIndex
+comment1.target=PlayerS(Player,\ util.geom.VektorD,\ int)
+comment2.params=frame
+comment2.target=void\ makeFrame(Frame)
+comment3.params=e\ type
+comment3.target=void\ keyEvent(java.awt.event.KeyEvent,\ char)
+comment3.text=\r\n\ Tastatur\ event\r\n\ @param\:\r\n\ \ char\ type\:\ 'p'\:\ pressed\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 'r'\:\ released\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 't'\:\ typed\ (nur\ Unicode\ Buchstaben)\r\n
+comment4.params=e\ type
+comment4.target=void\ mouseEvent(java.awt.event.MouseEvent,\ char)
+comment4.text=\r\n\ Maus\ Event\r\n\ @param\:\r\n\ \ char\ type\:\ 'p'\:\ pressed\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 'r'\:\ released\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 'c'\:\ clicked\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ 'd'\:\ dragged\r\n
+comment5.params=e
+comment5.target=void\ mouseWheelMoved(java.awt.event.MouseWheelEvent)
+comment6.params=
+comment6.target=util.geom.VektorD\ getFocussedMassPos()
+comment7.params=
+comment7.target=util.geom.VektorD\ getPosToNull()
+comment8.params=g\ screenSize
+comment8.target=void\ paint(java.awt.Graphics,\ util.geom.VektorI)
+comment8.text=\r\n\ Grafik\ ausgeben\r\n
+numComments=9
