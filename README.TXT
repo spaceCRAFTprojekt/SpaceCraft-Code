@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SpaceCraft
 ==========
 
@@ -82,3 +83,6 @@ Hinweis:
  
  Witziges:
  * java.lang.NoSuchMethodError
+=======
+Hi du jemand. Kannst gerne einen Kommentar dar lassen. Wird eh keiner lesen...  ~not_unknown
+>>>>>>> 8bcb6c5c554e4ef3d840e791490e47b8c4646f27
