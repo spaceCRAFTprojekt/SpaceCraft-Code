@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
+import items.*;
 
 import blocks.*;
 /**
@@ -40,11 +41,11 @@ public class Main implements Serializable
     static String blocksfilename="blocks";
     static String fileEnding=".ser";
 
-    private transient ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<Player> players = new ArrayList<Player>();
     // Kopie der Player, muss synchronisiert werden!
     // normalerweise nur ein Spieler
     private transient ArrayList<String> chat=new ArrayList<String>();
-    private transient Space space;
+    private Space space;
     private transient ServerCreator sc;
 
     /**
@@ -85,7 +86,7 @@ public class Main implements Serializable
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
         serverCreatorSetup();
-        space = new Space(100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
+        space = new Space(this,100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
     }
 
     /**
@@ -97,54 +98,6 @@ public class Main implements Serializable
      */
     private Object writeReplace() throws ObjectStreamException{
         String folder=Settings.GAMESAVE_FOLDER;
-
-        ArrayList<ShipC> shipCs=ShipC.shipCs; //Schiffe
-        for (int i=0;i<shipCs.size();i++){
-            try{
-                FileOutputStream sbo=new FileOutputStream(folder+File.separator+shipCfilename+i+fileEnding);
-                ObjectOutputStream sboO=new ObjectOutputStream(sbo);
-                sboO.writeObject(shipCs.get(i).map);
-                sboO.writeObject(shipCs.get(i).meta);
-                sboO.writeObject(shipCs.get(i).getSubsandboxes());
-                //sboO.writeObject(shipCs.get(i).getShipS());
-            }
-            catch(Exception e){
-                System.out.println(e+": "+e.getMessage());
-            }
-        }
-
-        ArrayList<PlanetC> planetCs=PlanetC.planetCs; //Planeten
-        for (int i=0;i<planetCs.size();i++){
-            try{
-                FileOutputStream sbo=new FileOutputStream(folder+File.separator+planetCfilename+i+fileEnding);
-                ObjectOutputStream sboO=new ObjectOutputStream(sbo);
-                sboO.writeObject(planetCs.get(i).map);
-                sboO.writeObject(planetCs.get(i).meta);
-                sboO.writeObject(planetCs.get(i).getSubsandboxes());
-                //sboO.writeObject(planetCs.get(i).getPlanetS());
-            }
-            catch(Exception e){
-                System.out.println(e+": "+e.getMessage());
-            }
-        }
-
-        try{ //Space
-            FileOutputStream spo=new FileOutputStream(folder+File.separator+spacefilename+fileEnding);
-            ObjectOutputStream spoO=new ObjectOutputStream(spo);
-            spoO.writeObject(space);
-        }
-        catch(Exception e){
-            System.out.println(e+": "+e.getMessage());
-        }
-
-        try{ //Player
-            FileOutputStream plo=new FileOutputStream(folder+File.separator+playersfilename+fileEnding);
-            ObjectOutputStream ploO=new ObjectOutputStream(plo);
-            ploO.writeObject(players);
-        }
-        catch(Exception e){
-            System.out.println(e+": "+e.getMessage());
-        }
         return this;
     }
 
@@ -162,66 +115,6 @@ public class Main implements Serializable
         if (!new File(folder).isDirectory()){
             System.out.println("Folder "+folder+" does not exist.");
             return null;
-        }
-
-        for (int i=0;i<Integer.MAX_VALUE;i++){  //Schiffe
-            try{
-                if (new File(folder+File.separator+shipCfilename+i+fileEnding).exists()){
-                    FileInputStream sbi=new FileInputStream(folder+File.separator+shipCfilename+i+fileEnding);
-                    ObjectInputStream sbiO=new ObjectInputStream(sbi);
-                    Block[][] map=(Block[][]) sbiO.readObject();
-                    Meta[][] meta=(Meta[][]) sbiO.readObject();
-                    ArrayList<SandboxInSandbox> subsandboxes=(ArrayList<SandboxInSandbox>) sbiO.readObject();
-                    ShipS shipS=null; //siehe unten warum
-                    Timer spaceTimer=null;
-                    new ShipC(map,subsandboxes,shipS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein
-                }
-                else{
-                    break;
-                }
-            }
-            catch(Exception e){
-                System.out.println("Main: 2: "+e+": "+e.getMessage());
-            }
-        }
-
-        for (int i=0;i<Integer.MAX_VALUE;i++){  //Planeten
-            try{
-                if (new File(folder+File.separator+planetCfilename+i+fileEnding).exists()){
-                    FileInputStream sbi=new FileInputStream(folder+File.separator+planetCfilename+i+fileEnding);
-                    ObjectInputStream sbiO=new ObjectInputStream(sbi);
-                    Block[][] map=(Block[][]) sbiO.readObject();
-                    Meta[][] meta=(Meta[][]) sbiO.readObject();
-                    ArrayList<SandboxInSandbox> subsandboxes=(ArrayList<SandboxInSandbox>) sbiO.readObject();
-                    PlanetS planetS=null; //Der PlanetS wird erst später (mit Space) hinzugefügt, um ein Problem mit einer zirkulären Referenz zu vermeiden.
-                    Timer spaceTimer=null; //dito // ????
-                    new PlanetC(map,subsandboxes,planetS,spaceTimer).meta = meta; //fügt sich automatisch in die ArrayList ein
-                }
-                else{
-                    break;
-                }
-            }
-            catch(Exception e){
-                System.out.println("Main: 3: "+e+": "+e.getMessage());
-            }
-        }
-
-        try{  // Space
-            FileInputStream spi=new FileInputStream(folder+File.separator+spacefilename+fileEnding);
-            ObjectInputStream spiO=new ObjectInputStream(spi);
-            space=(Space) spiO.readObject();
-        }
-        catch(Exception e){
-            System.out.println("Main: 4: "+e+": "+e.getMessage());
-        }
-
-        try{  //Players
-            FileInputStream pli=new FileInputStream(folder+File.separator+playersfilename+fileEnding);
-            ObjectInputStream pliO=new ObjectInputStream(pli);
-            players=(ArrayList<Player>) pliO.readObject();
-        }
-        catch(Exception e){
-            System.out.println("Main: 5: "+e+": "+e.getMessage());
         }
         this.chat=new ArrayList<String>();
         main=this;
@@ -327,24 +220,32 @@ public class Main implements Serializable
         sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
-
+    
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
-        if (menuName.equals("NoteblockMenu")){
-            Sandbox sb;
-            if ((Boolean) menuParams[0]){ //onPlanet
-                sb=PlanetC.planetCs.get((Integer) menuParams[1]);
-            }
-            else{
-                sb=ShipC.shipCs.get((Integer) menuParams[1]);
-            }
+        try{
+        if (menuName.equals("NoteblockMenu")){  // @Käpt'n ernsthaft? Kann man das nicht in die entsprechende Klasse auslagern???
+            Sandbox sb = getSandbox((Integer)menuParams[1]);
             Meta mt=sb.getMeta((VektorI) menuParams[2]);
             if (mt!=null){
                 mt.put("text",menuParams[3]);
                 return new Boolean(true);
             }
             return new Boolean(false);
+        }else if(menuName.equals("ChestMenu")){
+            Sandbox sb = getSandbox((Integer)menuParams[1]);
+            Meta mt=sb.getMeta((VektorI) menuParams[2]);
+            Inv inv_main = (Inv)menuParams[3];
+            if(inv_main != null && mt != null){
+                mt.put("inv_main", inv_main);
+                return new Boolean(true);
+            }
         }
+    }catch(Exception e){System.out.println("Exception in server.Main.returnFromMenu(): "+ e);}
         return new Boolean(false);
+    }
+    
+    public Sandbox getSandbox(Integer sandboxIndex){
+        return space.masses.get(sandboxIndex).getSandbox();
     }
 
     /**

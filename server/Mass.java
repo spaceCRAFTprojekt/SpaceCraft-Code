@@ -6,13 +6,15 @@ import java.io.Serializable;
 public abstract class Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
+    protected Main main;
     protected double m;
     protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
     protected VektorD vel;
     protected Orbit o;
     protected transient Timer spaceTimer;
 
-    public Mass(double m, VektorD pos, VektorD vel, Timer spaceTimer){
+    public Mass(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer){
+        this.main=main;
         this.m = m;
         this.pos = pos;
         this.vel = vel;
@@ -71,6 +73,6 @@ public abstract class Mass implements Serializable
     
     public static Mass sum(Mass m1, Mass m2){
         double mNew=m1.getMass()+m2.getMass();
-        return new PlanetS(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),null,"",0,0,0,null);
+        return new PlanetS(m1.main,mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),null,"",0,0,0,null);
     }
 }

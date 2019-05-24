@@ -26,6 +26,7 @@ public class Block implements Serializable
 
     public transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
     public transient boolean breakment_prediction = true; //  "  gebreakt " " ; goodest EnglisCh
+    public transient boolean drop_prediction = true;      // ob der Block das zugehörige Item droppt
     // ich hab das jetzt man alles public gemacht, weil man sonst so viele getter braucht. Natürlich kann man dann die Wert später verändern, aber wer macht das schon... ~AK
     /**
      * nur static möglich, nicht in-Game (wegen der Bilder für den Client)

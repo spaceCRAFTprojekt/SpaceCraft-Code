@@ -19,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import items.Inv;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
@@ -67,7 +68,7 @@ public class Player implements Serializable
         this.inCraft=true;
         //der Spawnpunkt muss nochmal überdacht werden
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
-        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50));
+        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50));  // spawn Position :)  Ein Herz für Benny :)
         //muss man hier auch schon synchronisieren?
     }
     
@@ -290,6 +291,8 @@ public class Player implements Serializable
     public void showMenu(String menuName, Object[] menuParams){
         if (menuName.equals("NoteblockMenu")){
             new NoteblockMenu(this,(VektorI) menuParams[0],(String) menuParams[1]);
+        }else if(menuName.equals("ChestMenu")){
+            new ChestMenu(this,(VektorI) menuParams[0],(Inv) menuParams[1]);
         }
     }
     

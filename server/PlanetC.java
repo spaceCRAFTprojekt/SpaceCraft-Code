@@ -12,24 +12,16 @@ import blocks.*;
 public class PlanetC extends Sandbox implements Serializable
 {
     public static final long serialVersionUID=0L;
-    public static ArrayList<PlanetC> planetCs=new ArrayList<PlanetC>(); //Tabelle, die alle PlanetCs enthält, muss eigens (de-)serialisiert werden!
-    private final int id;
-    //Index in der planetCs-Tabelle, eine der wenigen Sachen, die serialisiert wird (außer natürlich bei den PlanetCs in der planetCs-Tabelle selbst)
-    
-    private transient PlanetS planetS;
-    public PlanetC(VektorI size, PlanetS planetS, Timer spaceTimer)
+    private PlanetS planetS;
+    public PlanetC(Main main, VektorI size, PlanetS planetS, Timer spaceTimer)
     {
-        super(size,spaceTimer);
-        id=planetCs.size();
-        planetCs.add(id,this);
+        super(main,size,spaceTimer);
         this.planetS = planetS;
         setMap(Mapgen.generateMap("earthlike", size, planetS.radius));
     }
     
-    public PlanetC(Block[][] map, ArrayList<SandboxInSandbox> subsandboxes, PlanetS planetS, Timer spaceTimer){
-        super(map,subsandboxes,spaceTimer);
-        this.id=planetCs.size();
-        planetCs.add(id,this);
+    public PlanetC(Main main, Block[][] map, Meta[][] meta, ArrayList<SandboxInSandbox> subsandboxes, PlanetS planetS, Timer spaceTimer){
+        super(main,map,meta,subsandboxes,spaceTimer);
         this.planetS=planetS;
     }
     
@@ -38,16 +30,7 @@ public class PlanetC extends Sandbox implements Serializable
         
     }
     
-    public Object readResolve() throws ObjectStreamException{
-        return planetCs.get(id);
-    }
-    
     public PlanetS getPlanetS(){
         return planetS;
-    }
-    
-    public void setPlanetS(PlanetS p){
-        //um ein Problem mit einer zirulären Referenz zu umgehen, siehe PlanetS und Main
-        this.planetS=p;
     }
 }

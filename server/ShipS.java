@@ -20,13 +20,13 @@ public class ShipS extends Mass implements Serializable
      * - Masse
      * - Position
      */
-    public ShipS(double m, VektorD pos, VektorD vel, Timer spaceTimer)
+    public ShipS(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer)
     {
-        super(m,pos,vel,spaceTimer);
+        super(main,m,pos,vel,spaceTimer);
     }
     
     public Object readResolve() throws ObjectStreamException{
-        //muss noch das ShipS (this) und den spaceTimer des ShipCs setzen
+        //muss noch den spaceTimer des ShipCs setzen
         return this;
     }
     

@@ -3,10 +3,7 @@ import util.geom.*;
 import java.io.Serializable;
 
 /**
- * Write a description of class Inv here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * Wichtig: Für alle Änderungen von Slots immer die Methode setStack() verwenden!!!
  */
 public class Inv implements Serializable
 {
@@ -28,8 +25,13 @@ public class Inv implements Serializable
                     return new Stack(s.item, 0);
                 }
                 else leftover = stacks[x][y].add(leftover);
+                if(leftover == null || leftover.getCount() == 0){
+                    update();
+                    return null;
+                }
             }
         }
+        update();
         return leftover;
     }
     
@@ -37,20 +39,28 @@ public class Inv implements Serializable
         return stacks[v.x][v.y];
     }
     
+    /**
+     * Diese Methode immer verwenden, wenn etwas verändert werden soll!!!
+     */
     public void setStack(VektorI v,Stack s){
         stacks[v.x][v.y] = s;
+        update();
     }
+    
+    
     public Stack addToStack(VektorI v, Stack s){
         Stack sTo = getStack(v);
         if(sTo == null){
             setStack(v, s);
             return null;
         }else{
+            
             return sTo.add(s);
         }
+        
     }
     public void removeStack(VektorI v){
-        stacks[v.x][v.y] = null;
+        setStack(v, null);
     }
     
     public int getSizeX() {
@@ -66,4 +76,7 @@ public class Inv implements Serializable
     public boolean inBounds(VektorI v){
         try{ Stack s = stacks[v.x][v.y]; }catch(Exception e){return false;}return true;  // Damit k�nnte ich einen Sch�nheitswettbewerb gewinnen xD ~unknown
     } 
+    
+    
+    public void update(){}  // kann überschrieben werden, damit man bei jeder Änderung das Inv neu läd
 }

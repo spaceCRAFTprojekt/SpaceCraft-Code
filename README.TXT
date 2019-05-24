@@ -2,12 +2,9 @@ SpaceCraft
 ==========
 
 DoTo:
-> Grafik halbe Blöcke
 > Caching von Planetenbahnen
-> Inventar
 > Mehr Blöcke
 > Space-Craft-Schnittstelle
-> Internet?
 
 Regeln:
 * Alle Klassen und Methoden werden (auf Deutsch) genau beschrieben (Getter und Setter nicht zwingend)
@@ -44,7 +41,7 @@ History:
  06.05.2019 v0.2.0_LG * Server/Client-System. Server und Client kommunizieren nur über Tasks (Server->Client) und Requests(Client->Server)
                         Player müssen synchronisiert werden.
  06.05.2019 v0.2.1_LG * Ich warte ... ~ AK
- 06.05.2019 v0.2.2_LG * 
+ 06.05.2019 v0.2.2_LG * "Leg' dich in die Hängematte, nicht ins Zeug" ~ Linus bevor er die readme anpasst :)
  12.05.2019 v0.2.3_AK * Merge mit v0.1.10_AK: Inventar Items Drop and Drag; moved ioTools to package util; moved geom to package util; 
  14.05.2019 v0.2.4_LG * Umstieg auf Sockets (unvollständig, Tasks fehlen noch und aus irgendeinem Grund 
                         kann man nur für ein Frame in die Space-Darstellung wechseln (ist auf irgendeine obskure Weise vom Default-Wert
@@ -69,12 +66,19 @@ History:
  22.05.2019 v0.3.7_LG * kleine Änderungen: Items, massChanges (ungetestet)
                         Craft: Fließkommakoordinaten-Darstellung (noch nicht wirklich getestet)
                         Subsandbox-Zeichnen (noch ohne Interaktionen!)
+ 23.05.2019 v0.3.8_AK * Chest; Änderungen in Main
+ 24.05.2019 v0.3.9_LG * Merge mit v0.3.8_LG/ ShipsC und PlanetCs wieder entfernt (=> nur noch masses)
+ 24.05.2019 v0.3.10_AK* Hotbar Ánfang; Änderungen im Inv und im PlayerC mouseEvent
                         
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:
+ Falsch zugeordnete Zitate dienen nur der witzigkeit des Code und sind nicht Meinung des AutorX. Beim Schreiben dieses Satzes wurde keine Tastatur verletzt
  LG = Schnux = Käptn ( = Linus)
  AK = unknown = Alex
  MH = maxx = Max
  BB = Benny = Benedikt
  FG = Floh
+ 
+ Witziges:
+ * java.lang.NoSuchMethodError

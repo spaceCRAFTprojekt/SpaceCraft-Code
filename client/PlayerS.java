@@ -146,7 +146,6 @@ public class PlayerS implements Serializable
             ArrayList<VektorD> poss=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllPos",ArrayList.class).ret);
             ArrayList<ArrayList<VektorD>> orbits=(ArrayList<ArrayList<VektorD>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllOrbits",ArrayList.class).ret);
             ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
-            
             for (int i=0;i<poss.size();i++){
                 if (poss.get(i)!=null){
                     for (int j=1;j<orbits.get(i).size();j=j+1){  // ernsthaft?
@@ -167,7 +166,7 @@ public class PlayerS implements Serializable
                     VektorD posDiff=poss.get(i).subtract(posToNull);
                     posDiff=posDiff.multiply(scale);
                     int r=radii.get(i);
-                    r=(int)(r*scale);
+                    r=Math.max((int)(r*scale),2);
                     if (i== player.getCurrentMassIndex())g2.setColor(Color.RED);
                     else if(i == focussedMassIndex)g2.setColor(Color.CYAN);
                     else g2.setColor(Color.WHITE);

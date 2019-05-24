@@ -21,6 +21,7 @@ public abstract class Blocks
         new Block(000, "stone", "blocks_stone", true);
         new Block(001, "dirt", "blocks_dirt", true); 
         new Block(002, "grass", "blocks_grass", true); 
+        new Blocks_Chest(100);
         new Blocks_Note(104); // id kann noch verändert werden
         new Blocks_Piston(300);
         // piston_on: 301

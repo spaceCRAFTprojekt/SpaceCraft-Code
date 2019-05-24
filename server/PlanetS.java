@@ -25,19 +25,17 @@ public class PlanetS extends Mass implements Serializable
      * - Planetanziehungskraft
      * - Licht
      */
-    public PlanetS(double m, VektorD pos, VektorD vel, String name, int radius, double gravity, int lightSource, Timer spaceTimer)
+    public PlanetS(Main main, double m, VektorD pos, VektorD vel, String name, int radius, double gravity, int lightSource, Timer spaceTimer)
     {
-        super(m,pos,vel,spaceTimer);
+        super(main,m,pos,vel,spaceTimer);
         this.gravity = gravity;
         this.name = name;
         this.lightSource = lightSource;
         this.radius = radius;
-        planetC = new PlanetC(new VektorI((radius*2)+100, (radius*2)+100), this, spaceTimer);
+        planetC = new PlanetC(main,new VektorI((radius*2)+100, (radius*2)+100), this, spaceTimer);
     }
     
     public Object readResolve() throws ObjectStreamException{
-        //um eine zirkuläre Referenz zwischen dem PlanetC und dem PlanetS zu umgehen, siehe Main
-        this.planetC.setPlanetS(this);
         this.planetC.setSpaceTimer(spaceTimer);
         return this;
     }

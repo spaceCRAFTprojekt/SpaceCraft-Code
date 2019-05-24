@@ -29,14 +29,14 @@ import java.io.ObjectInputStream;
      * Space.getAllPos()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
-     * Sandbox.breakBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos) v0.3.1_AK
-     * Sandbox.placeBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
-     * Sandbox.rightclickBlock(Boolean onPlanet, Integer sandboxIndex, VektorI sPos)
-     * Sandbox.getMapIDs(Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
-     * Sandbox.getAllSubsandboxTransferData(Boolean onPlanet, Integer sandboxIndex)
+     * Sandbox.breakBlock(Integer sandboxIndex, VektorI sPos) v0.3.1_AK
+     * Sandbox.placeBlock(Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
+     * Sandbox.rightclickBlock(Integer sandboxIndex, VektorI sPos)
+     * Sandbox.getMapIDs(Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
+     * Sandbox.getAllSubsandboxTransferData(Integer sandboxIndex)
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
-     * Bei Sandbox.*-Methoden ist der erste Parameter aus params playerC.onPlanet, der zweite der SandboxIndex.
+     * Bei Sandbox.*-Methoden ist der erste Parameter aus params der currentMassIndex des Players.
  */
 public class Request implements Serializable{
     public static final long serialVersionUID=0L;

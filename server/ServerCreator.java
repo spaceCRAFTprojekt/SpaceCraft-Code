@@ -117,16 +117,9 @@ public class ServerCreator{
             req.ret=method.invoke(main.getSpace(),params);
         }
         else if (className.equals("Sandbox")){
-            boolean onPlanet=(boolean) params[1];
-            int sandboxIndex=(int) params[2];
-            if (onPlanet){
-                Method method=PlanetC.class.getMethod(methodName,parameterTypes);
-                req.ret=method.invoke(PlanetC.planetCs.get(sandboxIndex),params);
-            }
-            else{
-                Method method=ShipC.class.getMethod(methodName,parameterTypes);
-                req.ret=method.invoke(ShipC.shipCs.get(sandboxIndex),params);
-            }
+            int sandboxIndex=(int) params[1];
+            Method method=PlanetC.class.getMethod(methodName,parameterTypes);
+            req.ret=method.invoke(main.getSandbox(sandboxIndex),params);
         }
         //hier können auch noch weitere Klassen folgen
         else{

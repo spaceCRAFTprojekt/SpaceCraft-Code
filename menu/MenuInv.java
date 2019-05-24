@@ -31,10 +31,10 @@ public class MenuInv extends JPanel
     public MenuInv(Menu m, Inv inv){
         super();
         this.inv = inv;
-        VektorI size = getInvSize(); // Achtung nicht ändern, weil getSize() wird im MenuHotbar überschrieben
+        VektorI size = getInvSize(); // Achtung nicht ändern, weil getSize() wird in Hotbar überschrieben
 
         this.setSize(size.x*iconSize, size.y*iconSize);
-        this.setLayout(new GridLayout(inv.getSizeY(), inv.getSizeX()));   // Warum Y vor X??? Liebe Java Entwickler, so ein Fehler muss doch auffallen! Arrrrrrrrrrrrrrrrrrgh!!!
+        this.setLayout(new GridLayout(size.y, size.x));   // Warum Y vor X??? Liebe Java Entwickler, so ein Fehler muss doch auffallen! Arrrrrrrrrrrrrrrrrrgh!!!
         this.setVisible(true);
         this.setEnabled(false); //damit die Events zum InvMenu kommen
         this.setOpaque(false);  // kein Hintergrund
@@ -42,7 +42,7 @@ public class MenuInv extends JPanel
         slots = new ItemImage[size.x][size.y];
         initSlots(size);
 
-        if (m!=null) m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu
+        if (m!=null) m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu (in der Hotbar ist m null)
     }
     
     public MenuInv(Menu m, Inv inv, VektorI pos){

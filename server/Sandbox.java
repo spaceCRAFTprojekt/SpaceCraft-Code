@@ -30,10 +30,11 @@ import blocks.*;
 public abstract class Sandbox implements Serializable
 {
     public static final long serialVersionUID=0L;
-    public transient Block[][]map;
+    protected Main main;
+    public Block[][]map;
     public Meta[][]meta;
     // Sandboxen können Sandboxen enthalten, z.B.: Schiff auf Planet
-    protected transient ArrayList<SandboxInSandbox> subsandboxes = new ArrayList<SandboxInSandbox>();
+    protected ArrayList<SandboxInSandbox> subsandboxes = new ArrayList<SandboxInSandbox>();
     protected transient Timer spaceTimer; //nur eine Referenz
 
     /***********************************************************************************************************************************************************
@@ -44,19 +45,21 @@ public abstract class Sandbox implements Serializable
      * erstellt eine neue Sandbox
      * @param: Vektor size: gibt die größe der Sandbox an (Bereich in dem Blöcke sein können)
      */
-    public Sandbox(VektorI size, Timer spaceTimer){
+    public Sandbox(Main main, VektorI size, Timer spaceTimer){
         map = new Block[size.x][size.y];
         meta = new Meta[size.x][size.y];
         this.spaceTimer=spaceTimer;
         this.spaceTimerSetup();
+        this.main=main;
     }
 
-    public Sandbox(Block[][] map, ArrayList<SandboxInSandbox> subsandboxes, Timer spaceTimer){
+    public Sandbox(Main main, Block[][] map, Meta[][] meta, ArrayList<SandboxInSandbox> subsandboxes, Timer spaceTimer){
         this.map=map;
-        
+        this.meta=meta;
         this.subsandboxes=subsandboxes;
         this.spaceTimer=spaceTimer;
         this.spaceTimerSetup();
+        this.main=main;
     }
 
     public void setSpaceTimer(Timer t){
@@ -113,7 +116,7 @@ public abstract class Sandbox implements Serializable
      *  * Integer playerID
      * Request-Funktion
      */
-    public void rightclickBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+    public void rightclickBlock(Integer playerID, Integer sandboxIndex, VektorI pos){
         try{
             if (map[pos.x][pos.y] == null){
                 //placeBlock(Blocks.blocks.get(104), pos, playerID);
@@ -145,7 +148,7 @@ public abstract class Sandbox implements Serializable
     /**
      * Und das gleiche für einen Request
      */
-    public void placeBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos, Integer BlockID){
+    public void placeBlock(Integer playerID, Integer sandboxIndex, VektorI pos, Integer BlockID){
         Block block = Blocks.get(BlockID);
         if(block != null)placeBlock(block, pos, playerID);
     }
@@ -177,9 +180,6 @@ public abstract class Sandbox implements Serializable
     public void swapBlock(Block block, VektorI pos){
         map[pos.x][pos.y]= block; 
     }
-
-    
-    
     
     /**
      * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurückgibt und löscht die Metadaten
@@ -203,7 +203,7 @@ public abstract class Sandbox implements Serializable
     /**
      * Das gleiche für ein Request
      */
-    public void breakBlock(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI pos){
+    public void breakBlock(Integer playerID, Integer sandboxIndex, VektorI pos){
         breakBlock(pos, playerID);
     }
 
@@ -260,22 +260,19 @@ public abstract class Sandbox implements Serializable
     /***********************************************************************************************************************************************************
     /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
-    public SubsandboxTransferData[] getAllSubsandboxTransferData(Integer playerID, Boolean onPlanet, Integer sandboxIndex){
+    public SubsandboxTransferData[] getAllSubsandboxTransferData(Integer playerID, Integer sandboxIndex){
         SubsandboxTransferData[] ret=new SubsandboxTransferData[subsandboxes.size()];
-        boolean isPlanet;
-        int index;
-        VektorD offset;
+        ArrayList<Mass> masses=main.getSpace().masses;
         for (int i=0;i<subsandboxes.size();i++){
-            if (subsandboxes.get(i).sandbox instanceof PlanetC){
-                isPlanet=true;
-                index=PlanetC.planetCs.indexOf((PlanetC) subsandboxes.get(i).sandbox);
+            int index=-1;
+            for (int j=0;j<masses.size();j++){
+                if (masses.get(j).getSandbox().equals(subsandboxes.get(i).sandbox)){
+                    index=j;
+                    break;
+                }
             }
-            else{
-                isPlanet=false;
-                index=ShipC.shipCs.indexOf((ShipC) subsandboxes.get(i).sandbox);
-            }
-            offset=subsandboxes.get(i).offset;
-            ret[i]=new SubsandboxTransferData(isPlanet,index,offset);
+            VektorD offset=subsandboxes.get(i).offset;
+            ret[i]=new SubsandboxTransferData(index,offset);
         }
         return ret;
     }
@@ -295,7 +292,7 @@ public abstract class Sandbox implements Serializable
     /**
      * Request-Funktion
      */
-    public int[][] getMapIDs(Integer playerID, Boolean onPlanet, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
+    public int[][] getMapIDs(Integer playerID, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
         int[][] ret=new int[bottomRightCorner.x-upperLeftCorner.x+1][bottomRightCorner.y-upperLeftCorner.y+1];
         for (int x=upperLeftCorner.x;x<=bottomRightCorner.x;x++){
             for (int y=upperLeftCorner.y;y<=bottomRightCorner.y;y++){

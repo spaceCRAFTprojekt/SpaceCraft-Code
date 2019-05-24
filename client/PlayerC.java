@@ -1,13 +1,17 @@
 package client;
-import java.awt.Graphics;
+
+import util.geom.*;
+import util.ImageTools;
+import items.*;
+import client.menus.*;
+import menu.*;
+import blocks.*;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
-import util.geom.*;
-import items.*;
-import client.menus.*;
-import util.ImageTools;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -16,10 +20,12 @@ import java.awt.image.DataBufferInt;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Graphics;
+
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-import blocks.*;
-import menu.MenuSettings;
+// ich hab das mal geordnet ~ Müllmann
+
 /**
  * ein Spieler in der Craft Ansicht
  */
@@ -47,6 +53,7 @@ public class PlayerC implements Serializable
     public transient OtherPlayerTexturesPanel otherPlayerTexturesPanel;
     
     private PlayerInv inv;
+    public transient Hotbar hotbar;
     
     
     public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos)
@@ -88,16 +95,16 @@ public class PlayerC implements Serializable
             timer.schedule(new TimerTask(){
                     public void run(){
                         if (player.isOnline()){
-                            mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,onPlanet,sandboxIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
+                            mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,player.currentMassIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
                             mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
                             Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
                             otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
-                            subData=(SubsandboxTransferData[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxTransferData",SubsandboxTransferData[].class,onPlanet,sandboxIndex).ret);
+                            subData=(SubsandboxTransferData[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxTransferData",SubsandboxTransferData[].class,player.currentMassIndex).ret);
                             subMapIDCache=new int[subData.length][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y];
                             subMapIDCachePos=new VektorI[subData.length];
                             for (int i=0;i<subData.length;i++){
                                 VektorD posRel=pos.subtract(subData[i].offset);
-                                subMapIDCache[i]=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,subData[i].isPlanet,subData[i].index,posRel.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),posRel.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
+                                subMapIDCache[i]=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,subData[i].index,posRel.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),posRel.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
                                 subMapIDCachePos[i]=posRel.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
                             }
                         }
@@ -110,6 +117,8 @@ public class PlayerC implements Serializable
         this.opC = frame.getOverlayPanelC();
         this.playerTexture.makeFrame(opC,player.getScreenSize(), getBlockWidth());
         this.otherPlayerTexturesPanel = new OtherPlayerTexturesPanel(opC, this, player.getScreenSize());
+        this.hotbar = new Hotbar(opC, inv, player.getScreenSize());   // wird automatisch dem Overlaypanel geadded
+        inv.setHotbar(hotbar);
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -182,12 +191,16 @@ public class PlayerC implements Serializable
             if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
                 if(mapIDCache[cPos.x][cPos.y] == -1)return;  // wenn da kein block ist => nichts machen
-                if(Blocks.get(mapIDCache[cPos.x][cPos.y]).breakment_prediction){
+                Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
+                if(block.breakment_prediction){
                     mapIDCache[cPos.x][cPos.y] = -1;  
+                    if(block.drop_prediction && block.item != null)getInv().addStack(new Stack(block.item, 1));
                 }
                 // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
-                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,onPlanet,sandboxIndex,sPos);
+                
+                
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,player.currentMassIndex,sPos);
                 
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(mapIDCache[cPos.x][cPos.y] == -1){
@@ -200,13 +213,13 @@ public class PlayerC implements Serializable
                         // wenn der Block wahrscheinlich plaziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                         // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder entfernt
                     }
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",Boolean.class,onPlanet,sandboxIndex,sPos, blockID);      
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.currentMassIndex,sPos, blockID);      
                 }else{
                     //leftclick
                     //System.out.println("Tried to leftclick block at "+sPos.toString());
                     Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
                     if(block instanceof SBlock){
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",Boolean.class,onPlanet,sandboxIndex,sPos);      
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.currentMassIndex,sPos);      
                     }
                 }
             }
@@ -232,7 +245,7 @@ public class PlayerC implements Serializable
     }
     
     public int getHotbarBlockID(){
-        return 300;
+        return 100;
     }
     
     public int getBlockWidth(){

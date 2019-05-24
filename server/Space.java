@@ -11,7 +11,8 @@ import java.io.ObjectStreamException;
 public class Space implements Serializable
 {
     public static final long serialVersionUID=0L;
-    ArrayList<Mass>masses = new ArrayList<Mass>(); // hier sind alle Massen (Planeten oder Schiffe) verzeichnet
+    Main main;
+    ArrayList<Mass>masses = new ArrayList<Mass>(); // hier sind alle Massen (Planeten oder Schiffe) verzeichnet  // HALLO LINUS
     transient Timer timer;
     long time; //Alle Zeiten in s
     long inGameTime;
@@ -20,16 +21,17 @@ public class Space implements Serializable
      * Erstellt eine neues Sonnensystem (am Anfang: Sonne, Erde und Mond)
      *
      */
-    public Space(long inGameDTime)
+    public Space(Main main, long inGameDTime)
     {
+        this.main=main;
         timer=new Timer();
-        PlanetS erde=new PlanetS(1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer);
+        PlanetS erde=new PlanetS(main,1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer);
         masses.add(erde);
-        PlanetS mond=new PlanetS(200000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",10,10,0,timer);
+        PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",100,10,0,timer);
         masses.add(mond);
-        ShipS schiff=new ShipS(20L,new VektorD(500,0),new VektorD(0,10),timer);
+        ShipS schiff=new ShipS(main,20L,new VektorD(500,0),new VektorD(0,10),timer);
         masses.add(schiff);
-        erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(0,0));
+        //erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(0,0));
         time=0;
         inGameTime=0;
         this.inGameDTime=inGameDTime;
@@ -95,7 +97,6 @@ public class Space implements Serializable
     public Integer getFocussedMassIndex(Integer playerID, VektorI posClick, VektorD posToNull, VektorI screenSize, Double scale){
         posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
         posClick=posClick.subtract(screenSize.divide(2));
-        System.out.println(posClick);
         posClick=posClick.divide(scale);
         VektorI posClickToNull=posClick.add(posToNull.toInt());
         Integer ret=new Integer(-1);

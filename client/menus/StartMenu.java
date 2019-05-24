@@ -30,7 +30,7 @@ public class StartMenu extends Menu{
                 }
                 else{
                     ClientSettings.SERVER_ADDRESS=adress.getText();
-                    ClientSettings.SERVER_PORT=Integer.parseInt(port.getText());
+                    try{ClientSettings.SERVER_PORT=Integer.parseInt(port.getText());} catch(NumberFormatException e){System.out.println("Invalid Input: Port muss eine Zahl sein!");}
                     closeMenu();
                     new LoginMenu();
                 }
