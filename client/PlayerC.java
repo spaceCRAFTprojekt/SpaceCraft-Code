@@ -33,13 +33,11 @@ public class PlayerC implements Serializable
 {
     public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden, müssen public sein
-    private transient Timer timer;
+    public transient Timer timer; //public, damit er in logout() beendet werden kann
 
     private int blockBreite = 32;  // Breite eines Blocks in Pixeln
     private Player player;
     public VektorD pos;
-    public boolean onPlanet; //sonst: auf einem Schiff
-    public int sandboxIndex; //entweder im ShipCs-Array oder im PlanetCs-Array der Index der Sandbox, in der sich der PlayerC gerade befindet
     @Deprecated private VektorD hitbox = new VektorD(1,2);
     public transient int[][] mapIDCache;
     public transient VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
@@ -56,13 +54,12 @@ public class PlayerC implements Serializable
     public transient Hotbar hotbar;
     
     
-    public PlayerC(Player player, boolean onPlanet, int sandboxIndex, VektorD pos)
+    public PlayerC(Player player, VektorD pos)
     {
         this.player = player;
-        setSandbox(onPlanet, sandboxIndex, pos);
+        setSandbox(player.currentMassIndex, pos);
         makeTexture();
         //muss man hier auch schon synchronisieren?  ka ~ unknown
-        
         // Inventar:
         inv = new PlayerInv();
         mapIDCache=null;
@@ -133,12 +130,9 @@ public class PlayerC implements Serializable
     /**
      * Setze Spieler in einer andere Sandbox
      */
-    public void setSandbox(boolean onPlanet, int sandboxIndex, VektorD pos){
-        this.onPlanet=onPlanet;
-        this.sandboxIndex = sandboxIndex;
+    public void setSandbox(int sandboxIndex, VektorD pos){
         this.pos = pos;
         if (player.isOnline() && player.onClient()){
-            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"onPlanet",Boolean.class,onPlanet);
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"sandboxIndex",Integer.class,sandboxIndex);
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
         }
@@ -198,9 +192,9 @@ public class PlayerC implements Serializable
                 }
                 // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
-                
-                
-                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,player.currentMassIndex,sPos);
+
+                if(block.drop_prediction && block.item != null)getInv().addStack(new Stack(block.item, 1));
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.currentMassIndex,sPos);
                 
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(mapIDCache[cPos.x][cPos.y] == -1){
@@ -245,7 +239,7 @@ public class PlayerC implements Serializable
     }
     
     public int getHotbarBlockID(){
-        return 100;
+        return 300;
     }
     
     public int getBlockWidth(){
@@ -473,13 +467,5 @@ public class PlayerC implements Serializable
     
     public void synchronizeWithServer(){
         player.synchronizeWithServer();
-    }
-    
-    public boolean isOnPlanet(){
-        return onPlanet;
-    }
-    
-    public int getSandboxIndex(){
-        return sandboxIndex;
     }
 }

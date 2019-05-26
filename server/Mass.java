@@ -1,12 +1,13 @@
 package server;
 import util.geom.*;
+import client.Orbit;
 import java.util.Timer;
 import java.util.ArrayList;
 import java.io.Serializable;
 public abstract class Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
-    protected Main main;
+    public Main main;
     protected double m;
     protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
     protected VektorD vel;
@@ -22,7 +23,7 @@ public abstract class Mass implements Serializable
         poss.add(pos);
         ArrayList<Double> masss=new ArrayList<Double>();
         masss.add(m);
-        this.o=new Orbit(poss,masss,0,0);
+        this.o=new Orbit(poss,masss,0,0,Settings.SPACE_CALC_PERIOD_INGAME);
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
     }

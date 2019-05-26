@@ -26,9 +26,11 @@ import java.io.ObjectInputStream;
      * Main.getOtherPlayerTextures(int PlayerID, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
-     * Space.getAllPos()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
+     * Space.getAllPos()
+     * Space.getAllVels()
+     * Space.getAllMasses()
      * Sandbox.breakBlock(Integer sandboxIndex, VektorI sPos) v0.3.1_AK
      * Sandbox.placeBlock(Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
      * Sandbox.rightclickBlock(Integer sandboxIndex, VektorI sPos)
@@ -90,7 +92,7 @@ public class Request implements Serializable{
                 try{
                     synchronized(socketOut){
                         socketOut.reset();
-                        socketOut.writeUnshared(this);
+                        socketOut.writeObject(this);
                         socketOut.flush();
                     }
                 }

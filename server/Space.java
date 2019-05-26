@@ -3,6 +3,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import util.geom.*;
+import client.Orbit;
+import client.OrbitChange;
+import client.MassChange;
+import client.ClientSettings;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
@@ -29,13 +33,13 @@ public class Space implements Serializable
         masses.add(erde);
         PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",100,10,0,timer);
         masses.add(mond);
-        ShipS schiff=new ShipS(main,20L,new VektorD(500,0),new VektorD(0,10),timer);
+        ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
         masses.add(schiff);
         //erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(0,0));
         time=0;
         inGameTime=0;
         this.inGameDTime=inGameDTime;
-        calcOrbits(inGameDTime*20+1); //so lange Zeit, damit man es gut sieht
+        calcOrbits(Settings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
         timerSetup();
     }
     
@@ -60,7 +64,7 @@ public class Space implements Serializable
                         masses.get(i).setVel(o.getVel(inGameTime));
                     }
                 }
-                calcOrbits(inGameDTime*20+1); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
+                calcOrbits(Settings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
             }
         },Settings.SPACE_TIMER_PERIOD,Settings.SPACE_TIMER_PERIOD);
         for (int i=0;i<masses.size();i++){
@@ -135,10 +139,39 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
+    public Long getInGameTime(Integer playerID){
+        return inGameTime;
+    }
+
+    /**
+     * Request-Funktion
+     */
     public ArrayList<VektorD> getAllPos(Integer playerID){
         ArrayList<VektorD> ret=new ArrayList<VektorD>();
         for (int i=0;i<masses.size();i++){
             ret.add(masses.get(i).getPos());
+        }
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<VektorD> getAllVels(Integer playerID){
+        ArrayList<VektorD> ret=new ArrayList<VektorD>();
+        for (int i=0;i<masses.size();i++){
+            ret.add(masses.get(i).getVel());
+        }
+        return ret;
+    }
+
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<Double> getAllMasses(Integer playerID){
+        ArrayList<Double> ret=new ArrayList<Double>();
+        for (int i=0;i<masses.size();i++){
+            ret.add(masses.get(i).getMass());
         }
         return ret;
     }
@@ -162,14 +195,39 @@ public class Space implements Serializable
     /**
      * Request-Funktion
      */
-    public ArrayList<ArrayList<VektorD>> getAllOrbits(Integer playerID){
-        ArrayList<ArrayList<VektorD>> ret=new ArrayList<ArrayList<VektorD>>();
-        int accuracy=100;
+    public ArrayList<Orbit> getAllOrbits(Integer playerID){
+        ArrayList<Orbit> ret=new ArrayList<Orbit>();
+        int accuracy=Settings.SPACE_GET_ORBIT_ACCURACY;
         for (int i=0;i<masses.size();i++){
-            ret.add(new ArrayList<VektorD>());
+            ArrayList<VektorD> pos=new ArrayList<VektorD>(masses.get(i).o.pos.size()/accuracy);
+            ArrayList<Double> mass=new ArrayList<Double>(masses.get(i).o.pos.size()/accuracy);
             for (int j=0;j<masses.get(i).o.pos.size();j=j+accuracy){
-                ret.get(i).add(masses.get(i).o.pos.get(j));
+                pos.add(masses.get(i).o.pos.get(j));
+                mass.add(masses.get(i).o.mass.get(j));
             }
+            ret.add(new Orbit(pos,mass,masses.get(i).o.t0,masses.get(i).o.t1,Settings.SPACE_CALC_PERIOD_INGAME*accuracy));
+        }
+        return ret;
+    }
+    
+    public ArrayList<ArrayList<OrbitChange>> getAllOrbitChanges(Integer playerID){
+        ArrayList<ArrayList<OrbitChange>> ret=new ArrayList<ArrayList<OrbitChange>>();
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof ShipS)
+                ret.add(((ShipS) masses.get(i)).orbitChanges);
+            else
+                ret.add(new ArrayList<OrbitChange>());
+        }
+        return ret;
+    }
+
+    public ArrayList<ArrayList<MassChange>> getAllMassChanges(Integer playerID){
+        ArrayList<ArrayList<MassChange>> ret=new ArrayList<ArrayList<MassChange>>();
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof ShipS)
+                ret.add(((ShipS) masses.get(i)).massChanges);
+            else
+                ret.add(new ArrayList<MassChange>());
         }
         return ret;
     }
@@ -177,7 +235,7 @@ public class Space implements Serializable
     /**
      * Berechnet die (Nicht-Kepler-)Orbits aller Objekte in diesem Space ab dem Aufruf dieser Methode für (dtime) Sekunden
      */
-    public void calcOrbits(long dtime){ //irgendetwas hier oder in der Verwendung der Orbits ist falsch
+    public void calcOrbits(long dtime){
         ArrayList<VektorD>[] poss=new ArrayList[masses.size()]; //Positionslisten
         ArrayList<VektorD>[] vels=new ArrayList[masses.size()]; //Geschwindigkeitslisten
         ArrayList<Double>[]masss=new ArrayList[masses.size()]; //Massenlisten, für Schiffe mit MassChanges
@@ -196,29 +254,57 @@ public class Space implements Serializable
                 double m2=masss[i].get(k);
                 VektorD pos2=poss[i].get(k);
                 if (pos2!=null){
-                    VektorD Fg=new VektorD(0,0);
+                    VektorD F=new VektorD(0,0); //wirkende Kraft durch Gravitation und OrbitChanges
                     for (int j=0;j<masses.size();j++){
                         double m1=masss[j].get(k);
                         VektorD pos1=poss[j].get(k);
                         if (pos1.x!=pos2.x || pos1.y!=pos2.y){
                             VektorD posDiff=pos1.subtract(pos2);
-                            VektorD Fgj=posDiff.multiply(Settings.G*m1*m2/Math.pow(posDiff.getLength(),3));
-                            Fg=Fg.add(Fgj);
+                            VektorD Fgj=posDiff.multiply(Settings.G*m1*m2/Math.pow(posDiff.getLength(),3)); 
+                            //geteilt durch (Abstand^3), da ja mit dem ursprünglichen Vektor wieder multipliziert wird
+                            F=F.add(Fgj);
                         }
                     }
-                    VektorD dx=Fg.multiply(Math.pow(Settings.SPACE_CALC_PERIOD_INGAME,2)).divide(m2).divide(2); //x=1/2*a*t^2
                     if (masses.get(i) instanceof ShipS){
-                        ArrayList<OrbitChange> os=((ShipS) masses.get(i)).orbitChanges;
-                        for (int j=0;j<os.size();j++){
-                            if (t+inGameTime>=os.get(j).t0 && t+inGameTime<os.get(j).t1){
-                                dx=dx.add(os.get(j).F.multiply(Math.pow(Settings.SPACE_CALC_PERIOD_INGAME,2)).divide(m2).divide(2));
+                        ArrayList<OrbitChange> oc=((ShipS) masses.get(i)).orbitChanges;
+                        int j=0;
+                        while (j<oc.size()){
+                            if (t+inGameTime>=oc.get(j).t0 && t+inGameTime<oc.get(j).t1){
+                                F=F.add(oc.get(j).F);
+                                j=j+1;
+                            }
+                            else if (inGameTime>oc.get(j).t1){ //OrbitChange sicher vollständig abgehandelt, kann entfernt werden
+                                oc.remove(j);
+                            }
+                            else{
+                                j=j+1;
                             }
                         }
+                        j=0;
+                        ArrayList<MassChange> mc=((ShipS) masses.get(i)).massChanges;
+                        double mass=masss[i].get(k);
+                        while (j<mc.size()){
+                            if (t+inGameTime>=mc.get(j).t0 && t+inGameTime<mc.get(j).t1){
+                                double dm=mc.get(j).dMass/(mc.get(j).t1-mc.get(j).t0)*(Settings.SPACE_CALC_PERIOD_INGAME);
+                                mass=mass+dm;
+                                j=j+1;
+                            }
+                            else if (inGameTime>mc.get(j).t1){
+                                mc.remove(j);
+                            }
+                            else{
+                                j=j+1;
+                            }
+                        }
+                        masss[i].add(mass);
                     }
+                    else{
+                        masss[i].add(masses.get(i).getMass());
+                    }
+                    VektorD dx=F.multiply(Math.pow(Settings.SPACE_CALC_PERIOD_INGAME,2)).divide(m2).divide(2); //x=1/2*a*t^2
                     dx=dx.add(vels[i].get(k).multiply(Settings.SPACE_CALC_PERIOD_INGAME));
                     boolean hasCrash=false;
                     
-                    //irgendwas hier stimmt nicht
                     for (int j=0;j<masses.size();j++){
                         if (j!=i){ //kein Zusammenstoß mit sich selbst
                             /*Intersektion eines Kreises mit einer Linie:
@@ -275,23 +361,36 @@ public class Space implements Serializable
                         vels[i].add(dx.divide(Settings.SPACE_CALC_PERIOD_INGAME));
                         //System.out.println(dx+" "+pos2.add(dx));
                     }
-                    double mass=masss[i].get(k);
-                    if (masses.get(i) instanceof ShipS){
-                        for (int j=0;j<((ShipS) masses.get(i)).massChanges.size();j++){
-                            MassChange mc=((ShipS) masses.get(i)).massChanges.get(j);
-                            if (t+inGameTime>=mc.t0 && t+inGameTime<mc.t1){
-                                double dm=mc.dMass/(mc.t1-mc.t0)*(Settings.SPACE_CALC_PERIOD_INGAME);
-                                mass=mass+dm;
-                            }
-                        }
-                    }
-                    masss[i].add(mass);
                 }
             }
         }
         for (int i=0;i<masses.size();i++){
-            Orbit o=new Orbit(poss[i],masss[i],inGameTime,inGameTime+dtime);
+            Orbit o=new Orbit(poss[i],masss[i],inGameTime,inGameTime+dtime,Settings.SPACE_CALC_PERIOD_INGAME);
             masses.get(i).setOrbit(o);
+        }
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public void setOrbitChanges(Integer playerID, Integer shipID, ArrayList<OrbitChange> orbitChanges){
+        if (masses.get(shipID) instanceof ShipS){
+            ShipS ship=(ShipS) masses.get(shipID);
+            if (ship.isOwner(playerID)){
+                ship.orbitChanges=orbitChanges;
+            }
+        }
+    }
+
+    /**
+     * Request-Funktion
+     */
+    public void setMassChanges(Integer playerID, Integer shipID, ArrayList<MassChange> massChanges){
+        if (masses.get(shipID) instanceof ShipS){
+            ShipS ship=(ShipS) masses.get(shipID);
+            if (ship.isOwner(playerID)){
+                ship.massChanges=massChanges;
+            }
         }
     }
 }

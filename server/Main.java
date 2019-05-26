@@ -32,7 +32,10 @@ import blocks.*;
  */
 public class Main implements Serializable
 {
-    public static Main main; //nur ein Main pro Kopie des Spiels. Mit dieser Referenz können alle Objekte auf den Server zugreifen.
+    public static Main main; 
+    //nur ein Main pro Kopie des Spiels.
+    //(es sind ja sowieso alle Mains (bisher) am selben Port, also ist das vielleicht gar nicht so blöd, wie es aussieht. Vielleicht.
+    //eigentlich nicht nötig
     public static final long serialVersionUID=0L;
     static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
     static String playersfilename="players";
@@ -86,19 +89,7 @@ public class Main implements Serializable
     {
         System.out.println("\n==================\nSpaceCraft startet\n==================\n");
         serverCreatorSetup();
-        space = new Space(this,100); //10-fache Beschleunigung im Space ~LG; drum steht 100 da :) ~AK
-    }
-
-    /**
-     * "Ich warte" ~ DB Kunde
-     * auf die Beschreibung @LG
-     * Instruktionen zur Serialisierung, siehe Readme.
-     * LG
-     * ist alles für das Speichern des aktuellen Spielstands
-     */
-    private Object writeReplace() throws ObjectStreamException{
-        String folder=Settings.GAMESAVE_FOLDER;
-        return this;
+        space = new Space(this,1); //keine Beschleunigung im Space
     }
 
     /**
@@ -198,16 +189,12 @@ public class Main implements Serializable
 
     //Ab hier Request-Funktionen
 
-    public Boolean exit(Integer playerID){
-        Boolean exited=new Boolean(true);
+    public void exit(Integer playerID){
         exit();
-        return exited;
     }
 
-    public Boolean exitIfNoPlayers(Integer playerID){
-        Boolean exited=new Boolean(true);
+    public void exitIfNoPlayers(Integer playerID){
         exitIfNoPlayers();
-        return exited;
     }
 
     public Boolean login(Integer playerID){
@@ -223,24 +210,24 @@ public class Main implements Serializable
     
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         try{
-        if (menuName.equals("NoteblockMenu")){  // @Käpt'n ernsthaft? Kann man das nicht in die entsprechende Klasse auslagern???
-            Sandbox sb = getSandbox((Integer)menuParams[1]);
-            Meta mt=sb.getMeta((VektorI) menuParams[2]);
-            if (mt!=null){
-                mt.put("text",menuParams[3]);
-                return new Boolean(true);
+            if (menuName.equals("NoteblockMenu")){  // @Käpt'n ernsthaft? Kann man das nicht in die entsprechende Klasse auslagern???
+                Sandbox sb = getSandbox((Integer)menuParams[1]);
+                Meta mt=sb.getMeta((VektorI) menuParams[2]);
+                if (mt!=null){
+                    mt.put("text",menuParams[3]);
+                    return new Boolean(true);
+                }
+                return new Boolean(false);
+            }else if(menuName.equals("ChestMenu")){
+                Sandbox sb = getSandbox((Integer)menuParams[1]);
+                Meta mt=sb.getMeta((VektorI) menuParams[2]);
+                Inv inv_main = (Inv)menuParams[3];
+                if(inv_main != null && mt != null){
+                    mt.put("inv_main", inv_main);
+                    return new Boolean(true);
+                }
             }
-            return new Boolean(false);
-        }else if(menuName.equals("ChestMenu")){
-            Sandbox sb = getSandbox((Integer)menuParams[1]);
-            Meta mt=sb.getMeta((VektorI) menuParams[2]);
-            Inv inv_main = (Inv)menuParams[3];
-            if(inv_main != null && mt != null){
-                mt.put("inv_main", inv_main);
-                return new Boolean(true);
-            }
-        }
-    }catch(Exception e){System.out.println("Exception in server.Main.returnFromMenu(): "+ e);}
+        }catch(Exception e){System.out.println("Exception in server.Main.returnFromMenu(): "+ e);}
         return new Boolean(false);
     }
     

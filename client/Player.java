@@ -65,10 +65,10 @@ public class Player implements Serializable
         this.name = name;
         this.onClient=onClient;
         this.currentMassIndex=0;
-        this.inCraft=true;
+        this.inCraft=false;
         //der Spawnpunkt muss nochmal überdacht werden
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
-        this.playerC=new PlayerC(this,true,currentMassIndex,new VektorD(50,50));  // spawn Position :)  Ein Herz für Benny :)
+        this.playerC=new PlayerC(this,new VektorD(50,50));  // spawn Position :)  Ein Herz für Benny :)
         //muss man hier auch schon synchronisieren?
     }
     
@@ -191,9 +191,11 @@ public class Player implements Serializable
                     socketClose();
                 }
                 catch(Exception e){}
+                playerC.timer.cancel();
+                playerS.closeWorkspace(false);
                 closeMenu();
                 disposeFrame();
-                //Boolean exited=(Boolean) (new Request(id,"Main.exitIfNoPlayers",Boolean.class).ret);
+                //new Request(id,"Main.exitIfNoPlayers",null);
             }
             else{
                 System.out.println("No success when trying to log out");
@@ -206,13 +208,15 @@ public class Player implements Serializable
      */
     public void logoutTask(){
         if (!online)return;
-        closeMenu();
         this.online=false;
-        disposeFrame();
         try{
             socketClose();
         }
         catch(Exception e){}
+        playerC.timer.cancel();
+        playerS.closeWorkspace(false);
+        closeMenu();
+        disposeFrame();
     }
     
     /**
@@ -301,7 +305,7 @@ public class Player implements Serializable
      */
     public void exit(){
         if (online && onClient){
-            Boolean exited=(Boolean) (new Request(id,requestOut,requestIn,"Main.exit",Boolean.class).ret);
+            new Request(id,requestOut,requestIn,"Main.exit",null);
         }
     }
     
@@ -415,8 +419,6 @@ public class Player implements Serializable
         playerS.scale=pOnServer.getPlayerS().scale;
         playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
         playerC.pos=pOnServer.getPlayerC().pos;
-        playerC.onPlanet=pOnServer.getPlayerC().onPlanet;
-        playerC.sandboxIndex=pOnServer.getPlayerC().sandboxIndex;
     }
     
     public void writeIntoChat(String message){

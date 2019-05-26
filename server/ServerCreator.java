@@ -65,8 +65,8 @@ public class ServerCreator{
                                             }
                                             if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
                                                 if (!playerID.equals(-1)){
-                                                    Main.main.getPlayer(playerID).logout();
-                                                    Main.main.newTask(playerID,"logoutTask");
+                                                    main.getPlayer(playerID).logout();
+                                                    main.newTask(playerID,"logoutTask");
                                                 }
                                                 return;
                                             }
@@ -129,22 +129,18 @@ public class ServerCreator{
     }
     
     public void sendTask(int playerID, Task task){
-        try{
-            ObjectOutputStream tos=taskOutputStreams.get(playerID);
-            synchronized(tos){
-                tos.reset();
-                tos.writeObject(task);
-                tos.flush();
+        if (main.getPlayer(playerID).isOnline()){
+            try{
+                ObjectOutputStream tos=taskOutputStreams.get(playerID);
+                synchronized(tos){
+                    tos.reset();
+                    tos.writeObject(task);
+                    tos.flush();
+                }
             }
-        }
-        catch(IndexOutOfBoundsException e){
-            System.out.println("Player "+playerID+" is not online, so cannot retrieve any tasks.");
-        }
-        catch(NullPointerException e){
-            System.out.println("Player "+playerID+" is not online, so cannot retrieve any tasks.");
-        }
-        catch(Exception e){
-            System.out.println("Exception when sending Task: "+e);
+            catch(Exception e){
+                System.out.println("Exception when sending Task: "+e);
+            }
         }
     }
 }

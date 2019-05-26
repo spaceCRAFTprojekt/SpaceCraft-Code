@@ -1,5 +1,8 @@
 package server;
 import util.geom.*;
+import client.Orbit;
+import client.OrbitChange;
+import client.MassChange;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.io.Serializable;
@@ -11,8 +14,10 @@ import java.io.ObjectStreamException;
 public class ShipS extends Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
-    public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>(); //werden nie gelöscht, nicht gut
+    public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>();
     public ArrayList<MassChange> massChanges = new ArrayList<MassChange>();
+    public ArrayList<Integer> ownerIDs=new ArrayList<Integer>(); //wenn diese Liste leer ist, dann ist das Schiff öffentlich
+    public ShipC shipC;
     
     /**
      * Erstellt einen neuen Raumschiffs
@@ -23,16 +28,36 @@ public class ShipS extends Mass implements Serializable
     public ShipS(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer)
     {
         super(main,m,pos,vel,spaceTimer);
+        shipC=new ShipC(main,new VektorI(20,40),this,spaceTimer);
     }
     
     public Object readResolve() throws ObjectStreamException{
-        //muss noch den spaceTimer des ShipCs setzen
+        this.shipC.setSpaceTimer(spaceTimer);
         return this;
+    }
+    
+    @Override
+    public void setSpaceTimer(Timer t){
+        super.setSpaceTimer(t);
     }
     
     protected void spaceTimerSetup(){}
     
     public Sandbox getSandbox(){
-        return null;
+        return shipC;
+    }
+    
+    public void setOwner(int playerID){
+        if (ownerIDs.indexOf(playerID)==-1)
+            ownerIDs.add(playerID);
+    }
+
+    public void removeOwner(int playerID){
+        if (ownerIDs.indexOf(playerID)!=-1)
+            ownerIDs.remove(ownerIDs.indexOf(playerID));
+    }
+
+    public boolean isOwner(int playerID){
+        return ownerIDs.indexOf(playerID)!=-1 || ownerIDs.size()==0;
     }
 }

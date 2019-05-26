@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 SpaceCraft
 ==========
 
@@ -22,6 +21,7 @@ History:
  09.04.2019 v0.0.5 LG * VektorLGlump, OrbitGlump, SerializationGlump:
                         Es gibt 5 "Serialisierungs-Blöcke": die Liste der Player, der Space, die
                         Liste der Planeten, die Liste der Schiffe, die Liste der Blöcke
+                        Das stimmt nicht mehr. (26.05.2019) -LG
  11.04.2019 v0.0.6 LG * Timer
  12.04.2019 v0.1.0 LG * Zusammenführung mit v0.0.7_AK !Auf keinen Fall verwenden!
  13.04.2019 v0.1.1 AK * Kleine Änderungen und Kommentare für Linus (soweit ich es verstanden hab)
@@ -70,7 +70,10 @@ History:
  23.05.2019 v0.3.8_AK * Chest; Änderungen in Main
  24.05.2019 v0.3.9_LG * Merge mit v0.3.8_LG/ ShipsC und PlanetCs wieder entfernt (=> nur noch masses)
  24.05.2019 v0.3.10_AK* Hotbar Ánfang; Änderungen im Inv und im PlayerC mouseEvent
-                        
+ 24.05.2019 v0.3.8_LG * Arbeitsweltraum
+ 26.05.2019 v0.3.9_LG * Manöver im Arbeitsweltraum, Anwenden dieser Manöver dann im richtigen Weltraum
+ 26.05.2019 v0.3.11_LG* Merge mit v0.3.10_AK (eigentlich andersherum)
+ 
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:
@@ -85,4 +88,3 @@ Hinweis:
  * java.lang.NoSuchMethodError
 =======
 Hi du jemand. Kannst gerne einen Kommentar dar lassen. Wird eh keiner lesen...  ~not_unknown
->>>>>>> 8bcb6c5c554e4ef3d840e791490e47b8c4646f27

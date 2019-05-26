@@ -9,10 +9,9 @@ public class SingleplayerTest{
     public SingleplayerTest(){
         main=Main.newMain(false);
         //startmenu = new StartMenu();
-        player=Player.newPlayer("Singleplayer");
-        player.login();
+        player=Player.newPlayer("Singleplayer");player.login();
         
-        player2=Player.newPlayer("unknown"); player2.login();
+        //player2=Player.newPlayer("unknown"); player2.login();
     }
     
     public void exit(){

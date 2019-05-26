@@ -307,4 +307,8 @@ public abstract class Sandbox implements Serializable
         }
         return ret;
     }
+    
+    public Main getMain(){
+        return main;
+    }
 }

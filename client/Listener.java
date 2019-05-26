@@ -30,7 +30,6 @@ public class Listener implements MouseListener, KeyListener, WindowListener, Mou
 
     // Mouse Events:
     public void mouseClicked(MouseEvent e) {
-        System.out.println(e.getX()+" "+e.getY());
         p.mouseEvent(e,'c');
         //System.out.println("Mouse " + e.getClickCount() + " times clicked at "+ e.getPoint());
     }
