@@ -1,14 +1,14 @@
 #BlueJ package file
-dependency1.from=PlayerInv
+dependency1.from=Inv
 dependency1.to=Stack
 dependency1.type=UsesDependency
-dependency2.from=Stack
+dependency2.from=Items
 dependency2.to=Item
 dependency2.type=UsesDependency
-dependency3.from=Inv
+dependency3.from=PlayerInv
 dependency3.to=Stack
 dependency3.type=UsesDependency
-dependency4.from=Items
+dependency4.from=Stack
 dependency4.to=Item
 dependency4.type=UsesDependency
 objectbench.height=182
