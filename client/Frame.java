@@ -1,4 +1,6 @@
 package client;
+
+ 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import javax.swing.JPanel;

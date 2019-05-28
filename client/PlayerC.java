@@ -1,5 +1,7 @@
 package client;
 
+ 
+
 import util.geom.*;
 import util.ImageTools;
 import items.*;
@@ -245,7 +247,7 @@ public class PlayerC implements Serializable
     
     // und die Methoden, die fÃ¼r diese Events gebraucht werden
     public void openInventory(){
-        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ã‚ˆãç§ã¯çŸ¥ã‚‰ãªã„ã€ã‚ˆãã‚ãªãŸãŒçŸ¥ã£ã¦ã„ã‚‹ ~unknown
+        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ã‚ˆã??ç§?ã?¯çŸ¥ã‚‰ã?ªã?„ã€?ã‚ˆã??ã?‚ã?ªã?Ÿã?ŒçŸ¥ã?£ã?¦ã?„ã‚‹ ~unknown
         if (inv == null)return;
         /*
         inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
