@@ -35,23 +35,32 @@ public class ServerCreator{
                                     Integer playerID=-1; //wird von den Requests genommen
                                     public void run(){
                                         while(true){
-                                            //sollte eigentlich aufhÃ¶ren, wenn der Client geschlossen wird, aber das funktioniert aus irgendeinem Grund nicht
                                             try{
                                                 Request req=(Request) in.readObject();
                                                 playerID=req.playerID;
-                                                if (req.retClass!=null){
-                                                    Object ret=resolveRequest(req);
-                                                    synchronized(out){
-                                                        //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Ãœbertragung falscher (zu alter) Attribute
-                                                        out.reset();
-                                                        out.writeObject(ret);
-                                                        out.flush();
+                                                if ((playerID.equals(-1) && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
+                                                        || (main.getPlayer(playerID)!=null && (req.todo.equals("Main.login") || main.getPlayer(playerID).isOnline()))){
+                                                    if (req.retClass!=null){
+                                                        Object ret=resolveRequest(req);
+                                                        synchronized(out){
+                                                            //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
+                                                            out.reset();
+                                                            out.writeObject(ret);
+                                                            out.flush();
+                                                        }
                                                     }
+                                                    else{
+                                                        resolveRequest(req);
+                                                    }
+                                                    timeOfLastAction=System.currentTimeMillis();
                                                 }
-                                                else{
-                                                    resolveRequest(req);
+                                                else{ //Jemand versucht, zu betrügen, hier am Server kann nämlich ein Player nur isOnline()=true zurückgeben, 
+                                                      //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
+                                                      //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Menü statt)
+                                                    System.out.println("Ein Betrüger? "+req);
+                                                    client.close();
+                                                    return;
                                                 }
-                                                timeOfLastAction=System.currentTimeMillis();
                                             }
                                             catch(Exception e){
                                                 if (e instanceof EOFException){}
@@ -86,7 +95,9 @@ public class ServerCreator{
                 }
             }.start();
         }
-        catch(Exception e){}
+        catch(Exception e){
+            System.out.println("Exception when creating ServerSocket: "+e);
+        }
     }
     
     public Object resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
@@ -121,7 +132,7 @@ public class ServerCreator{
             Method method=PlanetC.class.getMethod(methodName,parameterTypes);
             req.ret=method.invoke(main.getSandbox(sandboxIndex),params);
         }
-        //hier kÃ¶nnen auch noch weitere Klassen folgen
+        //hier können auch noch weitere Klassen folgen
         else{
             throw new IllegalArgumentException("className = "+className+", methodName = "+methodName);
         }

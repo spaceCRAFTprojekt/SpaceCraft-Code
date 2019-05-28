@@ -1,7 +1,6 @@
 #BlueJ class context
-comment0.target=KomplettTest
+comment0.params=
+comment0.target=KomplettTest()
 comment1.params=
-comment1.target=KomplettTest()
-comment2.params=
-comment2.target=void\ exit()
-numComments=3
+comment1.target=void\ exit()
+numComments=2

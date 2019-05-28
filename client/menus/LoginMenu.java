@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 /**
  * wird angezeigt beim Start des Spiels:
- * MÃ¶glichkeit der Kartenauswahl und Starten des Spiels.
+ * Möglichkeit der Kartenauswahl und Starten des Spiels.
  * VG von MH 06.05.2019
  */
 public class LoginMenu extends Menu{
@@ -39,15 +39,19 @@ public class LoginMenu extends Menu{
                     ObjectInputStream getPlayerIn=new ObjectInputStream(s.getInputStream());
                     Player pOnServer=(Player) (new Request(-1,getPlayerOut,getPlayerIn,"Main.getPlayer",Integer.class,name.getText()).ret); //Kopie des Players am Server
                     Player player;
+                    String password=new String(pw.getPassword());
                     if (pOnServer!=null){
-                        player=new Player(pOnServer.getID(),pOnServer.getName(),true);
+                        player=new Player(pOnServer.getID(),pOnServer.getName(),null,true); //Passwort wird nur serverseitig gespeichert, hier ist es null
                         player.synchronizeWithPlayerFromServer(pOnServer);
                     }
                     else{
-                        player=Player.newPlayer(name.getText());
+                        player=Player.newPlayer(name.getText(),password);
                     }
                     if (player!=null){
-                        player.login();
+                        Boolean success=player.login(password);
+                        if (!success){
+                            new StartMenu(); //kein erfolgreiches Einloggen (Passwort falsch)
+                        }
                     }
                     s.close();
                 }

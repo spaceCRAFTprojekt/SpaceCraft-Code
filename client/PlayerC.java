@@ -209,7 +209,7 @@ public class PlayerC implements Serializable
                     try{ 
                         blockID = ((BlockItem)(hotStack.getItem())).id; 
                     }
-                    catch(Exception _){return;}// => Craftitem
+                    catch(Exception e1){return;}// => Craftitem
                     if(blockID == -1 || Blocks.get(blockID) == null) return;
                     if(Blocks.get(blockID).placement_prediction){
                         mapIDCache[cPos.x][cPos.y] = blockID;  

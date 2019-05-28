@@ -33,6 +33,7 @@ public class Player implements Serializable
     public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden m√ºssen, m√ºssen public sein
     private String name;
+    private String password; //keine gute Idee, absolut unsicher!
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
     private transient Socket requestSocket;
     private transient ObjectOutputStream requestOut;
@@ -62,22 +63,23 @@ public class Player implements Serializable
      * int id: Index in der Playerliste in Main
      * String name: Name des Players
      * boolean onClient: ob der Player sich im Client befindet (ob also er synchronisiert wird oder nicht)
-     * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), au√üer man wei√ü, was man tut.
+     * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), auﬂer man weiﬂ, was man tut.
      */
-    public Player(int id, String name, boolean onClient)
+    public Player(int id, String name, String password, boolean onClient)
     {
         this.id=id;
         this.name = name;
+        this.password=password;
         this.onClient=onClient;
         this.currentMassIndex=0;
         this.inCraft=false;
-        //der Spawnpunkt muss nochmal √ºberdacht werden
+        //der Spawnpunkt muss nochmal ¸berdacht werden
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
-        this.playerC=new PlayerC(this,new VektorD(50,50));  // spawn Position :)  Ein Herz f√ºr Benny :)
+        this.playerC=new PlayerC(this,new VektorD(50,50));  // spawn Position :)  Ein Herz f¸r Benny :)
         //muss man hier auch schon synchronisieren?
     }
     
-    public static Player newPlayer(String name){
+    public static Player newPlayer(String name, String password){
         try{
             Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
             ObjectOutputStream newPlayerOut=new ObjectOutputStream(s.getOutputStream());
@@ -86,10 +88,10 @@ public class Player implements Serializable
                 newPlayerOut.flush();
             }
             ObjectInputStream newPlayerIn=new ObjectInputStream(s.getInputStream());
-            int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name).ret); //Kopie des Players am Server
+            int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name,password).ret); //Kopie des Players am Server
             if (id!=-1){
                 s.close();
-                return new Player(id,name,true); //Player hier am Client
+                return new Player(id,name,null,true); //Player hier am Client, Passwort wird nicht am Client gespeichert
             }
             s.close();
         }
@@ -114,6 +116,10 @@ public class Player implements Serializable
         this.frame.getOverlayPanelC().setVisible(inCraft);
         this.opA = frame.getOverlayPanelA();
         this.chatP = new ChatPanel(getScreenSize(), opA);
+    }
+    
+    public boolean passwordEquals(String pw){
+        return password.equals(pw);
     }
     
     public void disposeFrame(){
@@ -166,8 +172,8 @@ public class Player implements Serializable
         taskIn=null;
     }
     
-    public void login(){
-        if(online)return;
+    public boolean login(String password){
+        if(online)return false;
         if (onClient){
             try{
                 socketSetup();
@@ -175,7 +181,7 @@ public class Player implements Serializable
             catch(Exception e){
                 System.out.println("Exception when creating socket: "+e);
             }
-            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class).ret);
+            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class,password).ret);
             if (success){
                 this.online = true;
                 makeFrame();
@@ -184,7 +190,9 @@ public class Player implements Serializable
             else{
                 System.out.println("No success when trying to log in");
             }
+            return success;
         }
+        return false;
     }
     
     public void logout(){

@@ -1,6 +1,4 @@
 package client;
-
- 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.awt.Graphics;
@@ -22,15 +20,14 @@ import menu.MenuSettings;
 public class PlayerS implements Serializable
 {
     public static final long serialVersionUID=0L;
-    //alle Variablen, die synchronisiert werden mÃ¼ssen, mÃ¼ssen public sein
+    //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private Player player;
     public VektorD posToMass;
     public double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
     public int focussedMassIndex;
     private transient VektorI lastDragPosition = null;
     private transient ClientSpace workspace; //Irgendwie mag ich diesen Namen. -LG //null=Darstellung des "echten" Space, nicht-null: Bearbeitungsmodus
-    //auch der workspace verwendet zur Zeichnung und fÃ¼r die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher)
-    private transient Manoeuvre manoeuvre; //nur im workspace relevant
+    //auch der workspace verwendet zur Zeichnung und für die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher)
     
     public transient OverlayPanelS opS;
     
@@ -40,7 +37,6 @@ public class PlayerS implements Serializable
         this.posToMass=pos;
         this.focussedMassIndex=focussedMassIndex;
         this.workspace=null;
-        this.manoeuvre=null;
     }
     
     public void makeFrame(Frame frame){
@@ -94,24 +90,24 @@ public class PlayerS implements Serializable
                     //System.out.println("Stelle 1");
                 }
                 lastDragPosition = new VektorI(e.getX(), e.getY());
-                // @Linus: Ich weiÃŸ du sollst dir nicht zu viele Pausen nehmen, damit Spacecraft noch fertig wird, aber in diesem CASE wÃ¤re 
-                // eine kleine BREAK in der du feststellst, dass du eine BREAK vergessen hast nÃ¼tzlich. Mit anderen Worten: Da gehÃ¶rt ein break hin:
+                // @Linus: Ich weiß du sollst dir nicht zu viele Pausen nehmen, damit Spacecraft noch fertig wird, aber in diesem CASE wäre 
+                // eine kleine BREAK in der du feststellst, dass du eine BREAK vergessen hast nützlich. Mit anderen Worten: Da gehört ein break hin:
                 // ~ unknown
                 break;  // :)
             case 'p': VektorI pos = new VektorI(e.getX(), e.getY());
-                // das hÃ¤tte ich auch clientside berechnet:
-                // und das komische ist, dass die Methode irgendwas verÃ¤ndert!!!
-                                 int focussedMassIndexNew;
+                // das hätte ich auch clientside berechnet:
+                // und das komische ist, dass die Methode irgendwas verändert!!!
+                int focussedMassIndexNew;
                 if (workspace==null)
                     focussedMassIndexNew=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getFocussedMassIndex",Integer.class,pos,getPosToNull(),player.getScreenSize(),scale).ret).intValue();
                 else
                     focussedMassIndexNew=workspace.getFocussedMassIndex(pos,getPosToNull(),player.getScreenSize(),scale);
-                // das hab ich eingefÃ¼gt (Alex)
+                // das hab ich eingefügt (Alex)
                 if (focussedMassIndexNew != -1)focussedMassIndex = focussedMassIndexNew;
                 System.out.println("new focussedMass:" + focussedMassIndex);
                 if (player.onClient())
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
-                // und das ist auch eine schÃ¶ne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal
+                // und das ist auch eine schöne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal
                 // zum Server schicken lassen, um es mit dem Server zu synchronisieren xD
                 //System.out.println("Stelle 2");
                 break;
@@ -185,13 +181,13 @@ public class PlayerS implements Serializable
                 if (poss.get(i)!=null){
                     g2.setColor(Color.WHITE);
                     long time=(long) orbits.get(i).t0;
-                    long tEnd=(long) (orbits.get(i).pos.size()*orbits.get(i).dtime); //eigentlich nur eine Zeitdifferenz, nicht die tatsÃ¤chliche End-Zeit
-                    while (orbits.get(i).getPos(time+tEnd)==null){ //hÃ¤ssliche LÃ¶sung fÃ¼r komische NullPointerExceptions
+                    long tEnd=(long) (orbits.get(i).pos.size()*orbits.get(i).dtime); //eigentlich nur eine Zeitdifferenz, nicht die tatsächliche End-Zeit
+                    while (orbits.get(i).getPos(time+tEnd)==null){ //hässliche Lösung für komische NullPointerExceptions
                         tEnd=(long) (tEnd-orbits.get(i).dtime);
                     }
                     //Malen der Bahn des Planeten
                     for (long t=(long) (orbits.get(i).dtime);t<tEnd;t=t+(long) (orbits.get(i).dtime)){
-                        //das sind lÃ¤ngst nicht alle berechneten Positionen, nur alle gesendeten
+                        //das sind längst nicht alle berechneten Positionen, nur alle gesendeten
                         VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
                         VektorD posToNull2=posToNull;
                         if (focussedMassIndex!=-1){
@@ -218,51 +214,56 @@ public class PlayerS implements Serializable
                 }
             }
             
-            //Malen eines Pfeils beim Startpunkt des nÃ¤chsten (geplanten) ManÃ¶vers, der in die Richtung des ManÃ¶vers zeigt, wenn sich der Spieler im workspace befindet
-            //und Malen der durch das ManÃ¶ver beeinflussten Bahn in GrÃ¼n
-            if (workspace!=null && manoeuvre!=null){
-                g2.setColor(Color.GREEN);
-                long t0=Math.max(manoeuvre.oc.t0,workspace.inGameTime); //Wenn man bereits Ã¼ber den Startpunkt des ManÃ¶vers hinaus ist, sollte immer noch etwas angezeigt werden
-
-                if (t0<manoeuvre.oc.t1){ //Pfeil
-                    try{
-                        VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
-                        if (focussedMassIndex!=-1){
-                            posToNull1=posToMass.add(orbits.get(focussedMassIndex).getPos(t0));
+            //Malen eines Pfeils beim Startpunkt der nächsten (geplanten) Manöver, der in die Richtung des Manövers zeigt, wenn sich der Spieler im workspace befindet
+            //und Malen der durch das Manöver beeinflussten Bahn in Grün
+            if (workspace!=null){
+                for (int j=0;j<workspace.masses.size();j++){
+                    for (int i=0;i<workspace.masses.get(j).manoeuvres.size();i++){
+                        Manoeuvre manoeuvre=workspace.masses.get(j).manoeuvres.get(i);
+                        g2.setColor(Color.GREEN);
+                        long t0=Math.max(manoeuvre.t0,workspace.inGameTime); //Wenn man bereits über den Startpunkt des Manövers hinaus ist, sollte immer noch etwas angezeigt werden
+        
+                        if (t0<manoeuvre.t1){ //Pfeil
+                            try{
+                                VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
+                                if (focussedMassIndex!=-1){
+                                    posToNull1=posToMass.add(orbits.get(focussedMassIndex).getPos(t0));
+                                }
+                                VektorD posDiff1=orbits.get(j).getPos(t0).subtract(posToNull1);
+                                posDiff1=posDiff1.multiply(scale);
+                                VektorD dir=manoeuvre.F.multiply(1000*scale);
+                                VektorI start=new VektorI((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y));
+                                VektorI end=new VektorI((int) (screenSize.x/2+posDiff1.x+dir.x),(int) (screenSize.y/2-posDiff1.y-dir.y));
+                                g2.drawLine(start.x,start.y,end.x,end.y);
+                                //Pfeilspitze
+                                double theta=Math.atan2(dir.y,dir.x);
+                                double angle=Math.PI/6;
+                                double theta1=Math.PI+theta-angle;
+                                double theta2=Math.PI+theta+angle;
+                                int l=(int) (400*scale);
+                                g2.drawLine(end.x,end.y,(int) (end.x+l*Math.cos(theta1)),(int) (end.y-l*Math.sin(theta1)));
+                                g2.drawLine(end.x,end.y,(int) (end.x+l*Math.cos(theta2)),(int) (end.y-l*Math.sin(theta2)));
+                            }
+                            catch(NullPointerException e){}
                         }
-                        VektorD posDiff1=orbits.get(manoeuvre.shipIndex).getPos(t0).subtract(posToNull1);
-                        posDiff1=posDiff1.multiply(scale);
-                        VektorD dir=manoeuvre.oc.F.multiply(1000*scale);
-                        VektorI start=new VektorI((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y));
-                        VektorI end=new VektorI((int) (screenSize.x/2+posDiff1.x+dir.x),(int) (screenSize.y/2-posDiff1.y-dir.y));
-                        g2.drawLine(start.x,start.y,end.x,end.y);
-                        //Pfeilspitze
-                        double theta=Math.atan2(dir.y,dir.x);
-                        double angle=Math.PI/6;
-                        double theta1=Math.PI+theta-angle;
-                        double theta2=Math.PI+theta+angle;
-                        int l=(int) (400*scale);
-                        g2.drawLine(end.x,end.y,(int) (end.x+l*Math.cos(theta1)),(int) (end.y-l*Math.sin(theta1)));
-                        g2.drawLine(end.x,end.y,(int) (end.x+l*Math.cos(theta2)),(int) (end.y-l*Math.sin(theta2)));
-                    }
-                    catch(NullPointerException e){}
-                }
-                //Ã¤hnlicb zu oben, wieder ein Teil der Bahn des Planeten
-                for (long t=t0+(long) orbits.get(manoeuvre.shipIndex).dtime;t<manoeuvre.oc.t1;t=t+(long) orbits.get(manoeuvre.shipIndex).dtime){
-                    try{
-                        VektorD posToNull2=posToNull;
-                        VektorD posToNull3=posToNull;
-                        if (focussedMassIndex!=-1){
-                            posToNull2=posToMass.add(orbits.get(focussedMassIndex).getPos(t-(long) orbits.get(manoeuvre.shipIndex).dtime));
-                            posToNull3=posToMass.add(orbits.get(focussedMassIndex).getPos(t));
+                        //ähnlicb zu oben, wieder ein Teil der Bahn des Planeten
+                        for (long t=t0+(long) orbits.get(j).dtime;t<manoeuvre.t1;t=t+(long) orbits.get(j).dtime){
+                            try{
+                                VektorD posToNull2=posToNull;
+                                VektorD posToNull3=posToNull;
+                                if (focussedMassIndex!=-1){
+                                    posToNull2=posToMass.add(orbits.get(focussedMassIndex).getPos(t-(long) orbits.get(j).dtime));
+                                    posToNull3=posToMass.add(orbits.get(focussedMassIndex).getPos(t));
+                                }
+                                VektorD posDiff2=orbits.get(j).getPos(t-(long) orbits.get(j).dtime).subtract(posToNull2);
+                                posDiff2=posDiff2.multiply(scale);
+                                VektorD posDiff3=orbits.get(j).getPos(t).subtract(posToNull3);
+                                posDiff3=posDiff3.multiply(scale);
+                                g2.drawLine((int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y),(int) (screenSize.x/2+posDiff3.x),(int) (screenSize.y/2-posDiff3.y));
+                            }
+                            catch(NullPointerException e){}
                         }
-                        VektorD posDiff2=orbits.get(manoeuvre.shipIndex).getPos(t-(long) orbits.get(manoeuvre.shipIndex).dtime).subtract(posToNull2);
-                        posDiff2=posDiff2.multiply(scale);
-                        VektorD posDiff3=orbits.get(manoeuvre.shipIndex).getPos(t).subtract(posToNull3);
-                        posDiff3=posDiff3.multiply(scale);
-                        g2.drawLine((int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y),(int) (screenSize.x/2+posDiff3.x),(int) (screenSize.y/2-posDiff3.y));
                     }
-                    catch(NullPointerException e){}
                 }
             }
             
@@ -277,41 +278,34 @@ public class PlayerS implements Serializable
         ArrayList<VektorD> vels=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllVels",ArrayList.class).ret);
         ArrayList<Double> masses=(ArrayList<Double>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMasses",ArrayList.class).ret);
         ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
-        ArrayList<ArrayList<OrbitChange>> orbitChanges=(ArrayList<ArrayList<OrbitChange>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllOrbitChanges",ArrayList.class).ret);
-        ArrayList<ArrayList<MassChange>> massChanges=(ArrayList<ArrayList<MassChange>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMassChanges",ArrayList.class).ret);
+        ArrayList<ArrayList<Manoeuvre>> manoeuvres=(ArrayList<ArrayList<Manoeuvre>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllManoeuvres",ArrayList.class).ret);
         Long inGameTime=(Long) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret);
 
         ArrayList<ClientMass> clientMasses=new ArrayList<ClientMass>(poss.size());
         for (int i=0;i<poss.size();i++){
-            ClientMass cm=new ClientMass(masses.get(i),poss.get(i),vels.get(i),radii.get(i),orbitChanges.get(i),massChanges.get(i));
+            ClientMass cm=new ClientMass(masses.get(i),poss.get(i),vels.get(i),radii.get(i),manoeuvres.get(i));
+            if (i==2)
+                cm.manoeuvres.add(new Manoeuvre(new VektorD(0,2.5),0,400,1000));
             clientMasses.add(cm);
         }
-        manoeuvre=new Manoeuvre(2,new VektorD(0,2),0,400,1000);
-        workspace=new ClientSpace(clientMasses,inGameTime.longValue(),1,manoeuvre);
+        workspace=new ClientSpace(clientMasses,inGameTime.longValue(),1);
     }
 
     public void closeWorkspace(boolean applyChanges){
-        workspace.timer.cancel();
-        if (!applyChanges){
+        if (workspace!=null){
+            workspace.timer.cancel();
+            if (!applyChanges){
+                workspace=null;
+                return;
+            }
+            for (int i=0;i<workspace.masses.size();i++){
+                ClientMass m=workspace.masses.get(i);
+                if (m.manoeuvres.size()!=0){
+                    //das könnte Probleme geben, wenn neue Massen hinzugefügt oder alte entfernt werden
+                    new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.setManoeuvres",null,i,m.manoeuvres);
+                }
+            }
             workspace=null;
-            return;
         }
-        if (manoeuvre!=null){
-            ClientMass m=workspace.masses.get(manoeuvre.shipIndex);
-            m.orbitChanges.add(manoeuvre.oc);
-            m.massChanges.add(manoeuvre.mc);
-        }
-        for (int i=0;i<workspace.masses.size();i++){
-            ClientMass m=workspace.masses.get(i);
-            if (m.orbitChanges.size()!=0){
-                //das kÃ¶nnte Probleme geben, wenn neue Massen hinzugefÃ¼gt oder alte entfernt werden
-                new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.setOrbitChanges",null,i,m.orbitChanges);
-            }
-            if (m.massChanges.size()!=0){
-                new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.setMassChanges",null,i,m.massChanges);
-            }
-        }
-        workspace=null;
-        manoeuvre=null;
     }
 }

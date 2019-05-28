@@ -2,8 +2,8 @@ package client;
 import util.geom.*;
 import java.util.ArrayList;
 /**
- * (hier keine Unterscheidung zwischen Planeten und Schiffen, da sie clientseitig nicht nÃ¶tig ist)
- * ziemlich Ã¤hnlich zu server.Mass und server.ShipS
+ * (hier keine Unterscheidung zwischen Planeten und Schiffen, da sie clientseitig nicht nötig ist)
+ * ziemlich ähnlich zu server.Mass und server.ShipS
  */
 public class ClientMass{
     private double m;
@@ -11,8 +11,7 @@ public class ClientMass{
     private VektorD vel;
     private int radius;
     private Orbit o;
-    public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>();
-    public ArrayList<MassChange> massChanges = new ArrayList<MassChange>();
+    public ArrayList<Manoeuvre> manoeuvres = new ArrayList<Manoeuvre>();
 
     public ClientMass(double m, VektorD pos, VektorD vel, int radius){
         this.m = m;
@@ -26,10 +25,9 @@ public class ClientMass{
         this.o=new Orbit(poss,masss,0,0,1);
     }
 
-    public ClientMass(double m, VektorD pos, VektorD vel, int radius, ArrayList<OrbitChange> orbitChanges, ArrayList<MassChange> massChanges){
+    public ClientMass(double m, VektorD pos, VektorD vel, int radius, ArrayList<Manoeuvre> manoeuvres){
         this(m,pos,vel,radius);
-        this.orbitChanges=orbitChanges;
-        this.massChanges=massChanges;
+        this.manoeuvres=manoeuvres;
     }
 
     public double getMass(){

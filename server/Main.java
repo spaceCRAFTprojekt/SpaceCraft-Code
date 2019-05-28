@@ -197,9 +197,12 @@ public class Main implements Serializable
         exitIfNoPlayers();
     }
 
-    public Boolean login(Integer playerID){
-        players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
-        return new Boolean(true);
+   public Boolean login(Integer playerID, String password){
+        if (players.get(playerID).passwordEquals(password)){
+            players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
+            return new Boolean(true);
+        }
+        return new Boolean(false);
     }
 
     public Boolean logout(Integer playerID){
@@ -272,15 +275,15 @@ public class Main implements Serializable
     /**
      * neuer Spieler (vorerst nur zu Testzwecken)
      * Request-Funktion!
-     * playerID wird bei Requests standardmÃ¤ÃŸig Ã¼bergeben, ist hier aber ohne Belang (-1).
+     * playerID wird bei Requests standardmäßig übergeben, ist hier aber ohne Belang (-1).
      * Return-Wert: Kein Erfolg: -1, sonst die ID
      * Erstellt nur die Kopie des Players am Server. Um einen Player mit Client zu erstellen, wird static client.Player.newPlayer(String name) verwendet.
      */
-    public Integer newPlayer(Integer playerID, String name)
+    public Integer newPlayer(Integer playerID, String name, String password)
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, false);
+        Player p=new Player(id, name, password, false);
         players.add(p);
         return id;
     }

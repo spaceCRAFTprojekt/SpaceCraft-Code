@@ -69,12 +69,13 @@ History:
                         Subsandbox-Zeichnen (noch ohne Interaktionen!)
  23.05.2019 v0.3.8_AK * Chest; Änderungen in Main
  24.05.2019 v0.3.9_LG * Merge mit v0.3.8_LG/ ShipsC und PlanetCs wieder entfernt (=> nur noch masses)
- 24.05.2019 v0.3.10_AK* Hotbar Ánfang; Änderungen im Inv und im PlayerC mouseEvent
+ 24.05.2019 v0.3.10_AK * Hotbar �?nfang; Änderungen im Inv und im PlayerC mouseEvent
  24.05.2019 v0.3.8_LG * Arbeitsweltraum
  26.05.2019 v0.3.9_LG * Manöver im Arbeitsweltraum, Anwenden dieser Manöver dann im richtigen Weltraum
- 26.05.2019 v0.3.11_LG* Merge mit v0.3.10_AK (eigentlich andersherum)
- 27.05.2019 v0.3.12_LG* Noch ein Merge, warum auch immer
- 28.05.2019 v0.3.13_MH* Chat und Data Panels, Chatcommands
+ 26.05.2019 v0.3.11_LG * Merge mit v0.3.10_AK (eigentlich andersherum)
+ 27.05.2019 v0.3.12_LG * Noch ein Merge, warum auch immer
+ 28.05.2019 v0.3.13_MH * Chat und Data Panels, Chatcommands
+ 29.05.2019 v0.3.14_LG * Sehr unsichere Passw�rter, in Space Umstieg auf Man�ver (vorher: Orbit- und MassChanges)
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

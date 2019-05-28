@@ -1,16 +1,19 @@
 package client;
 import util.geom.VektorD;
+import java.io.Serializable;
 /**
- * Zusammenfassung von einem OrbitChange und einem MassChange,
- * welche nicht als Referenz in einem Schiff steht (nur temporÃ¤r, im workspace)
+ * ein Manöver
  */
-public class Manoeuvre{
-    int shipIndex;
-    OrbitChange oc;
-    MassChange mc;
-    public Manoeuvre(int shipIndex, VektorD F, double dMass, long t0, long t1){
-        this.shipIndex=shipIndex;
-        oc=new OrbitChange(F,t0,t1);
-        mc=new MassChange(dMass,t0,t1);
+public class Manoeuvre implements Serializable{
+    public static final long serialVersionUID=0L;
+    public VektorD F;
+    public double dMass;
+    public long t0; //inGame-Zeiten
+    public long t1; //von t0 bis t1 gültig
+    public Manoeuvre(VektorD F, double dMass, long t0, long t1){
+        this.F=F;
+        this.dMass=dMass;
+        this.t0=t0;
+        this.t1=t1;
     }
 } 

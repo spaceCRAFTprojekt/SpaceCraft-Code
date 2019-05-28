@@ -1,8 +1,7 @@
 package server;
 import util.geom.*;
 import client.Orbit;
-import client.OrbitChange;
-import client.MassChange;
+import client.Manoeuvre;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.io.Serializable;
@@ -14,9 +13,8 @@ import java.io.ObjectStreamException;
 public class ShipS extends Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
-    public ArrayList<OrbitChange> orbitChanges = new ArrayList<OrbitChange>();
-    public ArrayList<MassChange> massChanges = new ArrayList<MassChange>();
-    public ArrayList<Integer> ownerIDs=new ArrayList<Integer>(); //wenn diese Liste leer ist, dann ist das Schiff Ã¶ffentlich
+    public ArrayList<Manoeuvre> manoeuvres = new ArrayList<Manoeuvre>();
+    public ArrayList<Integer> ownerIDs=new ArrayList<Integer>(); //wenn diese Liste leer ist, dann ist das Schiff öffentlich
     public ShipC shipC;
     
     /**
