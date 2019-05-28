@@ -74,7 +74,7 @@ History:
  26.05.2019 v0.3.9_LG * Manöver im Arbeitsweltraum, Anwenden dieser Manöver dann im richtigen Weltraum
  26.05.2019 v0.3.11_LG* Merge mit v0.3.10_AK (eigentlich andersherum)
  27.05.2019 v0.3.12_LG* Noch ein Merge, warum auch immer
- 
+ 28.05.2019 v0.3.13_MH* Chat und Data Panels, Chatcommands
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:
