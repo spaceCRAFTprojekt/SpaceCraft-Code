@@ -5,7 +5,7 @@ import menu.*;
 import client.ClientSettings;
 /**
  * wird angezeigt beim Start des Spiels:
- * MÃ¶glichkeit der Kartenauswahl und Starten des Spiels.
+ * Möglichkeit der Kartenauswahl und Starten des Spiels.
  * VG von MH 06.05.2019
  */
 public class StartMenu extends Menu{
@@ -15,8 +15,8 @@ public class StartMenu extends Menu{
     private JTextField adress;
     private JTextField port;
     public StartMenu(){
-        super("HauptmenÃ¼", new VektorI(440, 460));
-        label1 = new MenuLabel(this, "Hier kÃ¶nnte ihre Werbung stehen", new VektorI(10,10) ,new VektorI(250,30));
+        super("Hauptmenü", new VektorI(440, 460));
+        label1 = new MenuLabel(this, "Hier könnte ihre Werbung stehen", new VektorI(10,10) ,new VektorI(250,30));
         worldlist = new MenuList(this, new String[]{"localhost:30000"}, new VektorI(10,50) ,new VektorI(250,350), 15);
         playbutton = new MenuButton(this, "Spielen", new VektorI(280,360) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
