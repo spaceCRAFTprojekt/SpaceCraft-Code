@@ -293,7 +293,22 @@ public class Main implements Serializable
     }
 
     public void writeIntoChat(Integer playerID, String message){
-        chat.add(players.get(playerID).getName()+": "+message);
+        String msg = players.get(playerID).getName()+": "+message;
+        chat.add(msg);
+        for (int i=0;i<players.size();i++){
+            if (players.get(i).isOnline()){
+                newTask(i, "Player.addChatMsg", msg);
+            }
+        }
+    }
+    public void serverChatMsg(Integer playerID, String message){
+        String msg = message;
+        chat.add(msg);
+        for (int i=0;i<players.size();i++){
+            if (players.get(i).isOnline()){
+                newTask(i, "Player.addChatMsg", msg);
+            }
+        }
     }
 
     public String[] getChatContent(Integer playerID, Integer numLines){

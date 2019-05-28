@@ -15,4 +15,7 @@ public class CraftItem extends Item implements Serializable
     public CraftItem(int id, String name, BufferedImage inventoryImage){
         this(id, name, inventoryImage, 99);
     }
+    public String getName(){
+        return name;
+    }
 }

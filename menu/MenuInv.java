@@ -22,7 +22,7 @@ public class MenuInv extends JPanel
 {
     public static int iconSize = 50; // Pixel
     public static int border = iconSize/12;  //in Pixel: Abstand zweier Slots
-    private transient ItemImage[][]slots;
+    public transient ItemImage[][]slots;
     public transient Inv inv;
     private transient VektorI draggedItemPos = null;
     /**
@@ -66,9 +66,10 @@ public class MenuInv extends JPanel
         VektorI size = getInvSize();
         for(int y = 0; y < size.y; y++){
             for(int x = 0; x < size.x; x++){
-                this.remove(slots[x][y]);
-                slots[x][y] = new ItemImage(this, inv.getStack(new VektorI(x,y)),new VektorI(x,y), iconSize);
-                this.add(slots[x][y]);
+                //this.remove(slots[x][y]);
+                //slots[x][y] = new ItemImage(this, inv.getStack(new VektorI(x,y)),new VektorI(x,y), iconSize);
+                //this.add(slots[x][y]);
+                slots[x][y].update(inv.getStack(new VektorI(x,y)));
             }
         }
         revalidate();

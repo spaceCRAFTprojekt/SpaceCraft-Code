@@ -1,6 +1,6 @@
 package items;
 import java.util.HashMap;
-
+import java.util.Map.Entry;
 /**
  * Hier werden alle Items gespeichert
  */
@@ -18,5 +18,15 @@ public abstract class Items
     
     public static Item get(int id){
         return items.get(id);
+    }
+    
+    public static Item get(String name){
+        for (Entry<Integer, Item> entry : items.entrySet()) {
+            System.out.println(name+" "+entry.getValue().getName());
+            if (entry.getValue().getName().equals(name)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }

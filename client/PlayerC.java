@@ -14,6 +14,7 @@ import java.util.TimerTask;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferInt;
@@ -49,7 +50,7 @@ public class PlayerC implements Serializable
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
     public transient OtherPlayerTexturesPanel otherPlayerTexturesPanel;
-    
+    public transient DataPanel dataP;
     private PlayerInv inv;
     public transient Hotbar hotbar;
     
@@ -116,6 +117,7 @@ public class PlayerC implements Serializable
         this.otherPlayerTexturesPanel = new OtherPlayerTexturesPanel(opC, this, player.getScreenSize());
         this.hotbar = new Hotbar(opC, inv, player.getScreenSize());   // wird automatisch dem Overlaypanel geadded
         inv.setHotbar(hotbar);
+        this.dataP = new DataPanel(player.getScreenSize(), this, opC);
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -193,19 +195,26 @@ public class PlayerC implements Serializable
                 // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
 
-                if(block.drop_prediction && block.item != null)getInv().addStack(new Stack(block.item, 1));
                 new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.currentMassIndex,sPos);
                 
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(mapIDCache[cPos.x][cPos.y] == -1){
                     //plazieren
                     //System.out.println("Tried to place block at "+sPos.toString());
-                    int blockID = getHotbarBlockID();
+                    Stack hotStack = inv.getHotStack();
+                    if(hotStack == null || hotStack.count < 1)return;
+                    int blockID;
+                    try{ 
+                        blockID = ((BlockItem)(hotStack.getItem())).id; 
+                    }
+                    catch(Exception _){return;}// => Craftitem
                     if(blockID == -1 || Blocks.get(blockID) == null) return;
                     if(Blocks.get(blockID).placement_prediction){
                         mapIDCache[cPos.x][cPos.y] = blockID;  
                         // wenn der Block wahrscheinlich plaziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                         // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder entfernt
+                        hotStack.setCount(hotStack.getCount() -1);
+                        hotbar.updateSlots();
                     }
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.currentMassIndex,sPos, blockID);      
                 }else{
@@ -218,6 +227,20 @@ public class PlayerC implements Serializable
                 }
             }
         }
+    }
+    
+    /**
+     * Mausrad"Event"
+     * @param:
+     * irgend ein EventObjekt; Keine Ahnung was das kann
+     * 
+     * 
+     */
+    public void mouseWheelMoved(MouseWheelEvent e){
+        try{
+            hotbar.scrollDelta(e.getWheelRotation());
+            //System.out.println(e.getWheelRotation());
+        }catch(Exception ichhattekeinelustzuueberpruefenobhotbarnullist){}
     }
     
     // und die Methoden, die für diese Events gebraucht werden
@@ -236,10 +259,6 @@ public class PlayerC implements Serializable
     
     public PlayerInv getInv(){
         return inv; //von LG zum Testen, auch wenn ich eigentlich keine Ahnung vom inv habe
-    }
-    
-    public int getHotbarBlockID(){
-        return 300;
     }
     
     public int getBlockWidth(){
@@ -440,14 +459,6 @@ public class PlayerC implements Serializable
                     }
                 }
                 
-                //Chat
-                String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
-                g2.setColor(Color.WHITE);
-                g2.setFont(MenuSettings.MENU_FONT);
-                for (int i=0;i<chat.length;i++){
-                    g2.drawString(chat[i],20,i*16+8);
-                }
-                
                 g.setColor(new Color(0,0,0,1));
                 Color background = new Color(180,230,255,255);// hier kann der Hintergrund verändert werden
                 int drawX=(int) ((minX-pos.x+((fieldOfView.x)/2))*blockBreite);
@@ -458,6 +469,8 @@ public class PlayerC implements Serializable
                 image=image.getSubimage(-drawX,-drawY,width,height);
                 g.drawImage(image,0,0,background,null);
             }
+            //DataPanel wird upgedated v0.3.13_MH
+            dataP.update();
         }
     }
 

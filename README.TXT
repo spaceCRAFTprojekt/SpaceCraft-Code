@@ -73,6 +73,7 @@ History:
  24.05.2019 v0.3.8_LG * Arbeitsweltraum
  26.05.2019 v0.3.9_LG * Manöver im Arbeitsweltraum, Anwenden dieser Manöver dann im richtigen Weltraum
  26.05.2019 v0.3.11_LG* Merge mit v0.3.10_AK (eigentlich andersherum)
+ 27.05.2019 v0.3.12_LG* Noch ein Merge, warum auch immer
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import items.Inv;
+import items.Stack;
+import items.Items;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
@@ -48,6 +50,7 @@ public class Player implements Serializable
     private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
     public int currentMassIndex;
     public transient OverlayPanelA opA;
+    public transient ChatPanel chatP;
     //transiente Variablen werden nicht synchronisiert
     
     /**
@@ -108,6 +111,7 @@ public class Player implements Serializable
         this.frame.getOverlayPanelS().setVisible(!inCraft);
         this.frame.getOverlayPanelC().setVisible(inCraft);
         this.opA = frame.getOverlayPanelA();
+        this.chatP = new ChatPanel(getScreenSize(), opA);
     }
     
     public void disposeFrame(){
@@ -345,6 +349,7 @@ public class Player implements Serializable
     public void mouseWheelMoved(MouseWheelEvent e){
         if (!isActive())return;  // wenn ein Menü offen ist, dann passiert nichts
         if(!inCraft)playerS.mouseWheelMoved(e);
+        else playerC.mouseWheelMoved(e);
     }
     
     /**
@@ -422,8 +427,61 @@ public class Player implements Serializable
     }
     
     public void writeIntoChat(String message){
-        if (online && onClient)
-            new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);
+        if (online && onClient){
+            if (message.charAt(0) == '!'){
+                String msg = message.substring(1);
+                String[] spl = msg.split(" ");
+                switch (spl[0]){
+                    case "hello":
+                    addChatMsg("Es hat jemand Hallo geschrieben.");
+                    break;
+                    case "logout":
+                    addChatMsg("Du wirst ausgeloggt...");
+                    logout();
+                    break;
+                    case "afk":
+                    serverChatMsg(name + " ist jetzt afk.");
+                    break;
+                    case "witzig":
+                    serverChatMsg(name + " findet diese Aussage witzig.");
+                    break;
+                    case "nichtwitzig":
+                    serverChatMsg(name + " findet diese Aussage nicht witzig.");
+                    break;
+                    case "giveme":
+                    try{
+                        String name = spl[1];
+                        int amount;
+                        if (spl.length>=3){
+                            amount=Integer.parseInt(spl[2]);
+                        }
+                        else
+                            amount=1;
+                        Stack s = new Stack(Items.get(name),amount);
+                        if (s.getItem()!=null){
+                            playerC.getInv().addStack(s);
+                            addChatMsg("Du hast " + amount+" " + name + " bekommen");
+                        }
+                    }
+                    catch(ArrayIndexOutOfBoundsException e){}
+                    break;
+                    default:
+                    addChatMsg("Unbekannter Command...");
+                }
+            }
+            else new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);
+        }
+    }
+    
+    public void serverChatMsg(String message){
+        new Request(id,requestOut,requestIn,"Main.serverChatMsg",null,message);
+    }
+    
+    /**
+     * Die empfängt eine neue Nachricht vom Server und zeigt sie an
+     */
+    public void addChatMsg(String msg){
+        chatP.add(msg);
     }
     
     /**

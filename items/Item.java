@@ -39,4 +39,5 @@ public abstract class Item implements Serializable
         return id == item.id;
     }
     
+    public abstract String getName();
 }

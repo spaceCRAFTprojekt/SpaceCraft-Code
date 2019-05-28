@@ -18,10 +18,11 @@ public class Inv implements Serializable
      */
     public Stack addStack(Stack s){
         Stack leftover = s;
-        for(int x = 0; x < stacks.length; x++){
-            for(int y = 0; y < stacks[x].length; y++){
+        for(int y = 0; y < stacks[0].length; y++){  // erst y, damit die Items von links nach rechts befüllt werden
+            for(int x = 0; x < stacks.length; x++){
                 if(stacks[x][y] == null) {
                     stacks[x][y] = leftover;
+                    update();
                     return new Stack(s.item, 0);
                 }
                 else leftover = stacks[x][y].add(leftover);

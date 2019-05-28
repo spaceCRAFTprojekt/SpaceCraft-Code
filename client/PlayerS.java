@@ -264,13 +264,6 @@ public class PlayerS implements Serializable
                 }
             }
             
-            String[] chat=(String[]) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getChatContent",String[].class,5).ret;
-            g2.setColor(Color.WHITE);
-            g2.setFont(MenuSettings.MENU_FONT);
-            for (int i=0;i<chat.length;i++){
-                g2.drawString(chat[i],20,i*16+8);
-            }
-            
             g.drawImage(img, 0,0, Color.BLACK, null);
             //p.repaint();
             //player.getFrame().getOverlayPanelS().add(new InfoPopup());

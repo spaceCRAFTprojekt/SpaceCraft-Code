@@ -8,7 +8,6 @@ import menu.Hotbar;
  */
 public class PlayerInv extends Inv
 {
-    private VektorI hotkeyPos;
     private transient Hotbar hotbar;
     public PlayerInv(){
         super(MenuSettings.INV_SIZE);
@@ -21,6 +20,14 @@ public class PlayerInv extends Inv
     
     public void setHotbar(Hotbar hotbar){
         this.hotbar = hotbar;
+    }
+    
+    /**
+     * gibt den gerade ausgewählten Stack zurück
+     */
+    public Stack getHotStack(){
+        if(hotbar == null)return null;
+        return hotbar.getHotStack();
     }
 }
     

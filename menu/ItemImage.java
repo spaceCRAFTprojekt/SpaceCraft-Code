@@ -36,31 +36,33 @@ public class ItemImage extends JComponent
         this.mi = mi;
         this.pos = pos;
         this.setSize(size, size);
-        
-        
-        
+
         int halfBorder = MenuInv.border/2;
         this.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(halfBorder,halfBorder,halfBorder,halfBorder),
-            BorderFactory.createLoweredBevelBorder()));
+                BorderFactory.createEmptyBorder(halfBorder,halfBorder,halfBorder,halfBorder),
+                BorderFactory.createLoweredBevelBorder()));
         setEnabled(false); // damit die Mouse Events beim MenuInv bleiben
         setVisible(true);
         this.setBackground(Color.GRAY);
         this.setOpaque(true);
-        if(stack  == null || stack.getCount() <= 0){
-            
-        }else{
-            this.img = stack.getInventoryImage();
+        label = new JLabel();
+        label.setBounds(3, (2*size)/3 - 3, size,size/3);
+        label.setFont(new Font("sansserif",0,size/3));
+        label.setForeground(Color.WHITE);
+        label.setVisible(true); 
+        label.setOpaque(false);
+        this.add(label);
+        update(stack);
+        repaint();
+    }
 
-            label = new JLabel(""+stack.getCount());
-            label.setBounds(3, (2*size)/3 - 3, size,size/3);
-            label.setFont(new Font("sansserif",0,size/3));
-            label.setForeground(Color.WHITE);
-            label.setVisible(true); 
-            label.setOpaque(false);
-            this.add(label);
-            
-            repaint();
+    public void update(Stack stack){
+        if(stack == null || stack.getCount() <= 0){
+            label.setText("");
+            this.img = null;
+        }else{
+            label.setText(""+stack.getCount());
+            this.img = stack.getInventoryImage();
         }
         repaint();
     }
@@ -73,22 +75,21 @@ public class ItemImage extends JComponent
         g.fillRect(halfBorder,halfBorder,  width,width); 
         try{g.drawImage(img, halfBorder,halfBorder,  width,width, null);}catch(Exception e){}
     }
-    
+
     public VektorI getPos(){
         return pos;
     }
+
     public MenuInv getMenuInv(){
         return mi;
     }
+
     public Stack getStack(){
         return mi.getInv().getStack(pos);
     }
-    
+
     public boolean equals(ItemImage ii){
         return (this.mi.equals(ii.getMenuInv()) && this.pos.equals(ii.getPos()));
     }
-    
 
-    
 }
-
