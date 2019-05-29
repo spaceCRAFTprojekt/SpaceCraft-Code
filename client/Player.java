@@ -1,9 +1,7 @@
 package client;
 
- 
-import java.lang.reflect.Field;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import util.geom.*;
 import menu.*;
 import client.menus.*;
@@ -12,8 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.image.BufferedImage;
-import javax.swing.JButton;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.ObjectOutputStream;
@@ -33,7 +29,6 @@ public class Player implements Serializable
     public static final long serialVersionUID=0L;
     //alle Variablen, die synchronisiert werden m√ºssen, m√ºssen public sein
     private String name;
-    private String password; //keine gute Idee, absolut unsicher!
     private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
     private transient Socket requestSocket;
     private transient ObjectOutputStream requestOut;
@@ -65,11 +60,10 @@ public class Player implements Serializable
      * boolean onClient: ob der Player sich im Client befindet (ob also er synchronisiert wird oder nicht)
      * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), auﬂer man weiﬂ, was man tut.
      */
-    public Player(int id, String name, String password, boolean onClient)
+    public Player(int id, String name, boolean onClient)
     {
         this.id=id;
         this.name = name;
-        this.password=password;
         this.onClient=onClient;
         this.currentMassIndex=0;
         this.inCraft=false;
@@ -91,7 +85,7 @@ public class Player implements Serializable
             int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name,password).ret); //Kopie des Players am Server
             if (id!=-1){
                 s.close();
-                return new Player(id,name,null,true); //Player hier am Client, Passwort wird nicht am Client gespeichert
+                return new Player(id,name,true); //Player hier am Client, Passwort wird nicht am Client gespeichert
             }
             s.close();
         }
@@ -116,10 +110,6 @@ public class Player implements Serializable
         this.frame.getOverlayPanelC().setVisible(inCraft);
         this.opA = frame.getOverlayPanelA();
         this.chatP = new ChatPanel(getScreenSize(), opA);
-    }
-    
-    public boolean passwordEquals(String pw){
-        return password.equals(pw);
     }
     
     public void disposeFrame(){

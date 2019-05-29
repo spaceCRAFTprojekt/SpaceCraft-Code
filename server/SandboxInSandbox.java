@@ -12,10 +12,12 @@ public class SandboxInSandbox implements Serializable
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
      */
     public VektorD offset;
+    public VektorD vel; //Geschwindigkeit, nur zum Simulieren durch den Client
 
-    public SandboxInSandbox(Sandbox sandbox, VektorD offset)
+    public SandboxInSandbox(Sandbox sandbox, VektorD offset, VektorD vel)
     {
         this.sandbox = sandbox;
         this.offset = offset;
+        this.vel=vel;
     }
 }

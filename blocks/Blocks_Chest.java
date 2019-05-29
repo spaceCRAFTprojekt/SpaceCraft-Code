@@ -15,7 +15,7 @@ public class Blocks_Chest extends SBlock
     public static VektorI size = new VektorI(10,4);
     public Blocks_Chest(int id){
         // id, name, bild, hat ein item
-        super(id, "Chest", "blocks_chest", true);
+        super(id, "chest", "blocks_chest", true);
         this.breakment_prediction = false;
     }
 

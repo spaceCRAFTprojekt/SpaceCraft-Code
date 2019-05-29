@@ -41,7 +41,7 @@ public class LoginMenu extends Menu{
                     Player player;
                     String password=new String(pw.getPassword());
                     if (pOnServer!=null){
-                        player=new Player(pOnServer.getID(),pOnServer.getName(),null,true); //Passwort wird nur serverseitig gespeichert, hier ist es null
+                        player=new Player(pOnServer.getID(),pOnServer.getName(),true);
                         player.synchronizeWithPlayerFromServer(pOnServer);
                     }
                     else{

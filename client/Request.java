@@ -12,9 +12,9 @@ import java.io.ObjectInputStream;
  * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exit()
      * Main.exitIfNoPlayers()
-     * Main.newPlayer(String name)
+     * Main.newPlayer(String name,String password)
      * Main.getPlayer(String name)
-     * Main.login()
+     * Main.login(String password)
      * Main.logout()
      * Main.returnFromMenu(String menuName, Object[] menuParams)
      * Main.synchronizePlayerVariable(String varname, Class class, Object value)

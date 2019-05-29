@@ -37,16 +37,11 @@ public class Main implements Serializable
     //(es sind ja sowieso alle Mains (bisher) am selben Port, also ist das vielleicht gar nicht so blöd, wie es aussieht. Vielleicht.
     //eigentlich nicht nötig
     public static final long serialVersionUID=0L;
-    static String spacefilename="space"; //sollten die in Settings sein? Lg // die sind ja immer gleich; solange der Path in den Settings ist AK;
-    static String playersfilename="players";
-    static String shipCfilename="shipC";
-    static String planetCfilename="planetC";
-    static String blocksfilename="blocks";
-    static String fileEnding=".ser";
 
     private ArrayList<Player> players = new ArrayList<Player>();
     // Kopie der Player, muss synchronisiert werden!
     // normalerweise nur ein Spieler
+    private ArrayList<String> passwords = new ArrayList<String>(); //ziemlich unsicher!
     private transient ArrayList<String> chat=new ArrayList<String>();
     private Space space;
     private transient ServerCreator sc;
@@ -59,10 +54,7 @@ public class Main implements Serializable
      */
     public static Main newMain(boolean useOldData){
         String folder=Settings.GAMESAVE_FOLDER;
-        if (useOldData && new File(folder+File.separator+spacefilename+fileEnding).exists() &&
-        new File(folder+File.separator+playersfilename+fileEnding).exists() &&
-        new File(folder+File.separator+planetCfilename+"0"+fileEnding).exists() &&
-        new File(folder+File.separator+"main.ser").exists()){ //mindestens einer
+        if (useOldData && new File(folder+File.separator+"main.ser").exists()){
             try{
                 return Serializer.deserialize();
             }
@@ -95,7 +87,7 @@ public class Main implements Serializable
     /**
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
-     * Setup-Funktion, aufgerufen nach der Deserialisierung. 
+     * Setup-Funktion, aufgerufen nach der Deserialisierung.
      * LG
      * Oder mit anderen Worten: Liest den aktuellen Spielstand aus den gamesaves und erstellt damit alle nötigen Objekte
      * AK
@@ -165,7 +157,7 @@ public class Main implements Serializable
      * Schließt das Spiel UND speichert den Spielstand!!!
      */
     public void exit(){
-        System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
+        System.out.println("\n===================\nSpaceCraft schlie�t\n===================\n");
         for (int i=0;i<players.size();i++){
             if (players.get(i).isOnline()){
                 players.get(i).logout(); //Server-Kopie des Players
@@ -197,8 +189,8 @@ public class Main implements Serializable
         exitIfNoPlayers();
     }
 
-   public Boolean login(Integer playerID, String password){
-        if (players.get(playerID).passwordEquals(password)){
+    public Boolean login(Integer playerID, String password){
+        if (passwords.get(playerID).equals(password)){
             players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
             return new Boolean(true);
         }
@@ -214,17 +206,17 @@ public class Main implements Serializable
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         try{
             if (menuName.equals("NoteblockMenu")){  // @Käpt'n ernsthaft? Kann man das nicht in die entsprechende Klasse auslagern???
-                Sandbox sb = getSandbox((Integer)menuParams[1]);
-                Meta mt=sb.getMeta((VektorI) menuParams[2]);
+                Sandbox sb = getSandbox((Integer)menuParams[0]);
+                Meta mt=sb.getMeta((VektorI) menuParams[1]);
                 if (mt!=null){
-                    mt.put("text",menuParams[3]);
+                    mt.put("text",menuParams[2]);
                     return new Boolean(true);
                 }
                 return new Boolean(false);
             }else if(menuName.equals("ChestMenu")){
-                Sandbox sb = getSandbox((Integer)menuParams[1]);
-                Meta mt=sb.getMeta((VektorI) menuParams[2]);
-                Inv inv_main = (Inv)menuParams[3];
+                Sandbox sb = getSandbox((Integer)menuParams[0]);
+                Meta mt=sb.getMeta((VektorI) menuParams[1]);
+                Inv inv_main = (Inv)menuParams[2];
                 if(inv_main != null && mt != null){
                     mt.put("inv_main", inv_main);
                     return new Boolean(true);
@@ -283,8 +275,9 @@ public class Main implements Serializable
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, password, false);
+        Player p=new Player(id, name, false);
         players.add(p);
+        passwords.add(password);
         return id;
     }
 

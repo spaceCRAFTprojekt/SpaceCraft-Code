@@ -93,134 +93,6 @@ public class Space implements Serializable
     }
     
     /**
-     * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
-     * Es ist der Index des Planeten an pos.
-     * Einige der Parameter sind Standard mit Requests (=unnötig)
-     */
-    public Integer getFocussedMassIndex(Integer playerID, VektorI posClick, VektorD posToNull, VektorI screenSize, Double scale){
-        posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
-        posClick=posClick.subtract(screenSize.divide(2));
-        posClick=posClick.divide(scale);
-        VektorI posClickToNull=posClick.add(posToNull.toInt());
-        Integer ret=new Integer(-1);
-        for (int i=0;i<masses.size();i++){
-            if (masses.get(i)!=null){
-                VektorD posPlanet=masses.get(i).getPos();
-                double r=2;
-                if (masses.get(i) instanceof PlanetS){
-                    r=((PlanetS) masses.get(i)).getRadius()*scale;
-                }
-                double distance=posPlanet.subtract(posClickToNull.toDouble()).getLength()*scale;
-                if (distance < r+20){
-                    ret=new Integer(i);
-                    return ret;
-                }
-            }
-        }
-        ret=new Integer(-1);
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion (Player-ID standardmäßig als Übergabeparameter)
-     */
-    public VektorD getMassPos(Integer playerID, Integer index){
-        VektorD ret=new VektorD(Double.NaN,Double.NaN);
-        if (masses.get(index)==null){
-            
-        }
-        else{
-            ret=masses.get(index).getPos();
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion
-     */
-    public Long getInGameTime(Integer playerID){
-        return inGameTime;
-    }
-
-    /**
-     * Request-Funktion
-     */
-    public ArrayList<VektorD> getAllPos(Integer playerID){
-        ArrayList<VektorD> ret=new ArrayList<VektorD>();
-        for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getPos());
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion
-     */
-    public ArrayList<VektorD> getAllVels(Integer playerID){
-        ArrayList<VektorD> ret=new ArrayList<VektorD>();
-        for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getVel());
-        }
-        return ret;
-    }
-
-    /**
-     * Request-Funktion
-     */
-    public ArrayList<Double> getAllMasses(Integer playerID){
-        ArrayList<Double> ret=new ArrayList<Double>();
-        for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getMass());
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion
-     */
-    public ArrayList<Integer> getAllRadii(Integer playerID){
-        ArrayList<Integer> ret=new ArrayList<Integer>();
-        for (int i=0;i<masses.size();i++){
-            if (masses.get(i) instanceof PlanetS){
-                ret.add(((PlanetS) masses.get(i)).getRadius());
-            }
-            else{
-                ret.add(2);
-            }
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion
-     */
-    public ArrayList<Orbit> getAllOrbits(Integer playerID){
-        ArrayList<Orbit> ret=new ArrayList<Orbit>();
-        int accuracy=Settings.SPACE_GET_ORBIT_ACCURACY;
-        for (int i=0;i<masses.size();i++){
-            ArrayList<VektorD> pos=new ArrayList<VektorD>(masses.get(i).o.pos.size()/accuracy);
-            ArrayList<Double> mass=new ArrayList<Double>(masses.get(i).o.pos.size()/accuracy);
-            for (int j=0;j<masses.get(i).o.pos.size();j=j+accuracy){
-                pos.add(masses.get(i).o.pos.get(j));
-                mass.add(masses.get(i).o.mass.get(j));
-            }
-            ret.add(new Orbit(pos,mass,masses.get(i).o.t0,masses.get(i).o.t1,Settings.SPACE_CALC_PERIOD_INGAME*accuracy));
-        }
-        return ret;
-    }
-    
-    public ArrayList<ArrayList<Manoeuvre>> getAllManoeuvres(Integer playerID){
-        ArrayList<ArrayList<Manoeuvre>> ret=new ArrayList<ArrayList<Manoeuvre>>();
-        for (int i=0;i<masses.size();i++){
-            if (masses.get(i) instanceof ShipS)
-                ret.add(((ShipS) masses.get(i)).manoeuvres);
-            else
-                ret.add(new ArrayList<Manoeuvre>());
-        }
-        return ret;
-    }
-    
-    /**
      * Berechnet die (Nicht-Kepler-)Orbits aller Objekte in diesem Space ab dem Aufruf dieser Methode für (dtime) Sekunden
      */
     public void calcOrbits(long dtime){
@@ -355,5 +227,133 @@ public class Space implements Serializable
                 ship.manoeuvres=manoeuvres;
             }
         }
+    }
+    
+    /**
+     * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
+     * Es ist der Index des Planeten an pos.
+     * Einige der Parameter sind Standard mit Requests (=unnötig)
+     */
+    public Integer getFocussedMassIndex(Integer playerID, VektorI posClick, VektorD posToNull, VektorI screenSize, Double scale){
+        posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
+        posClick=posClick.subtract(screenSize.divide(2));
+        posClick=posClick.divide(scale);
+        VektorI posClickToNull=posClick.add(posToNull.toInt());
+        Integer ret=new Integer(-1);
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i)!=null){
+                VektorD posPlanet=masses.get(i).getPos();
+                double r=2;
+                if (masses.get(i) instanceof PlanetS){
+                    r=((PlanetS) masses.get(i)).getRadius()*scale;
+                }
+                double distance=posPlanet.subtract(posClickToNull.toDouble()).getLength()*scale;
+                if (distance < r+20){
+                    ret=new Integer(i);
+                    return ret;
+                }
+            }
+        }
+        ret=new Integer(-1);
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion (Player-ID standardmäßig als Übergabeparameter)
+     */
+    public VektorD getMassPos(Integer playerID, Integer index){
+        VektorD ret=new VektorD(Double.NaN,Double.NaN);
+        if (masses.get(index)==null){
+            
+        }
+        else{
+            ret=masses.get(index).getPos();
+        }
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public Long getInGameTime(Integer playerID){
+        return inGameTime;
+    }
+
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<VektorD> getAllPos(Integer playerID){
+        ArrayList<VektorD> ret=new ArrayList<VektorD>();
+        for (int i=0;i<masses.size();i++){
+            ret.add(masses.get(i).getPos());
+        }
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<VektorD> getAllVels(Integer playerID){
+        ArrayList<VektorD> ret=new ArrayList<VektorD>();
+        for (int i=0;i<masses.size();i++){
+            ret.add(masses.get(i).getVel());
+        }
+        return ret;
+    }
+
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<Double> getAllMasses(Integer playerID){
+        ArrayList<Double> ret=new ArrayList<Double>();
+        for (int i=0;i<masses.size();i++){
+            ret.add(masses.get(i).getMass());
+        }
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<Integer> getAllRadii(Integer playerID){
+        ArrayList<Integer> ret=new ArrayList<Integer>();
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof PlanetS){
+                ret.add(((PlanetS) masses.get(i)).getRadius());
+            }
+            else{
+                ret.add(2);
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * Request-Funktion
+     */
+    public ArrayList<Orbit> getAllOrbits(Integer playerID){
+        ArrayList<Orbit> ret=new ArrayList<Orbit>();
+        int accuracy=Settings.SPACE_GET_ORBIT_ACCURACY;
+        for (int i=0;i<masses.size();i++){
+            ArrayList<VektorD> pos=new ArrayList<VektorD>(masses.get(i).o.pos.size()/accuracy);
+            ArrayList<Double> mass=new ArrayList<Double>(masses.get(i).o.pos.size()/accuracy);
+            for (int j=0;j<masses.get(i).o.pos.size();j=j+accuracy){
+                pos.add(masses.get(i).o.pos.get(j));
+                mass.add(masses.get(i).o.mass.get(j));
+            }
+            ret.add(new Orbit(pos,mass,masses.get(i).o.t0,masses.get(i).o.t1,Settings.SPACE_CALC_PERIOD_INGAME*accuracy));
+        }
+        return ret;
+    }
+    
+    public ArrayList<ArrayList<Manoeuvre>> getAllManoeuvres(Integer playerID){
+        ArrayList<ArrayList<Manoeuvre>> ret=new ArrayList<ArrayList<Manoeuvre>>();
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof ShipS)
+                ret.add(((ShipS) masses.get(i)).manoeuvres);
+            else
+                ret.add(new ArrayList<Manoeuvre>());
+        }
+        return ret;
     }
 }

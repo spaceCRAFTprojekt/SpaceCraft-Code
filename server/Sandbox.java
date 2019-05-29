@@ -88,7 +88,7 @@ public abstract class Sandbox implements Serializable
      * Fügt eine Sandbox hinzu
      */
     public void addSandbox(Sandbox sbNeu, VektorD offsetPos){
-        if(sbNeu!=null)subsandboxes.add(new SandboxInSandbox(sbNeu,offsetPos));
+        if(sbNeu!=null)subsandboxes.add(new SandboxInSandbox(sbNeu,offsetPos,new VektorD(0,0)));
     }
 
     /**
@@ -272,7 +272,8 @@ public abstract class Sandbox implements Serializable
                 }
             }
             VektorD offset=subsandboxes.get(i).offset;
-            ret[i]=new SubsandboxTransferData(index,offset);
+            VektorD vel=subsandboxes.get(i).vel;
+            ret[i]=new SubsandboxTransferData(index,vel,offset);
         }
         return ret;
     }

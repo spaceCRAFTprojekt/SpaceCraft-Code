@@ -22,7 +22,6 @@ public abstract class Items
     
     public static Item get(String name){
         for (Entry<Integer, Item> entry : items.entrySet()) {
-            System.out.println(name+" "+entry.getValue().getName());
             if (entry.getValue().getName().equals(name)) {
                 return entry.getValue();
             }

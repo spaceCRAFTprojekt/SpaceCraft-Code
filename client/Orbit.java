@@ -34,11 +34,18 @@ public class Orbit implements Serializable{
             return null;
         }
         int i=(int) Math.round((double) (t-t0)/dtime);
+        /*
         if (i<0 || i>=pos.size()-1){
             return null;
         }
         else{
             return (pos.get(i+1).subtract(pos.get(i))).divide(dtime);
+        }*/
+        if (i<1 || i>pos.size()-1){
+            return null;
+        }
+        else{
+            return (pos.get(i).subtract(pos.get(i-1))).divide(dtime);
         }
     }
     public double getMass(long t){
