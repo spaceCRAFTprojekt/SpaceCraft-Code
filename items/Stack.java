@@ -21,8 +21,13 @@ public class Stack implements Serializable
         this.item = item;
         this.count = count;
     }
+    public Stack(Stack s){
+        this(s.getItem(), s.getCount());
+    }
     public Stack add(Stack stack){
-        if(!stack.item.equals(item))return stack;
+        if(stack == null)return null;
+        if(item == null || count == 0)item = stack.getItem();
+        else if(!stack.item.equals(item))return stack;
         int countNew = count + stack.count;
         if (countNew > maxCount){
             count = maxCount;
@@ -43,5 +48,13 @@ public class Stack implements Serializable
     }
     public Item getItem(){
         return item;
+    }
+    public boolean take(int i){
+        count = count - 1;
+        if(count < 0) {
+            count = 0;
+            return false;
+        }else return true;
+        
     }
 }

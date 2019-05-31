@@ -21,7 +21,7 @@ public class ItemImage extends JComponent
     private int size;
     private transient MenuInv mi;
     private transient VektorI pos;
-    private transient JLabel label;
+    private int count;
 
     /**
      * Constructor for objects of class MenuLabel
@@ -45,26 +45,36 @@ public class ItemImage extends JComponent
         setVisible(true);
         this.setBackground(Color.GRAY);
         this.setOpaque(true);
-        label = new JLabel();
-        label.setBounds(3, (2*size)/3 - 3, size,size/3);
-        label.setFont(new Font("sansserif",0,size/3));
-        label.setForeground(Color.WHITE);
-        label.setVisible(true); 
-        label.setOpaque(false);
-        this.add(label);
+        count = 0;
         update(stack);
         repaint();
     }
 
+    
     public void update(Stack stack){
-        if(stack == null || stack.getCount() <= 0){
-            label.setText("");
-            this.img = null;
-        }else{
-            label.setText(""+stack.getCount());
+        if(stack == null || stack.getCount() <= 0)showNullWithoutRepaint();
+        else{
+            count = stack.getCount();
             this.img = stack.getInventoryImage();
         }
         repaint();
+    }
+    
+    /**
+     * es wird ein leerer Stack angezeigt. (mit repaint!!!) 
+     * public, da es auch in den drop and drag [sic] Methoden verwendet wird
+     */
+    public void showNull(){
+        showNullWithoutRepaint();
+        repaint();
+    }
+    
+    /**
+     * es wird ein leerer Stack wird gesetzt, aber nicht gepaintet (-> nur private)
+     */
+    private void showNullWithoutRepaint(){
+        count = 0;
+        this.img = null;
     }
 
     @Override
@@ -73,7 +83,13 @@ public class ItemImage extends JComponent
         int halfBorder = MenuInv.border/2 + 2;
         int width = size-MenuInv.border-4;
         g.fillRect(halfBorder,halfBorder,  width,width); 
+        
         try{g.drawImage(img, halfBorder,halfBorder,  width,width, null);}catch(Exception e){}
+        if(count > 0){
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("sansserif",0,size/3));
+            g.drawString(count+"", 3, size - 5);
+        }
     }
 
     public VektorI getPos(){

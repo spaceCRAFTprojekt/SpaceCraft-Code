@@ -26,9 +26,9 @@ public class MenuInv extends JPanel
     public transient Inv inv;
     private transient VektorI draggedItemPos = null;
     /**
-     * Ich hatte keinen Block einen Konstruktor zu beschreiben xD
+     * wird nicht automatische zu Contentpane hinzugef�gt
      */
-    public MenuInv(Menu m, Inv inv){
+    public MenuInv(Inv inv){
         super();
         this.inv = inv;
         VektorI size = getInvSize(); // Achtung nicht ändern, weil getSize() wird in Hotbar überschrieben
@@ -41,7 +41,13 @@ public class MenuInv extends JPanel
 
         slots = new ItemImage[size.x][size.y];
         initSlots(size);
-
+    }
+    
+    /**
+     * Wird automatisch zur contentPane des Menus hinzugef�gt
+     */
+    public MenuInv(Menu m, Inv inv){
+        this(inv);
         if (m!=null) m.contentPane.add(this); // und fÃ¼gt ihn zur Pane hinzu (in der Hotbar ist m null)
     }
     
