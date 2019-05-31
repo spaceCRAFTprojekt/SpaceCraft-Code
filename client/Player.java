@@ -293,6 +293,10 @@ public class Player implements Serializable
         return openedMenu == null;
     }
     
+    public Menu getMenu(){
+        return openedMenu;
+    }
+    
     /**
      * Task-Funktion
      */

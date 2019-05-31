@@ -76,8 +76,9 @@ History:
  28.05.2019 v0.3.13_MH * Chat und Data Panels, Chatcommands
  29.05.2019 v0.3.14_LG * Sehr unsichere Passwörter, in Space Umstieg auf Manöver (vorher: Orbit- und MassChanges)
  29.05.2019 v0.3.15_AK * ManoeuvreInfo Menu
- 01.06.2019 v0.3.16_AK * Das blöde Inventar drop and drag [sic]. Uhrzeit: 00:42; Laune: schlechter als Benni
- 
+ 31.05.2019 v0.3.16_LG * Anwendung der Manò¶¥², unfertig (was noch fehlt: dMass, fuelcost,rel?), generell recht unschò®€€
+ 01.06.2019 v0.3.17_AK * Das blöde Inventar drop and drag [sic]. Uhrzeit: 00:42; Laune: schlechter als Benni
+
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

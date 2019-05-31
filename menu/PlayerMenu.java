@@ -15,10 +15,7 @@ import javax.swing.*;
 import util.geom.VektorI;
 import client.Player;
 /**
- * Beschreiben Sie hier die Klasse PlayerMenu.
- * 
- * @author (Ihr Name) 
- * @version (eine Versionsnummer oder ein Datum)
+ * Ein Menü mit Referenz auf einen Player
  */
 public abstract class PlayerMenu extends Menu{
     private Player p;

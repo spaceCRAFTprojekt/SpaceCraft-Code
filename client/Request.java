@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
      * Main.getOtherPlayerTextures(int PlayerID, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
+     * Space.getMassNumber()
      * Space.getAllRadii() <= echter Plural
      * Space.getAllOrbits()
      * Space.getAllPos()
@@ -35,7 +36,7 @@ import java.io.ObjectInputStream;
      * Sandbox.placeBlock(Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
      * Sandbox.rightclickBlock(Integer sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
-     * Sandbox.getAllSubsandboxTransferData(Integer sandboxIndex)
+     * Sandbox.getAllSubsandboxes(Integer sandboxIndex)
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params der currentMassIndex des Players.

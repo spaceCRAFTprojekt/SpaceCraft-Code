@@ -5,6 +5,7 @@ import java.util.TimerTask;
 import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import client.SandboxInSandbox;
 import blocks.*;
 /**
  * Die Sandbox eines Planeten
@@ -30,7 +31,7 @@ public class PlanetC extends Sandbox implements Serializable
         
     }
     
-    public PlanetS getPlanetS(){
+    public Mass getMass(){
         return planetS;
     }
 }

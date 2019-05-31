@@ -16,4 +16,8 @@ public class Manoeuvre implements Serializable{
         this.t0=t0;
         this.t1=t1;
     }
+    
+    public String toString(){
+        return "Manoeuvre: Force = "+F+", dMass = "+dMass+", t0 = "+t0+", t1 = "+t1;
+    }
 } 

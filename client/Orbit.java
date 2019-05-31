@@ -55,4 +55,15 @@ public class Orbit implements Serializable{
         int i=(int) Math.round((double) (t-t0)/dtime);
         return mass.get(i);
     }
+    public double getTravelledDistance(long tStart, long tEnd){
+        if (t0>tStart || t0>tEnd || t1<=tStart || t1<=tEnd || tEnd<tStart)
+            return -1;
+        double ret=0;
+        int iStart=(int) Math.round((double) (tStart-t0)/dtime);
+        int iEnd=(int) Math.round((double) (tEnd-t0)/dtime);
+        for (int i=iStart+1;i<iEnd;i++){
+            ret=ret+pos.get(i).subtract(pos.get(i-1)).getLength();
+        }
+        return ret;
+    }
 }

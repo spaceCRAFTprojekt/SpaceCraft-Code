@@ -47,4 +47,37 @@ public class WorkspaceMenu{
             };
         }
     }
+    public static class SelectManoeuvres extends PlayerMenu{
+        public SelectManoeuvres(Player p){
+            super(p,"Manöver wählen",new VektorI(p.getPlayerS().getWorkspace().getNumControllables()*120+16,200));
+            int index=0; //Da ja nur die kontrollierbaren Schiffe angezeigt werden, ist das nicht i
+            for (int i=0;i<p.getPlayerS().getWorkspace().masses.size();i++){
+                if (p.getPlayerS().getWorkspace().masses.get(i).isControllable()){
+                    String[] strs=new String[p.getPlayerS().getWorkspace().masses.get(i).manoeuvres.size()+1];
+                    strs[0]="Neues Manöver";
+                    for (int j=0;j<strs.length-1;j++){
+                        strs[j+1]=Integer.toString(j);
+                    }
+                    MenuList list=new MenuList(this,strs,new VektorI(index*120,30),new VektorI(120,200),MenuSettings.MENU_FONT_SIZE);
+                    final int massIndex=i; //aus irgendeinem Grund kann man vom MenuButton aus nur finale Variablen referenzieren
+                    //recht hässlich
+                    new MenuButton(this,"Editieren",new VektorI(index*120,0),new VektorI(120,30)){
+                        public void onClick(){
+                            if (list.getSelectedIndex()==-1)
+                                return;
+                            int k;
+                            closeMenu();
+                            if (list.getSelectedIndex()==0)
+                                k=-1; //neues Manöver
+                            else{
+                                k=Integer.parseInt((String) list.getSelectedValue());
+                            }
+                            p.openMenu(new ManoeuvreInfo(p,massIndex,k));
+                        }
+                    };
+                    index++;
+                }
+            }
+        }
+    }
 } 

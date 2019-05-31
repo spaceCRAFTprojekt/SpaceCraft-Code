@@ -9,10 +9,10 @@ import util.geom.*;
  */
 public class ClientSpace
 {
-    ArrayList<ClientMass>masses;
-    long inGameTime;
-    long inGameDTime;
-    Timer timer;
+    public ArrayList<ClientMass>masses;
+    public long inGameTime;
+    public long inGameDTime;
+    public Timer timer;
     public ClientSpace(ArrayList<ClientMass> masses, long inGameTime, long inGameDTime)
     {
         this.masses=masses;
@@ -22,6 +22,30 @@ public class ClientSpace
         timerSetup();
     }
 
+    /**
+     * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
+     * Es ist der Index des Planeten an pos.
+     * hier kein Request (da ohnehin clientseitig)
+     */
+    public int getFocussedMassIndex(VektorI posClick, VektorD posToNull, VektorI screenSize, double scale){
+        posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
+        posClick=posClick.subtract(screenSize.divide(2));
+        posClick=posClick.divide(scale);
+        VektorI posClickToNull=posClick.add(posToNull.toInt());
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i)!=null){
+                VektorD posPlanet=masses.get(i).getPos();
+                double r=2;
+                r=masses.get(i).getRadius()*scale;
+                double distance=posPlanet.subtract(posClickToNull.toDouble()).getLength()*scale;
+                if (distance < r+20){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+    
     public void timerSetup(){
         timer=new Timer();
         timer.schedule(new TimerTask(){
@@ -39,33 +63,6 @@ public class ClientSpace
                 calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
             }
         },ClientSettings.SPACE_TIMER_PERIOD,ClientSettings.SPACE_TIMER_PERIOD);
-    }
-
-    /**
-     * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
-     * Es ist der Index des Planeten an pos.
-     * hier kein Request (da ohnehin clientseitig)
-     */
-    public int getFocussedMassIndex(VektorI posClick, VektorD posToNull, VektorI screenSize, double scale){
-        posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
-        posClick=posClick.subtract(screenSize.divide(2));
-        posClick=posClick.divide(scale);
-        VektorI posClickToNull=posClick.add(posToNull.toInt());
-        Integer ret=new Integer(-1);
-        for (int i=0;i<masses.size();i++){
-            if (masses.get(i)!=null){
-                VektorD posPlanet=masses.get(i).getPos();
-                double r=2;
-                r=masses.get(i).getRadius()*scale;
-                double distance=posPlanet.subtract(posClickToNull.toDouble()).getLength()*scale;
-                if (distance < r+20){
-                    ret=new Integer(i);
-                    return ret;
-                }
-            }
-        }
-        ret=new Integer(-1);
-        return ret;
     }
 
     /**
@@ -112,6 +109,10 @@ public class ClientSpace
             ret=masses.get(index).getPos();
         }
         return ret;
+    }
+    
+    public int getMassNumber(){
+        return masses.size();
     }
 
     /**
@@ -228,5 +229,14 @@ public class ClientSpace
             Orbit o=new Orbit(poss[i],masss[i],inGameTime,inGameTime+dtime,ClientSettings.SPACE_CALC_PERIOD_INGAME);
             masses.get(i).setOrbit(o);
         }
+    }
+    
+    public int getNumControllables(){
+        int num=0;
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i).isControllable())
+                num++;
+        }
+        return num;
     }
 }
