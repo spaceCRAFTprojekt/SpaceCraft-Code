@@ -28,6 +28,7 @@ public class PlayerS implements Serializable
     private transient VektorI lastDragPosition = null;
     private transient ClientSpace workspace; //Irgendwie mag ich diesen Namen. -LG //null=Darstellung des "echten" Space, nicht-null: Bearbeitungsmodus
     //auch der workspace verwendet zur Zeichnung und für die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher)
+
     
     public transient OverlayPanelS opS;
     
@@ -58,11 +59,26 @@ public class PlayerS implements Serializable
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 // ist das notwendig? Muss der Server den fokusierten Planeten kennen?
                 break;
+            case Shortcuts.space_focus_next:
+                int maxNum;
+                if (workspace!=null)
+                    maxNum=workspace.getMassNumber()-1;
+                else
+                    maxNum=((Integer) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getMassNumber",Integer.class).ret).intValue()-1;
+                focussedMassIndex=focussedMassIndex<maxNum ? focussedMassIndex+1 : 0; //immer 1 größer, bei maxNum wieder bei 0 anfangen
+                if (player.onClient())
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
+                break;
             case Shortcuts.space_switch_workspace:
                 if (workspace==null)
                     new WorkspaceMenu.Open(this.player);
                 else
                     new WorkspaceMenu.Close(this.player);
+                break;
+            case Shortcuts.workspace_new_manoeuvre:
+                if (workspace!=null){
+                    player.openMenu(new WorkspaceMenu.SelectManoeuvres(player));
+                }
                 break;
         }
     }
@@ -174,8 +190,11 @@ public class PlayerS implements Serializable
                 poss=workspace.getAllPos();
                 orbits=workspace.getAllOrbits();
                 radii=workspace.getAllRadii();
-                g2.drawString("Arbeitsweltraum",20,20);
+                g2.drawString("Arbeitsweltraum",player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-60);
             }
+            long inGameTime=((Long) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret).longValue();
+            //immer der Wert im richtigen Space, nicht im Workspace (in dem vergeht keine Zeit)
+            g2.drawString("Zeit: "+inGameTime,player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-75);
             
             for (int i=0;i<poss.size();i++){
                 if (poss.get(i)!=null){
@@ -217,7 +236,7 @@ public class PlayerS implements Serializable
             //Malen eines Pfeils beim Startpunkt der nächsten (geplanten) Manöver, der in die Richtung des Manövers zeigt, wenn sich der Spieler im workspace befindet
             //und Malen der durch das Manöver beeinflussten Bahn in Grün
             if (workspace!=null){
-                for (int j=0;j<workspace.masses.size();j++){
+                for (int j=0;j<workspace.masses.size();j++){ //j ist die äußere Laufvariable, eher ungewöhnlich
                     for (int i=0;i<workspace.masses.get(j).manoeuvres.size();i++){
                         Manoeuvre manoeuvre=workspace.masses.get(j).manoeuvres.get(i);
                         g2.setColor(Color.GREEN);
@@ -279,13 +298,12 @@ public class PlayerS implements Serializable
         ArrayList<Double> masses=(ArrayList<Double>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMasses",ArrayList.class).ret);
         ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
         ArrayList<ArrayList<Manoeuvre>> manoeuvres=(ArrayList<ArrayList<Manoeuvre>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllManoeuvres",ArrayList.class).ret);
+        ArrayList<Boolean> isControllables=(ArrayList<Boolean>) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllIsControllables",ArrayList.class).ret);
         Long inGameTime=(Long) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret);
 
         ArrayList<ClientMass> clientMasses=new ArrayList<ClientMass>(poss.size());
         for (int i=0;i<poss.size();i++){
-            ClientMass cm=new ClientMass(masses.get(i),poss.get(i),vels.get(i),radii.get(i),manoeuvres.get(i));
-            if (i==2)
-                cm.manoeuvres.add(new Manoeuvre(new VektorD(0,2.5),0,400,1000));
+            ClientMass cm=new ClientMass(masses.get(i),isControllables.get(i),poss.get(i),vels.get(i),radii.get(i),manoeuvres.get(i));
             clientMasses.add(cm);
         }
         workspace=new ClientSpace(clientMasses,inGameTime.longValue(),1);
@@ -296,6 +314,9 @@ public class PlayerS implements Serializable
             workspace.timer.cancel();
             if (!applyChanges){
                 workspace=null;
+                if (player.getMenu() instanceof ManoeuvreInfo || player.getMenu() instanceof WorkspaceMenu.SelectManoeuvres){
+                    player.closeMenu();
+                }
                 return;
             }
             for (int i=0;i<workspace.masses.size();i++){
@@ -306,6 +327,13 @@ public class PlayerS implements Serializable
                 }
             }
             workspace=null;
+            if (player.getMenu() instanceof ManoeuvreInfo || player.getMenu() instanceof WorkspaceMenu.SelectManoeuvres){
+                player.closeMenu();
+            }
         }
+    }
+    
+    public ClientSpace getWorkspace(){
+        return workspace;
     }
 }

@@ -15,7 +15,7 @@ public class Space implements Serializable
 {
     public static final long serialVersionUID=0L;
     Main main;
-    ArrayList<Mass>masses = new ArrayList<Mass>(); // hier sind alle Massen (Planeten oder Schiffe) verzeichnet  // HALLO LINUS
+    ArrayList<Mass>masses; // hier sind alle Massen (Planeten oder Schiffe) verzeichnet
     transient Timer timer;
     long time; //Alle Zeiten in s
     long inGameTime;
@@ -28,13 +28,24 @@ public class Space implements Serializable
     {
         this.main=main;
         timer=new Timer();
+        masses=new ArrayList<Mass>();
         PlanetS erde=new PlanetS(main,1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer);
         masses.add(erde);
-        PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",100,10,0,timer);
+        PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",20,10,0,timer);
         masses.add(mond);
         ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
         masses.add(schiff);
-        //erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(0,0));
+        /*
+        new Thread(){//ziemlich unschön, aber sonst gibts NullPointer, weil Main.getSpace() noch null ist
+            //Das hier sollte definitiv nur für Testzwecke sein.
+            public void run(){
+                try{
+                    Thread.sleep(1000);
+                }
+                catch(InterruptedException e){}
+                erde.getSandbox().addSandbox(mond.getSandbox(),new VektorD(-1,-1));
+            }
+        }.start();*/
         time=0;
         inGameTime=0;
         this.inGameDTime=inGameDTime;
@@ -355,5 +366,21 @@ public class Space implements Serializable
                 ret.add(new ArrayList<Manoeuvre>());
         }
         return ret;
+    }
+    
+    //Das könnte man vermutlich auch irgendwie besser lösen
+    public ArrayList<Boolean> getAllIsControllables(Integer playerID){
+        ArrayList<Boolean> ret=new ArrayList<Boolean>();
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof ShipS)
+                ret.add(((ShipS) masses.get(i)).isOwner(playerID));
+            else
+                ret.add(false);
+        }
+        return ret;
+    }
+    
+    public Integer getMassNumber(Integer playerID){
+        return new Integer(masses.size());
     }
 }

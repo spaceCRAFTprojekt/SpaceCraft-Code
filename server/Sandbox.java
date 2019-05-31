@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 
 import client.ClientSettings;
-import client.SubsandboxTransferData;
+import client.SandboxInSandbox;
 import blocks.*;
 /**
  * Eine virtuelle Umgebung aus Blöcken
@@ -83,16 +83,22 @@ public abstract class Sandbox implements Serializable
     public void setMap(Block[][]map){
         if(map!= null)this.map = map;
     }
-
+    
     /**
-     * Fügt eine Sandbox hinzu
+     * Gibt die Masse der Sandbox zur�ck
+     */
+    public abstract Mass getMass();
+    
+    /**
+     * F�gt eine Sandbox hinzu
      */
     public void addSandbox(Sandbox sbNeu, VektorD offsetPos){
-        if(sbNeu!=null)subsandboxes.add(new SandboxInSandbox(sbNeu,offsetPos,new VektorD(0,0)));
+        if(sbNeu!=null)
+            subsandboxes.add(new SandboxInSandbox(main.getSpace().masses.indexOf(sbNeu.getMass()),offsetPos,new VektorD(0,0)));
     }
 
     /**
-     * Löscht eine Sandbox
+     * Entfernt eine Sandbox
      */
     public void removeSandbox(Sandbox sbR){
         if(sbR!=null)subsandboxes.remove(sbR);
@@ -260,22 +266,8 @@ public abstract class Sandbox implements Serializable
     /***********************************************************************************************************************************************************
     /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
-    public SubsandboxTransferData[] getAllSubsandboxTransferData(Integer playerID, Integer sandboxIndex){
-        SubsandboxTransferData[] ret=new SubsandboxTransferData[subsandboxes.size()];
-        ArrayList<Mass> masses=main.getSpace().masses;
-        for (int i=0;i<subsandboxes.size();i++){
-            int index=-1;
-            for (int j=0;j<masses.size();j++){
-                if (masses.get(j).getSandbox().equals(subsandboxes.get(i).sandbox)){
-                    index=j;
-                    break;
-                }
-            }
-            VektorD offset=subsandboxes.get(i).offset;
-            VektorD vel=subsandboxes.get(i).vel;
-            ret[i]=new SubsandboxTransferData(index,vel,offset);
-        }
-        return ret;
+    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){
+        return subsandboxes.toArray(new SandboxInSandbox[subsandboxes.size()]);
     }
 
     /***********************************************************************************************************************************************************

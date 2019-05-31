@@ -76,6 +76,8 @@ History:
  27.05.2019 v0.3.12_LG * Noch ein Merge, warum auch immer
  28.05.2019 v0.3.13_MH * Chat und Data Panels, Chatcommands
  29.05.2019 v0.3.14_LG * Sehr unsichere Passwörter, in Space Umstieg auf Manöver (vorher: Orbit- und MassChanges)
+ 30.05.2019 v0.3.15_AK * Manöver-GUI
+ 31.05.2019 v0.3.16_LG * Anwendung der Manöver, unfertig (was noch fehlt: dMass, fuelcost,rel?), generell recht unschön
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

@@ -1,7 +1,5 @@
 package client;
 
- 
-
 import util.geom.*;
 import util.ImageTools;
 import items.*;
@@ -44,10 +42,9 @@ public class PlayerC implements Serializable
     @Deprecated private VektorD hitbox = new VektorD(1,2);
     public transient int[][] mapIDCache;
     public transient VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
-    public transient SubsandboxTransferData[] subData;
+    public transient SandboxInSandbox[] subData;
     public transient int[][][] subMapIDCache;
     public transient VektorI[] subMapIDCachePos;
-    //Verschoben in OtherPlayerTexturePanel: public transient Object[] playerTextureCache = null;  // Es sind Objekte der Klasse OtherPlayerTexture. Ich kann die sch***e nicht in in ein OtherPlayerTexture[] casten!!!
     
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
@@ -99,7 +96,7 @@ public class PlayerC implements Serializable
                             mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
                             Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
                             otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
-                            subData=(SubsandboxTransferData[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxTransferData",SubsandboxTransferData[].class,player.currentMassIndex).ret);
+                            subData=(SandboxInSandbox[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxes",SandboxInSandbox[].class,player.currentMassIndex).ret);
                             subMapIDCache=new int[subData.length][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y];
                             subMapIDCachePos=new VektorI[subData.length];
                             for (int i=0;i<subData.length;i++){
@@ -110,6 +107,12 @@ public class PlayerC implements Serializable
                         }
                     }
                 },0,1000);
+            timer.schedule(new TimerTask(){ //Warum war dieser Timer nochmal im PlayerC und nicht im Player? -LG
+                    public void run(){
+                        if (player.getMenu() instanceof ManoeuvreInfo)
+                            ((ManoeuvreInfo) player.getMenu()).update();
+                    }
+                },0,100);
         }
     }
     
@@ -184,7 +187,7 @@ public class PlayerC implements Serializable
         if (type == 'c'){
             if (!player.isOnline() || !player.onClient())return;
             VektorI clickPos = new VektorI(e);  // Position in Pixeln am Bildschirm
-            VektorI sPos=getPosToPlayer(clickPos,blockBreite);  //Position in der Sandbox
+            VektorI sPos=getPosToPlayer(pos,clickPos,blockBreite); //Position in der Sandbox
             VektorI cPos=getPosToCache(sPos);  // Position im mapIDCache
             if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
@@ -197,7 +200,7 @@ public class PlayerC implements Serializable
                 // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
 
-                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.currentMassIndex,sPos);
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.getCurrentMassIndex(),sPos);
                 
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(mapIDCache[cPos.x][cPos.y] == -1){
@@ -218,13 +221,13 @@ public class PlayerC implements Serializable
                         hotStack.setCount(hotStack.getCount() -1);
                         hotbar.updateSlots();
                     }
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.currentMassIndex,sPos, blockID);      
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos, blockID);      
                 }else{
                     //leftclick
                     //System.out.println("Tried to leftclick block at "+sPos.toString());
                     Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
                     if(block instanceof SBlock){
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.currentMassIndex,sPos);      
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos);      
                     }
                 }
             }
@@ -305,6 +308,7 @@ public class PlayerC implements Serializable
      */
     public VektorD getUpperLeftCorner(VektorD pos){
         // das -0.5 ist eine hässliche Lösung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
+        //ist jetzt wieder rausgenommen, vorher .subtract(new VektorD(0.5,0.5)) o.�.
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) );
     }
     
@@ -312,12 +316,13 @@ public class PlayerC implements Serializable
      * Gibt die Position eines Blocks an
      * 
      * @param: 
+     * posRel: Position des Spielers relativ zu der Sandbox, mit der er interagiert
      * bPos: Position des Blocks relativ zur oberen rechten Ecke der Spieleransicht in Pixeln
      * blockBreite: Breite eines Blocks in Pixeln
      */
-    public VektorI getPosToPlayer(VektorI bPos, int blockBreite){
+    public VektorI getPosToPlayer(VektorD posRel, VektorI bPos, int blockBreite){
         //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
-        return (getUpperLeftCorner(pos).add(bPos.toDouble().divide(blockBreite))).toInt();
+        return (getUpperLeftCorner(posRel).add(bPos.toDouble().divide(blockBreite))).toInt();
     }
     
     /**
@@ -398,7 +403,7 @@ public class PlayerC implements Serializable
                 //Zeichnen von Subsandboxen, recht ähnlich zu dem Zeichnen der Sandbox oberhalb
                 if (subData!=null && subMapIDCache!=null && subMapIDCachePos!=null){
                     for (int i=0;i<subData.length;i++){
-                        SubsandboxTransferData sd=subData[i];
+                        SandboxInSandbox sd=subData[i];
                         int[][] smic=subMapIDCache[i];
                         VektorI smicp=subMapIDCachePos[i];
                         if (sd!=null && smic!=null && smicp!=null){

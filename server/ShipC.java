@@ -4,6 +4,7 @@ import java.util.Timer;
 import util.geom.*;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import client.SandboxInSandbox;
 import blocks.*;
 /**
  * Die Sandbox eines Schiffs
@@ -26,7 +27,7 @@ public class ShipC extends Sandbox implements Serializable
     
     protected void spaceTimerSetup(){}
     
-    public ShipS getShipS(){
+    public Mass getMass(){
         return shipS;
     }
 }

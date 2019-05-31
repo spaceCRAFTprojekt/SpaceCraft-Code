@@ -7,14 +7,15 @@ import java.util.ArrayList;
  */
 public class ClientMass{
     private double m;
+    private boolean isControllable; //false: fremdes ShipS oder Planet
     private VektorD pos;
     private VektorD vel;
     private int radius;
     private Orbit o;
     public ArrayList<Manoeuvre> manoeuvres = new ArrayList<Manoeuvre>();
-
-    public ClientMass(double m, VektorD pos, VektorD vel, int radius){
+    public ClientMass(double m, boolean isControllable, VektorD pos, VektorD vel, int radius){
         this.m = m;
+        this.isControllable=isControllable;
         this.pos = pos;
         this.vel = vel;
         this.radius=radius;
@@ -25,8 +26,8 @@ public class ClientMass{
         this.o=new Orbit(poss,masss,0,0,1);
     }
 
-    public ClientMass(double m, VektorD pos, VektorD vel, int radius, ArrayList<Manoeuvre> manoeuvres){
-        this(m,pos,vel,radius);
+    public ClientMass(double m, boolean isControllable, VektorD pos, VektorD vel, int radius, ArrayList<Manoeuvre> manoeuvres){
+        this(m,isControllable,pos,vel,radius);
         this.manoeuvres=manoeuvres;
     }
 
@@ -61,9 +62,8 @@ public class ClientMass{
     public int getRadius(){
         return radius;
     }
-
-    public static ClientMass sum(ClientMass m1, ClientMass m2){
-        double mNew=m1.getMass()+m2.getMass();
-        return new ClientMass(mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),m1.getVel().multiply(m1.getMass()).divide(mNew).add(m2.getVel().multiply(m2.getMass()).divide(mNew)),0);
+    
+    public boolean isControllable(){
+        return isControllable;
     }
 } 
