@@ -57,7 +57,7 @@ public class ServerCreator{
                                                 else{ //Jemand versucht, zu betrügen, hier am Server kann nämlich ein Player nur isOnline()=true zurückgeben, 
                                                       //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
                                                       //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Menü statt)
-                                                    System.out.println("Ein Betrüger? "+req);
+                                                    System.out.println("Sehr Witzig du Betrüger "+req);
                                                     client.close();
                                                     return;
                                                 }

@@ -309,7 +309,8 @@ public class PlayerC implements Serializable
     public VektorD getUpperLeftCorner(VektorD pos){
         // das -0.5 ist eine hässliche Lösung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
         //ist jetzt wieder rausgenommen, vorher .subtract(new VektorD(0.5,0.5)) o.�.
-        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) );
+        // 2.6.2019 AK: .subtract(new VektorD(0.5,0.5)) ist richtig. (Stichwort obere linke ecke des Blocks & Rundung)
+        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5).subtract(new VektorD(0.5,0.5)) );
     }
     
     /**
@@ -317,7 +318,7 @@ public class PlayerC implements Serializable
      * 
      * @param: 
      * posRel: Position des Spielers relativ zu der Sandbox, mit der er interagiert
-     * bPos: Position des Blocks relativ zur oberen rechten Ecke der Spieleransicht in Pixeln
+     * bPos: Position des Klicks
      * blockBreite: Breite eines Blocks in Pixeln
      */
     public VektorI getPosToPlayer(VektorD posRel, VektorI bPos, int blockBreite){

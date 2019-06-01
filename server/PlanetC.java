@@ -31,6 +31,11 @@ public class PlanetC extends Sandbox implements Serializable
         
     }
     
+    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){
+        return super.getAllSubsandboxes(playerID, sandboxIndex);  // 1.6.2019 AK ich wusste mir nicht zu helfen:
+        //Exception when resolving request: java.lang.NoSuchMethodException: server.PlanetC.getAllSubsandboxes(java.lang.Integer, java.lang.Integer)
+    }
+    
     public Mass getMass(){
         return planetS;
     }

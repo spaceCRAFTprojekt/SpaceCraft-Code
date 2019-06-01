@@ -14,4 +14,5 @@ public abstract class ClientSettings{
     public static boolean PRINT_COMMUNICATION=false; //nur weil es nervig ist, ständig Zeug aus-und einkommentieren zu müssen
     public static String SERVER_ADDRESS="localhost";
     public static int SERVER_PORT=30000;
+    
 }

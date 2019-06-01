@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseWheelEvent;
+import javax.swing.SwingUtilities;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import java.io.ObjectOutputStream;
@@ -365,9 +366,10 @@ public class Player implements Serializable
      * entered und exited wurde nicht implementiert, weil es daf√ºr bisher keine Verwendung gab
      */
     public void mouseEvent(MouseEvent e, char type) {
+        MouseEvent eLayered = SwingUtilities.convertMouseEvent(frame, e, frame.getLayeredPane());  // ‹bersetzt das Koosy in das Koosy eines LayeredPanes (Issue #26)
         closeMenu();
-        if (inCraft)playerC.mouseEvent(e,type);
-        else playerS.mouseEvent(e,type);
+        if (inCraft)playerC.mouseEvent(eLayered,type);
+        else playerS.mouseEvent(eLayered,type);
     }
     
     public void windowEvent(WindowEvent e, char type){
