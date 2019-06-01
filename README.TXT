@@ -78,7 +78,7 @@ History:
  29.05.2019 v0.3.15_AK * ManoeuvreInfo Menu
  31.05.2019 v0.3.16_LG * Anwendung der Manò¶¥², unfertig (was noch fehlt: dMass, fuelcost,rel?), generell recht unschò®€€
  01.06.2019 v0.3.17_AK * Das blöde Inventar drop and drag [sic]. Uhrzeit: 00:42; Laune: schlechter als Benni
- 02.06.2019 v0.3.17_AK * Offset Problem (#26) gelöst (Juhu); Inventar verbessert; DraggedItemImage hinzugefügt
+ 02.06.2019 v0.4.0_AK * Offset Problem (#26) gelöst (Juhu); Inventar verbessert; DraggedItemImage hinzugefügt
 
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
