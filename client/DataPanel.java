@@ -34,7 +34,7 @@ public class DataPanel extends JPanel{
         data.setBounds(0, 0,screenSize.x, 20);  // Position und Größe
         data.setBackground(new Color(0,0,0,0));
         data.setForeground(new Color(0,0,0));
-        data.setEnabled(true);
+        data.setEnabled(false);  // das war true, Ich habs auf false gesetzt AK  (v0.4.1_AK)
         data.setFont(MenuSettings.MENU_FONT);
         update();
         data.setVisible(true);

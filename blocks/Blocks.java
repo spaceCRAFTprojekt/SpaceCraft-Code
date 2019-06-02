@@ -5,6 +5,7 @@ package blocks;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.awt.image.BufferedImage;
+import items.*;
 
 /**
  * hier wird je ein Objekt jedes Blocks gespeichert (z.B.: Erde, Sand, Stein, Wasser)
@@ -23,6 +24,7 @@ public abstract class Blocks
         new Block(000, "stone", "blocks_stone", true);
         new Block(001, "dirt", "blocks_dirt", true); 
         new Block(002, "grass", "blocks_grass", true); 
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(0, 0, 0, 0, -1, 0, 0, 0, 0, 100, 2));
         new Blocks_Chest(100);
         new Blocks_Note(104); // id kann noch verändert werden
         new Blocks_Piston(300);

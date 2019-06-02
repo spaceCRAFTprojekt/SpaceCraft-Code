@@ -29,7 +29,31 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         this.addMouseListener(this);
     }
     
+    /**
+     * wird aufgerufen, wenn ein Stack gedroppt wird
+     * @return: boolean: Ob der Spieler den Stack droppen darf
+     */
+    public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack){
+        return true;
+    }
+   
+    /**
+     * wird aufgerufen, nachdem ein Stack gedroppt wurde
+     */
+    public void afterDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo){}
     
+    /**
+     * wird aufgerufen, wenn ein Stack gedragged wird
+     * @return: boolean: Ob der Spieler den Stack draggen darf
+     */
+    public boolean onDrag(MenuInv miFrom, VektorI vFrom, Stack stack){
+        return true;
+    }
+    
+    
+    /**
+     * gibt das ItemImage (und damit den darin gespeicherten Stack) an der Position des Auszeigers zurück
+     */
     public ItemImage getMenuInv(VektorI pos){
         Point pointOnContentPane = SwingUtilities.convertPoint(this, pos.x, pos.y, contentPane);  
         Component c = SwingUtilities.getDeepestComponentAt(this.getContentPane(),(int)pointOnContentPane.getX(), (int)pointOnContentPane.getY());
@@ -64,7 +88,7 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         ItemImage ii = getMenuInv(new VektorI(e));
         switch(e.getButton()){
             case MouseEvent.BUTTON1:  // linksklick
-            if(draggedStack == null || draggedStack.getCount() == 0)dragStack(ii);
+            if(draggedStack == null || draggedStack.getCount() == 0)dragStack(ii, new VektorI(SwingUtilities.convertMouseEvent(this, e, this.getLayeredPane())));
             else if(ii != null)dropStack(ii, false);
             break;
             case MouseEvent.BUTTON3:  // rechtsklick
@@ -82,7 +106,7 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         else resetDrag();
     }
     
-    public void dragStack(ItemImage ii){
+    public void dragStack(ItemImage ii, VektorI mousePos){
         // nichts machen, wenn kein Item zu draggen, oder wenn der zu draggende Slot leer ist
         if(ii == null)return;
         Inv invOfStack = ii.getMenuInv().getInv();
@@ -90,9 +114,10 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         if (ii == null || stackAtPos == null || draggedItemImage != null)return; 
         draggedItemImage = ii;
         draggedStack = new Stack(stackAtPos);
+        if(!onDrag(ii.getMenuInv(),ii.getPos(),draggedStack)){removeDragData(); return;}
         invOfStack.removeStack(ii.getPos());
         ii.showNull();  // ein leerer Stack wird angezeigt
-        dii = new DraggedItemImage(draggedStack, this);
+        dii = new DraggedItemImage(draggedStack, mousePos ,this);
         System.out.println("Item at pos "+draggedItemImage.getPos()+ " dragged.");
     }
     
@@ -102,8 +127,11 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         MenuInv dragMenuInv = draggedItemImage.getMenuInv();
         Stack dropStack = dropItemImage.getStack();
         MenuInv dropMenuInv = dropItemImage.getMenuInv();
+        VektorI dragItemPos = draggedItemImage.getPos();
         if(draggedStack == null || draggedStack.getCount() <= 0) {removeDragData(); return;}
-
+        
+        if(!onDrop(dragMenuInv,draggedItemImage.getPos(),dropMenuInv,dragItemPos,draggedStack)){resetDrag(); return;}
+        
         if (dropStack == null) {
             dropStack = new Stack(null , 0);
             dropMenuInv.getInv().setStack(dropItemImage.getPos(), dropStack);
@@ -120,24 +148,35 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         if(leftover == null || leftover.getCount() <= 0)removeDragData();
         else dii.update(draggedStack);
         System.out.println("Item to pos "+dropItemImage.getPos()+ " dropped.");
+        
+        afterDrop(dragMenuInv,dragItemPos,dropMenuInv,dropItemImage.getPos());
+        
         dropMenuInv.updateSlots();
-
+        
     }
     
+    /**
+     * Setzt das Item wieder an die Stelle an der es vor dem drag war.
+     */
     private void resetDrag(){
         try{ 
-            draggedItemImage.getStack().add(draggedStack);
+            draggedItemImage.getMenuInv().getInv().addToStack(draggedItemImage.getPos(), draggedStack);
             draggedItemImage.getMenuInv().updateSlots();
             
         }catch (Exception e){}
-        removeDragData();
+        finally{
+            removeDragData();
+        }
     }
     
     private void removeDragData(){
         draggedStack = null;
         draggedItemImage = null;
-        if(dii != null)dii.dispose(this);
-        dii = null;
+        if(dii != null){
+            dii.setVisible(false); // da das Remove manchmal nicht geht wird das Item vorher einmal leer repainted
+            dii.dispose(this);
+            dii = null;
+        }
     }
 
     public void mouseEntered(MouseEvent e) {}  // "Nichts ist besser als Nicht" ~ DSDS Teilnehmer

@@ -29,13 +29,14 @@ public class DraggedItemImage extends JComponent
      *  int size: die grÃ¶ÃŸe eines Inventar Slots in Pixeln (größenangabe mit dem Rahmen)
      *  pos: linke obere Ecke !in Pixeln!
      */
-    public DraggedItemImage(Stack stack, JFrame frame)
+    public DraggedItemImage(Stack stack, VektorI pos, JFrame frame)
     {
         super();
         this.size = MenuInv.iconSize - MenuInv.border;  // könnte man in Zukunft variabel machen
         this.setSize(size, size);
         setEnabled(false); // damit die Mouse Events beim MenuInv bleiben
         setVisible(true);
+        update(pos);
         this.setOpaque(false);
         count = 0;
         update(stack);
