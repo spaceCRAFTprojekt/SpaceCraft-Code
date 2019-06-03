@@ -187,7 +187,6 @@ public class PlayerS implements Serializable
                 g2.drawString("Arbeitsweltraum",player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-60);
             }
             long inGameTime=((Long) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret).longValue();
-            //immer der Wert im richtigen Space, nicht im Workspace (in dem vergeht keine Zeit)
             g2.drawString("Zeit: "+inGameTime,player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-75);
             
             for (int i=0;i<masses.size();i++){
@@ -231,19 +230,20 @@ public class PlayerS implements Serializable
             //Malen eines Pfeils beim Startpunkt der nächsten (geplanten) Manöver, der in die Richtung des Manövers zeigt, wenn sich der Spieler im workspace befindet
             //und Malen der durch das Manöver beeinflussten Bahn in Grün
             if (workspace!=null){
+                g2.setColor(Color.GREEN);
                 for (int j=0;j<workspace.masses.size();j++){ //j ist die äußere Laufvariable, eher ungewöhnlich
                     for (int i=0;i<workspace.masses.get(j).getManoeuvres().size();i++){
                         Manoeuvre manoeuvre=workspace.masses.get(j).getManoeuvres().get(i);
-                        g2.setColor(Color.GREEN);
-                        long t0=Math.max(manoeuvre.t0,workspace.inGameTime); //Wenn man bereits über den Startpunkt des Manövers hinaus ist, sollte immer noch etwas angezeigt werden
-        
+                        long t0=Math.max(manoeuvre.t0,workspace.inGameTime+1); //Wenn man bereits über den Startpunkt des Manövers hinaus ist, sollte immer noch etwas angezeigt werden
+                        
                         if (t0<manoeuvre.t1){ //Pfeil
                             try{
+                                //Dieser Teil arbeitet mit der Liste workspace.masses statt masses (tolle Namensgebung), die genauere Orbits enthält
                                 VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
                                 if (focussedMassIndex!=-1){
-                                    posToNull1=posToMass.add(masses.get(focussedMassIndex).o.getPos(t0));
+                                    posToNull1=posToMass.add(workspace.masses.get(focussedMassIndex).o.getPos(t0));
                                 }
-                                VektorD posDiff1=masses.get(j).o.getPos(t0).subtract(posToNull1);
+                                VektorD posDiff1=workspace.masses.get(j).o.getPos(t0).subtract(posToNull1);
                                 posDiff1=posDiff1.multiply(scale);
                                 VektorD dir=manoeuvre.getForce(workspace.masses.get(j).o.getVel(t0)).multiply(1000*scale);
                                 VektorI start=new VektorI((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y));
@@ -259,23 +259,23 @@ public class PlayerS implements Serializable
                                 g2.drawLine(end.x,end.y,(int) (end.x+l*Math.cos(theta2)),(int) (end.y-l*Math.sin(theta2)));
                             }
                             catch(NullPointerException e){}
-                        }
-                        //ähnlicb zu oben, wieder ein Teil der Bahn des Planeten
-                        for (long t=t0+(long) masses.get(j).o.dtime;t<manoeuvre.t1;t=t+(long) masses.get(j).o.dtime){
-                            try{
-                                VektorD posToNull2=posToNull;
-                                VektorD posToNull3=posToNull;
-                                if (focussedMassIndex!=-1){
-                                    posToNull2=posToMass.add(masses.get(focussedMassIndex).o.getPos(t-(long) masses.get(j).o.dtime));
-                                    posToNull3=posToMass.add(masses.get(focussedMassIndex).o.getPos(t));
+                            //ähnlicb zu oben, wieder ein Teil der Bahn des Planeten
+                            for (long t=t0+(long) masses.get(j).o.dtime;t<manoeuvre.t1;t=t+(long) masses.get(j).o.dtime){
+                                try{
+                                    VektorD posToNull2=posToNull;
+                                    VektorD posToNull3=posToNull;
+                                    if (focussedMassIndex!=-1){
+                                        posToNull2=posToMass.add(masses.get(focussedMassIndex).o.getPos(t-(long) masses.get(j).o.dtime));
+                                        posToNull3=posToMass.add(masses.get(focussedMassIndex).o.getPos(t));
+                                    }
+                                    VektorD posDiff2=masses.get(j).o.getPos(t-(long) masses.get(j).o.dtime).subtract(posToNull2);
+                                    posDiff2=posDiff2.multiply(scale);
+                                    VektorD posDiff3=masses.get(j).o.getPos(t).subtract(posToNull3);
+                                    posDiff3=posDiff3.multiply(scale);
+                                    g2.drawLine((int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y),(int) (screenSize.x/2+posDiff3.x),(int) (screenSize.y/2-posDiff3.y));
                                 }
-                                VektorD posDiff2=masses.get(j).o.getPos(t-(long) masses.get(j).o.dtime).subtract(posToNull2);
-                                posDiff2=posDiff2.multiply(scale);
-                                VektorD posDiff3=masses.get(j).o.getPos(t).subtract(posToNull3);
-                                posDiff3=posDiff3.multiply(scale);
-                                g2.drawLine((int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y),(int) (screenSize.x/2+posDiff3.x),(int) (screenSize.y/2-posDiff3.y));
+                                catch(NullPointerException e){}
                             }
-                            catch(NullPointerException e){}
                         }
                     }
                 }

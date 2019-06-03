@@ -5,12 +5,9 @@ public class SingleplayerTest{
     public Main main;
     public Player player;
     public Player player2;
-    public StartMenu startmenu;
     public SingleplayerTest(){
         main=Main.newMain(false);
-        //startmenu = new StartMenu();
         player=Player.newPlayer("Singleplayer","pw1");player.login("pw1");
-        
         //player2=Player.newPlayer("unknown"); player2.login();
     }
     

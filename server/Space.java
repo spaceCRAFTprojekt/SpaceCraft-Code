@@ -33,11 +33,7 @@ public class Space extends ClientSpace implements Serializable
         masses.add(mond);
         ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
         masses.add(schiff);
-        time=0;
-        inGameTime=0;
-        this.inGameDTime=inGameDTime;
         calcOrbits(Settings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
-        timerSetup();
     }
     
     public Object readResolve() throws ObjectStreamException{
