@@ -178,52 +178,47 @@ public class PlayerS implements Serializable
             g2.fillRect(0,0,screenSize.x,screenSize.y); // lol
             
             g2.setColor(Color.WHITE);
-            ArrayList<VektorD> poss;
-            ArrayList<Orbit> orbits;
-            ArrayList<Integer> radii;
+            ArrayList<ClientMass> masses;
             if (workspace==null){
-                poss=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllPos",ArrayList.class).ret);
-                orbits=(ArrayList<Orbit>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllOrbits",ArrayList.class).ret);
-                radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
+                masses=(ArrayList<ClientMass>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMassesInaccurate",ArrayList.class).ret);
             }
             else{
-                poss=workspace.getAllPos(-1);
-                orbits=workspace.getAllOrbits(-1);
-                radii=workspace.getAllRadii(-1);
+                masses=workspace.getAllMassesInaccurate(-1);
                 g2.drawString("Arbeitsweltraum",player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-60);
             }
             long inGameTime=((Long) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret).longValue();
             //immer der Wert im richtigen Space, nicht im Workspace (in dem vergeht keine Zeit)
             g2.drawString("Zeit: "+inGameTime,player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-75);
             
-            for (int i=0;i<poss.size();i++){
-                if (poss.get(i)!=null){
+            for (int i=0;i<masses.size();i++){
+                if (masses.get(i)!=null){
                     g2.setColor(Color.WHITE);
-                    long time=(long) orbits.get(i).t0;
-                    long tEnd=(long) (orbits.get(i).pos.size()*orbits.get(i).dtime); //eigentlich nur eine Zeitdifferenz, nicht die tatsächliche End-Zeit
-                    while (orbits.get(i).getPos(time+tEnd)==null){ //hässliche Lösung für komische NullPointerExceptions
-                        tEnd=(long) (tEnd-orbits.get(i).dtime);
+                    Orbit orbit=masses.get(i).o;
+                    long time=(long) orbit.t0;
+                    long tEnd=(long) (orbit.pos.size()*orbit.dtime); //eigentlich nur eine Zeitdifferenz, nicht die tatsächliche End-Zeit
+                    while (orbit.getPos(time+tEnd)==null){ //hässliche Lösung für komische NullPointerExceptions
+                        tEnd=(long) (tEnd-orbit.dtime);
                     }
                     //Malen der Bahn des Planeten
-                    for (long t=(long) (orbits.get(i).dtime);t<tEnd;t=t+(long) (orbits.get(i).dtime)){
+                    for (long t=(long) (orbit.dtime);t<tEnd;t=t+(long) (orbit.dtime)){
                         //das sind längst nicht alle berechneten Positionen, nur alle gesendeten
                         VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
                         VektorD posToNull2=posToNull;
                         if (focussedMassIndex!=-1){
-                            posToNull1=posToMass.add(orbits.get(focussedMassIndex).getPos(time+t-(long) orbits.get(i).dtime));
-                            posToNull2=posToMass.add(orbits.get(focussedMassIndex).getPos(time+t));
+                            posToNull1=posToMass.add(masses.get(focussedMassIndex).o.getPos(time+t-(long) orbit.dtime));
+                            posToNull2=posToMass.add(masses.get(focussedMassIndex).o.getPos(time+t));
                         }
-                        VektorD posDiff1=orbits.get(i).getPos(time+t-(long) orbits.get(i).dtime).subtract(posToNull1);
+                        VektorD posDiff1=orbit.getPos(time+t-(long) orbit.dtime).subtract(posToNull1);
                         posDiff1=posDiff1.multiply(scale);
-                        VektorD posDiff2=orbits.get(i).getPos(time+t).subtract(posToNull2);
+                        VektorD posDiff2=orbit.getPos(time+t).subtract(posToNull2);
                         posDiff2=posDiff2.multiply(scale);
                         g2.drawLine((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y),(int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y));
                     }
                     
                     //Malen des Planeten
-                    VektorD posDiff=poss.get(i).subtract(posToNull);
+                    VektorD posDiff=masses.get(i).getPos().subtract(posToNull);
                     posDiff=posDiff.multiply(scale);
-                    int r=radii.get(i);
+                    int r=masses.get(i).getRadius();
                     r=Math.max((int)(r*scale),2);
                     if (i== player.getCurrentMassIndex())g2.setColor(Color.RED);
                     else if(i == focussedMassIndex)g2.setColor(Color.CYAN);
@@ -246,11 +241,11 @@ public class PlayerS implements Serializable
                             try{
                                 VektorD posToNull1=posToNull; //Position relativ zur fokussierten Masse zu diesem Zeitpunkt
                                 if (focussedMassIndex!=-1){
-                                    posToNull1=posToMass.add(orbits.get(focussedMassIndex).getPos(t0));
+                                    posToNull1=posToMass.add(masses.get(focussedMassIndex).o.getPos(t0));
                                 }
-                                VektorD posDiff1=orbits.get(j).getPos(t0).subtract(posToNull1);
+                                VektorD posDiff1=masses.get(j).o.getPos(t0).subtract(posToNull1);
                                 posDiff1=posDiff1.multiply(scale);
-                                VektorD dir=manoeuvre.getForce().multiply(1000*scale);
+                                VektorD dir=manoeuvre.getForce(workspace.masses.get(j).o.getVel(t0)).multiply(1000*scale);
                                 VektorI start=new VektorI((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y));
                                 VektorI end=new VektorI((int) (screenSize.x/2+posDiff1.x+dir.x),(int) (screenSize.y/2-posDiff1.y-dir.y));
                                 g2.drawLine(start.x,start.y,end.x,end.y);
@@ -266,17 +261,17 @@ public class PlayerS implements Serializable
                             catch(NullPointerException e){}
                         }
                         //ähnlicb zu oben, wieder ein Teil der Bahn des Planeten
-                        for (long t=t0+(long) orbits.get(j).dtime;t<manoeuvre.t1;t=t+(long) orbits.get(j).dtime){
+                        for (long t=t0+(long) masses.get(j).o.dtime;t<manoeuvre.t1;t=t+(long) masses.get(j).o.dtime){
                             try{
                                 VektorD posToNull2=posToNull;
                                 VektorD posToNull3=posToNull;
                                 if (focussedMassIndex!=-1){
-                                    posToNull2=posToMass.add(orbits.get(focussedMassIndex).getPos(t-(long) orbits.get(j).dtime));
-                                    posToNull3=posToMass.add(orbits.get(focussedMassIndex).getPos(t));
+                                    posToNull2=posToMass.add(masses.get(focussedMassIndex).o.getPos(t-(long) masses.get(j).o.dtime));
+                                    posToNull3=posToMass.add(masses.get(focussedMassIndex).o.getPos(t));
                                 }
-                                VektorD posDiff2=orbits.get(j).getPos(t-(long) orbits.get(j).dtime).subtract(posToNull2);
+                                VektorD posDiff2=masses.get(j).o.getPos(t-(long) masses.get(j).o.dtime).subtract(posToNull2);
                                 posDiff2=posDiff2.multiply(scale);
-                                VektorD posDiff3=orbits.get(j).getPos(t).subtract(posToNull3);
+                                VektorD posDiff3=masses.get(j).o.getPos(t).subtract(posToNull3);
                                 posDiff3=posDiff3.multiply(scale);
                                 g2.drawLine((int) (screenSize.x/2+posDiff2.x),(int) (screenSize.y/2-posDiff2.y),(int) (screenSize.x/2+posDiff3.x),(int) (screenSize.y/2-posDiff3.y));
                             }
@@ -293,17 +288,12 @@ public class PlayerS implements Serializable
     }
     
     public void openWorkspace(){
-        ArrayList<VektorD> poss=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllPos",ArrayList.class).ret);
-        ArrayList<VektorD> vels=(ArrayList<VektorD>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllVels",ArrayList.class).ret);
-        ArrayList<Double> masses=(ArrayList<Double>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMasses",ArrayList.class).ret);
-        ArrayList<Integer> radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
-        ArrayList<ArrayList<Manoeuvre>> manoeuvres=(ArrayList<ArrayList<Manoeuvre>>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllManoeuvres",ArrayList.class).ret);
-        ArrayList<Boolean> isControllables=(ArrayList<Boolean>) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllIsControllables",ArrayList.class).ret);
+        ArrayList<ClientMass> masses=(ArrayList<ClientMass>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMassesInaccurate",ArrayList.class).ret);
         Long inGameTime=(Long) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret);
 
-        ArrayList<AbstractMass> clientMasses=new ArrayList<AbstractMass>(poss.size());
-        for (int i=0;i<poss.size();i++){
-            ClientMass cm=new ClientMass(masses.get(i),isControllables.get(i),poss.get(i),vels.get(i),radii.get(i),manoeuvres.get(i));
+        ArrayList<AbstractMass> clientMasses=new ArrayList<AbstractMass>(masses.size());
+        for (int i=0;i<masses.size();i++){
+            ClientMass cm=new ClientMass(masses.get(i).m,masses.get(i).isControllable(player.getID()),masses.get(i).getPos(),masses.get(i).getVel(),masses.get(i).getRadius(),masses.get(i).getManoeuvres());
             clientMasses.add(cm);
         }
         workspace=new ClientSpace(clientMasses,inGameTime.longValue(),1);

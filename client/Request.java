@@ -27,11 +27,8 @@ import java.io.ObjectInputStream;
      * Space.getFocussedMassIndex(VektorD pos, VektorD posToNull, VektorI screenSize, Double scale)
      * Space.getMassPos(Integer index)
      * Space.getMassNumber()
-     * Space.getAllRadii() <= echter Plural
-     * Space.getAllOrbits()
-     * Space.getAllPos()
-     * Space.getAllVels()
      * Space.getAllMasses()
+     * Space.getAllMassesInaccurate()
      * Space.setTime(long time)
      * Sandbox.breakBlock(Integer sandboxIndex, VektorI sPos) v0.3.1_AK
      * Sandbox.placeBlock(Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK

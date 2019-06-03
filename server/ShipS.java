@@ -72,6 +72,22 @@ public class ShipS extends Mass implements Serializable
     }
     
     public void setManoeuvres(ArrayList<Manoeuvre> manos){
+        /*
+        double dMassGes=0; //gesamte verlorene Masse, sollte natürlich nicht größer sein als die Masse des Schiffs
+        for (int i=0;i<manos.size();i++){
+            if (manos.get(i).outvel>=getOutvel())
+                return;
+            dMassGes=dMassGes+manos.get(i).dMass;
+        }
+        if (-dMassGes>=m)
+            return;*/
         manoeuvres=manos;
+    }
+    
+    /**
+     * Siehe client.ClientMass.getOutvel()
+     */
+    public double getOutvel(){
+        return 1;
     }
 }

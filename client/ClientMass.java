@@ -12,6 +12,9 @@ public class ClientMass extends AbstractMass{
         this.manoeuvres=manos;
         this.radius=radius;
     }
+    public ClientMass(AbstractMass m, int playerID){
+        this(m.m,m.isControllable(playerID),m.pos,m.vel,m.getRadius(),m.getManoeuvres());
+    }
     public boolean isControllable(int playerID){
         return isControllable;
     }

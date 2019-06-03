@@ -60,6 +60,9 @@ public class ClientSpace implements Serializable
                     if (o.getVel(inGameTime)!=null){
                         masses.get(i).setVel(o.getVel(inGameTime));
                     }
+                    if (o.getMass(inGameTime)!=-1){
+                        masses.get(i).setMass(o.getMass(inGameTime));
+                    }
                 }
                 calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
             }
@@ -72,87 +75,44 @@ public class ClientSpace implements Serializable
     /**
      * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      */
-    public ArrayList<VektorD> getAllPos(Integer playerID){
-        ArrayList<VektorD> ret=new ArrayList<VektorD>();
+    public ArrayList<ClientMass> getAllMasses(Integer playerID){
+        ArrayList<ClientMass> ret=new ArrayList<ClientMass>();
         for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getPos());
+            ret.add(new ClientMass(masses.get(i),playerID.intValue()));
         }
         return ret;
     }
     
     /**
      * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Wie getAllMasses, nur dass die Orbits nicht alle Punkte enthalten (sollte eher verwendet werden, da sonst zu große Datenmengen verschickt werden)
      */
-    public ArrayList<VektorD> getAllVels(Integer playerID){
-        ArrayList<VektorD> ret=new ArrayList<VektorD>();
+    public ArrayList<ClientMass> getAllMassesInaccurate(Integer playerID){
+        ArrayList<ClientMass> ret=new ArrayList<ClientMass>();
         for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getVel());
-        }
-        return ret;
-    }
-
-    /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
-     */
-    public ArrayList<Double> getAllMasses(Integer playerID){
-        ArrayList<Double> ret=new ArrayList<Double>();
-        for (int i=0;i<masses.size();i++){
-            ret.add(masses.get(i).getMass());
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
-     */
-    public ArrayList<Integer> getAllRadii(Integer playerID){
-        ArrayList<Integer> ret=new ArrayList<Integer>();
-        for (int i=0;i<masses.size();i++){
-            ret.add((masses.get(i)).getRadius());
-        }
-        return ret;
-    }
-    
-    /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
-     */
-    public ArrayList<Orbit> getAllOrbits(Integer playerID){
-        ArrayList<Orbit> ret=new ArrayList<Orbit>();
-        int accuracy=(int) ClientSettings.SPACE_GET_ORBIT_ACCURACY;
-        for (int i=0;i<masses.size();i++){
-            ArrayList<VektorD> pos=new ArrayList<VektorD>(masses.get(i).getOrbit().pos.size()/accuracy);
-            ArrayList<Double> mass=new ArrayList<Double>(masses.get(i).getOrbit().pos.size()/accuracy);
-            for (int j=0;j<masses.get(i).getOrbit().pos.size();j=j+accuracy){
-                pos.add(masses.get(i).getOrbit().pos.get(j));
-                mass.add(masses.get(i).getOrbit().mass.get(j));
+            ret.add(new ClientMass(masses.get(i),playerID.intValue()));
+            int accuracy=ClientSettings.SPACE_GET_ORBIT_ACCURACY;
+            ArrayList<VektorD> pos=new ArrayList<VektorD>(masses.get(i).o.pos.size()/accuracy);
+            ArrayList<Double> mass=new ArrayList<Double>(masses.get(i).o.pos.size()/accuracy);
+            for (int j=0;j<masses.get(i).o.pos.size();j=j+accuracy){
+                pos.add(masses.get(i).o.pos.get(j));
+                mass.add(masses.get(i).o.mass.get(j));
             }
-            ret.add(new Orbit(pos,mass,masses.get(i).getOrbit().t0,masses.get(i).getOrbit().t1,ClientSettings.SPACE_CALC_PERIOD_INGAME*accuracy));
+            Orbit o=new Orbit(pos,mass,masses.get(i).o.t0,masses.get(i).o.t1,ClientSettings.SPACE_CALC_PERIOD_INGAME*accuracy);
+            ret.get(i).setOrbit(o);
         }
         return ret;
     }
     
-    public ArrayList<ArrayList<Manoeuvre>> getAllManoeuvres(Integer playerID){
-        ArrayList<ArrayList<Manoeuvre>> ret=new ArrayList<ArrayList<Manoeuvre>>();
-        for (int i=0;i<masses.size();i++){
-            ret.add((masses.get(i)).getManoeuvres());
-        }
-        return ret;
-    }
-    
-    //Das könnte man vermutlich auch irgendwie besser lösen
-    public ArrayList<Boolean> getAllIsControllables(Integer playerID){
-        ArrayList<Boolean> ret=new ArrayList<Boolean>();
-        for (int i=0;i<masses.size();i++){
-            ret.add((masses.get(i)).isControllable(playerID));
-        }
-        return ret;
-    }
-    
+    /**
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     */
     public Integer getMassNumber(Integer playerID){
         return new Integer(masses.size());
     }
     
     /**
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      * Vorwärts immer, rückwärts nimmer (und auch nur begrenzt vorwärts)
      */
     public void setTime(Integer playerID, Long time){
@@ -206,7 +166,14 @@ public class ClientSpace implements Serializable
                     int j=0;
                     while (j<ms.size()){
                         if (t+inGameTime>=ms.get(j).t0 && t+inGameTime<ms.get(j).t1){
-                            F=F.add(ms.get(j).getForce());
+                            VektorD vel;
+                            try{
+                                vel=vels[i].get(k);
+                            }
+                            catch(IndexOutOfBoundsException e){
+                                vel=masses.get(i).getVel();
+                            }
+                            F=F.add(ms.get(j).getForce(vel));
                             double dm=ms.get(j).dMass/(ms.get(j).t1-ms.get(j).t0)*(ClientSettings.SPACE_CALC_PERIOD_INGAME);
                             mass=mass+dm;
                             j=j+1;
@@ -295,7 +262,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * z.T. Request-Funktion (Player-ID standardmäßig als Übergabeparameter)
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request (Player-ID standardmäßig als Übergabeparameter)
      */
     public VektorD getMassPos(Integer playerID, Integer index){
         VektorD ret=new VektorD(Double.NaN,Double.NaN);
@@ -309,13 +276,14 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      */
     public Long getInGameTime(Integer playerID){
         return inGameTime;
     }
     
     /**
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
@@ -343,7 +311,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * z.T. Request-Funktion
+     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      */
     public void setManoeuvres(Integer playerID, Integer shipID, ArrayList<Manoeuvre> manoeuvres){
         AbstractMass ship= masses.get(shipID);

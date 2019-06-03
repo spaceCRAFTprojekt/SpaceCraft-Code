@@ -3,7 +3,9 @@ import menu.*;
 import util.geom.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JTextField;
 import client.Player;
+import client.Manoeuvre;
 public class WorkspaceMenu{
     //Ja, man kann geschachtelte Klassen so hernehmen. Aber es fühlt sich gewalttätig an. -LG
     public static class Open extends PlayerMenu{
@@ -72,7 +74,17 @@ public class WorkspaceMenu{
                             else{
                                 k=Integer.parseInt((String) list.getSelectedValue());
                             }
-                            p.openMenu(new ManoeuvreInfo(p,massIndex,k));
+                            ManoeuvreInfo mi=new ManoeuvreInfo(p,massIndex,k);
+                            if (k!=-1){
+                                Manoeuvre m=p.getPlayerS().getWorkspace().masses.get(massIndex).getManoeuvres().get(k);
+                                mi.accField.setText(Double.toString(-m.dMass));
+                                mi.angleField.setText(Double.toString(Math.atan2(m.dir.y,m.dir.x)*180/Math.PI));
+                                ((JTextField) mi.table[1][1]).setText(Long.toString(m.t0));
+                                ((JTextField) mi.table[1][2]).setText(Long.toString(m.t1));
+                                mi.angleToggle.setSelected(m.rel);
+                                mi.update();
+                            }
+                            p.openMenu(mi);
                         }
                     };
                     index++;

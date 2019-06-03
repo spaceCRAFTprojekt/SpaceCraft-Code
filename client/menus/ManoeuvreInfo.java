@@ -18,19 +18,19 @@ public class ManoeuvreInfo extends PlayerMenu
     private JLabel rocketInfo;
     private JSeparator separator0;
     private JLabel accLabel;
-    private JTextField accField;
+    public JTextField accField;
     private JLabel angleLabel;
-    private JTextField angleField;
-    private JToggleButton angleToggle;
+    public JTextField angleField;
+    public JToggleButton angleToggle;
     private JSeparator separator1;
     private JPanel tablePanel;
-    private JComponent[][]table;
+    public JComponent[][]table;
     //private JSeparator separator2;
     //private JLabel fuelCost;
 
 
     public ManoeuvreInfo(Player p, int massIndex, int manoeuvreIndex){
-        super(p, "Manoeuvre Info", new VektorI(210,280));   // id muss noch gemacht werden
+        super(p, "Manoeuvre Info", new VektorI(210,260));   // id muss noch gemacht werden
         this.massIndex=massIndex;
         this.manoeuvreIndex=manoeuvreIndex;
 
@@ -46,13 +46,12 @@ public class ManoeuvreInfo extends PlayerMenu
         separator0 = new JSeparator(JSeparator.HORIZONTAL);
         separator0.setForeground(Color.gray);
 
-        accLabel = new JLabel("Thrust");
+        accLabel = new JLabel("dMass: ");
         accLabel.setVisible(true); 
         angleLabel = new JLabel("Angle: ");
         accField = new JTextField();
         angleField = new JTextField();
         angleToggle = new JToggleButton("rel");
-        angleToggle.setEnabled(false);
 
         separator1 = new JSeparator(JSeparator.HORIZONTAL);
         separator1.setForeground(Color.gray);
@@ -149,12 +148,12 @@ public class ManoeuvreInfo extends PlayerMenu
         try{
             double angle=Double.parseDouble(angleField.getText())*Math.PI/180; //Eingabe in Grad ist vermutlich schöner
             VektorD dir=new VektorD(Math.cos(angle),Math.sin(angle));
-            double dMass=Double.parseDouble(accField.getText());
-            //Was soll angleToggle tun?
+            double dMass=-Double.parseDouble(accField.getText()); //Eingabe: positiver Wert => negative Massenänderung (wirkt vielleicht logischer?)
             long t0=Long.parseLong(((JTextField) table[1][1]).getText());
             long t1=Long.parseLong(((JTextField) table[1][2]).getText());
+            boolean isRel=angleToggle.isSelected();
             ClientSpace workspace=getPlayer().getPlayerS().getWorkspace();
-            Manoeuvre mano=new Manoeuvre(dir,dMass,((ClientMass) workspace.masses.get(massIndex)).getOutvel(),t0,t1);
+            Manoeuvre mano=new Manoeuvre(dir,isRel,dMass,((ClientMass) workspace.masses.get(massIndex)).getOutvel(),t0,t1);
             AbstractMass rocket=workspace.masses.get(massIndex);
             if (manoeuvreIndex>=0 && manoeuvreIndex<rocket.getManoeuvres().size()){ //altes Manöver editieren
                 rocket.getManoeuvres().set(manoeuvreIndex,mano);
@@ -167,7 +166,7 @@ public class ManoeuvreInfo extends PlayerMenu
             else{ //neues Manöver an der gegebenen Stelle hinzufügen
                 rocket.getManoeuvres().add(manoeuvreIndex,mano);
             }
-            rocketInfo.setText("Rocket: " + "" + ";  mass: " + rocket.getMass());
+            rocketInfo.setText("Rocket: " + "" + ";  mass: " + Math.round(rocket.getMass()));
             ((JLabel) table[1][3]).setText(Long.toString(t1-t0));
             workspace.calcOrbits(ClientSettings.SPACE_CALC_TIME);
             t0=t0>=workspace.inGameTime ? t0 : workspace.inGameTime; //eher unschön, führt zu Veränderungen der Werte im Lauf der Zeit

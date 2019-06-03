@@ -35,6 +35,10 @@ public abstract class AbstractMass implements Serializable
         return vel;
     }
     
+    public void setMass(double mass){
+        m=mass;
+    }
+    
     public void setPos(VektorD pos){
         this.pos=pos;
     }

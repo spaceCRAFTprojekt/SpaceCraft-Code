@@ -58,7 +58,7 @@ public class Main implements Serializable
             try{
                 return Serializer.deserialize();
             }
-            catch(Exception e){e.printStackTrace();}
+            catch(Exception e){}
         }
         try{
             for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
