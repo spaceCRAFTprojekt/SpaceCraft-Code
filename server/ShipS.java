@@ -58,4 +58,20 @@ public class ShipS extends Mass implements Serializable
     public boolean isOwner(int playerID){
         return ownerIDs.indexOf(playerID)!=-1 || ownerIDs.size()==0;
     }
+    
+    public boolean isControllable(int playerID){
+        return isOwner(playerID);
+    }
+    
+    public ArrayList<Manoeuvre> getManoeuvres(){
+        return manoeuvres;
+    }
+    
+    public int getRadius(){
+        return 2;
+    }
+    
+    public void setManoeuvres(ArrayList<Manoeuvre> manos){
+        manoeuvres=manos;
+    }
 }

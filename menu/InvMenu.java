@@ -136,12 +136,13 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
             dropStack = new Stack(null , 0);
             dropMenuInv.getInv().setStack(dropItemImage.getPos(), dropStack);
         }
-        
+        Stack actDroppedStack;
         Stack leftover;
         if(singleItem){ 
             draggedStack.take(1);
-            leftover = draggedStack;
-            leftover.add(dropStack.add(new Stack(draggedStack.getItem(), 1)));
+            actDroppedStack = new Stack(draggedStack.getItem(), 1);
+            leftover = dropStack.add(actDroppedStack);
+            if(!(leftover == null || leftover.getCount() <= 0)){draggedStack.add(leftover); return;}
         }
         else leftover = dropStack.add(draggedStack);
         draggedStack = leftover;

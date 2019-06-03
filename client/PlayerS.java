@@ -150,7 +150,7 @@ public class PlayerS implements Serializable
             focussedMassPos=(VektorD) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getMassPos",VektorD.class,focussedMassIndex).ret);
         }
         else{
-            focussedMassPos=workspace.getMassPos(focussedMassIndex);
+            focussedMassPos=workspace.getMassPos(-1,focussedMassIndex);
         }
         return focussedMassPos;
     }
@@ -187,9 +187,9 @@ public class PlayerS implements Serializable
                 radii=(ArrayList<Integer>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllRadii",ArrayList.class).ret);
             }
             else{
-                poss=workspace.getAllPos();
-                orbits=workspace.getAllOrbits();
-                radii=workspace.getAllRadii();
+                poss=workspace.getAllPos(-1);
+                orbits=workspace.getAllOrbits(-1);
+                radii=workspace.getAllRadii(-1);
                 g2.drawString("Arbeitsweltraum",player.getFrame().getScreenSize().x-140,player.getFrame().getScreenSize().y-60);
             }
             long inGameTime=((Long) new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret).longValue();
@@ -237,8 +237,8 @@ public class PlayerS implements Serializable
             //und Malen der durch das Manöver beeinflussten Bahn in Grün
             if (workspace!=null){
                 for (int j=0;j<workspace.masses.size();j++){ //j ist die äußere Laufvariable, eher ungewöhnlich
-                    for (int i=0;i<workspace.masses.get(j).manoeuvres.size();i++){
-                        Manoeuvre manoeuvre=workspace.masses.get(j).manoeuvres.get(i);
+                    for (int i=0;i<workspace.masses.get(j).getManoeuvres().size();i++){
+                        Manoeuvre manoeuvre=workspace.masses.get(j).getManoeuvres().get(i);
                         g2.setColor(Color.GREEN);
                         long t0=Math.max(manoeuvre.t0,workspace.inGameTime); //Wenn man bereits über den Startpunkt des Manövers hinaus ist, sollte immer noch etwas angezeigt werden
         
@@ -250,7 +250,7 @@ public class PlayerS implements Serializable
                                 }
                                 VektorD posDiff1=orbits.get(j).getPos(t0).subtract(posToNull1);
                                 posDiff1=posDiff1.multiply(scale);
-                                VektorD dir=manoeuvre.F.multiply(1000*scale);
+                                VektorD dir=manoeuvre.getForce().multiply(1000*scale);
                                 VektorI start=new VektorI((int) (screenSize.x/2+posDiff1.x),(int) (screenSize.y/2-posDiff1.y));
                                 VektorI end=new VektorI((int) (screenSize.x/2+posDiff1.x+dir.x),(int) (screenSize.y/2-posDiff1.y-dir.y));
                                 g2.drawLine(start.x,start.y,end.x,end.y);
@@ -301,7 +301,7 @@ public class PlayerS implements Serializable
         ArrayList<Boolean> isControllables=(ArrayList<Boolean>) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllIsControllables",ArrayList.class).ret);
         Long inGameTime=(Long) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret);
 
-        ArrayList<ClientMass> clientMasses=new ArrayList<ClientMass>(poss.size());
+        ArrayList<AbstractMass> clientMasses=new ArrayList<AbstractMass>(poss.size());
         for (int i=0;i<poss.size();i++){
             ClientMass cm=new ClientMass(masses.get(i),isControllables.get(i),poss.get(i),vels.get(i),radii.get(i),manoeuvres.get(i));
             clientMasses.add(cm);
@@ -320,10 +320,10 @@ public class PlayerS implements Serializable
                 return;
             }
             for (int i=0;i<workspace.masses.size();i++){
-                ClientMass m=workspace.masses.get(i);
-                if (m.manoeuvres.size()!=0){
+                AbstractMass m=workspace.masses.get(i);
+                if (m.getManoeuvres().size()!=0){
                     //das könnte Probleme geben, wenn neue Massen hinzugefügt oder alte entfernt werden
-                    new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.setManoeuvres",null,i,m.manoeuvres);
+                    new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.setManoeuvres",null,i,m.getManoeuvres());
                 }
             }
             workspace=null;

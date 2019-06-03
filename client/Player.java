@@ -439,40 +439,50 @@ public class Player implements Serializable
                 String[] spl = msg.split(" ");
                 switch (spl[0]){
                     case "hello":
-                    addChatMsg("Es hat jemand Hallo geschrieben.");
-                    break;
+                        addChatMsg("Es hat jemand Hallo geschrieben.");
+                        break;
                     case "logout":
-                    addChatMsg("Du wirst ausgeloggt...");
-                    logout();
-                    break;
+                        addChatMsg("Du wirst ausgeloggt...");
+                        logout();
+                        break;
                     case "afk":
-                    serverChatMsg(name + " ist jetzt afk.");
-                    break;
+                        serverChatMsg(name + " ist jetzt afk.");
+                        break;
                     case "witzig":
-                    serverChatMsg(name + " findet diese Aussage witzig.");
-                    break;
+                        serverChatMsg(name + " findet diese Aussage witzig.");
+                        break;
                     case "nichtwitzig":
-                    serverChatMsg(name + " findet diese Aussage nicht witzig.");
-                    break;
+                        serverChatMsg(name + " findet diese Aussage nicht witzig.");
+                        break;
                     case "giveme":
-                    try{
-                        String name = spl[1];
-                        int amount;
-                        if (spl.length>=3){
-                            amount=Integer.parseInt(spl[2]);
+                        try{
+                            String name = spl[1];
+                            int amount;
+                            if (spl.length>=3){
+                                amount=Integer.parseInt(spl[2]);
+                            }
+                            else
+                                amount=1;
+                            Stack s = new Stack(Items.get(name),amount);
+                            if (s.getItem()!=null){
+                                playerC.getInv().addStack(s);
+                                addChatMsg("Du hast " + amount+" " + name + " bekommen");
+                            }
                         }
-                        else
-                            amount=1;
-                        Stack s = new Stack(Items.get(name),amount);
-                        if (s.getItem()!=null){
-                            playerC.getInv().addStack(s);
-                            addChatMsg("Du hast " + amount+" " + name + " bekommen");
+                        catch(ArrayIndexOutOfBoundsException e){}
+                        break;
+                    case "time":
+                        try{
+                            long time=Long.parseLong(spl[1]);
+                            new Request(id,requestOut,requestIn,"Space.setTime",null,time);
+                            if (playerS.getWorkspace()!=null){
+                                playerS.getWorkspace().inGameTime=((Long) new Request(id,requestOut,requestIn,"Space.getInGameTime",Long.class).ret).longValue();
+                            }
                         }
-                    }
-                    catch(ArrayIndexOutOfBoundsException e){}
-                    break;
+                        catch(NumberFormatException e){}
+                        break;
                     default:
-                    addChatMsg("Unbekannter Command...");
+                        addChatMsg("Unbekannter Command...");
                 }
             }
             else new Request(id,requestOut,requestIn,"Main.writeIntoChat",null,message);

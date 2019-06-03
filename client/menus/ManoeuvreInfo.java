@@ -5,8 +5,6 @@ import javax.swing.*;
 import menu.*;
 import client.*;
 import java.awt.Color;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Zum einstellen eines Manoeuvres
@@ -27,8 +25,8 @@ public class ManoeuvreInfo extends PlayerMenu
     private JSeparator separator1;
     private JPanel tablePanel;
     private JComponent[][]table;
-    private JSeparator separator2;
-    private JLabel fuelCost;
+    //private JSeparator separator2;
+    //private JLabel fuelCost;
 
 
     public ManoeuvreInfo(Player p, int massIndex, int manoeuvreIndex){
@@ -54,6 +52,7 @@ public class ManoeuvreInfo extends PlayerMenu
         accField = new JTextField();
         angleField = new JTextField();
         angleToggle = new JToggleButton("rel");
+        angleToggle.setEnabled(false);
 
         separator1 = new JSeparator(JSeparator.HORIZONTAL);
         separator1.setForeground(Color.gray);
@@ -71,10 +70,10 @@ public class ManoeuvreInfo extends PlayerMenu
         table[2][2] = new JLabel("");
         table[2][3] = new JLabel("");
 
-        separator2 = new JSeparator(JSeparator.HORIZONTAL);
-        separator2.setForeground(Color.gray);
+        //separator2 = new JSeparator(JSeparator.HORIZONTAL);
+        //separator2.setForeground(Color.gray);
 
-        fuelCost = new JLabel("Fuel Cost: - ");
+        //fuelCost = new JLabel("Fuel Cost: - ");
 
 
         layout.linkSize(SwingConstants.VERTICAL, angleField, accField);
@@ -110,8 +109,8 @@ public class ManoeuvreInfo extends PlayerMenu
                         .addComponent(table[2][2])
                         .addComponent(table[2][3]) )
                     )
-                .addComponent(separator2)
-                .addComponent(fuelCost)
+                //.addComponent(separator2)
+                //.addComponent(fuelCost)
             ) );
 
 
@@ -141,36 +140,34 @@ public class ManoeuvreInfo extends PlayerMenu
                 .addComponent(table[0][3])
                 .addComponent(table[1][3])
                 .addComponent(table[2][3]) )
-            .addComponent(separator2)
-            .addComponent(fuelCost)
+            //.addComponent(separator2)
+            //.addComponent(fuelCost)
         );
     }
 
     public void update(){
         try{
             double angle=Double.parseDouble(angleField.getText())*Math.PI/180; //Eingabe in Grad ist vermutlich schöner
-            double F=Double.parseDouble(accField.getText());
-            VektorD Fvect=new VektorD(Math.cos(angle)*F,Math.sin(angle)*F);
+            VektorD dir=new VektorD(Math.cos(angle),Math.sin(angle));
+            double dMass=Double.parseDouble(accField.getText());
             //Was soll angleToggle tun?
-            //dMass und fuelCost müssen noch berechnet werd
             long t0=Long.parseLong(((JTextField) table[1][1]).getText());
             long t1=Long.parseLong(((JTextField) table[1][2]).getText());
-            Manoeuvre mano=new Manoeuvre(Fvect,0,t0,t1);
             ClientSpace workspace=getPlayer().getPlayerS().getWorkspace();
-            ClientMass rocket=workspace.masses.get(massIndex);
-            if (manoeuvreIndex>=0 && manoeuvreIndex<rocket.manoeuvres.size()){ //altes Manöver editieren
-                rocket.manoeuvres.set(manoeuvreIndex,mano);
+            Manoeuvre mano=new Manoeuvre(dir,dMass,((ClientMass) workspace.masses.get(massIndex)).getOutvel(),t0,t1);
+            AbstractMass rocket=workspace.masses.get(massIndex);
+            if (manoeuvreIndex>=0 && manoeuvreIndex<rocket.getManoeuvres().size()){ //altes Manöver editieren
+                rocket.getManoeuvres().set(manoeuvreIndex,mano);
             }
             else if (manoeuvreIndex==-1){ //neues Manöver hinzufügen
-                rocket.manoeuvres.add(mano);
-                manoeuvreIndex=rocket.manoeuvres.size()-1; 
+                rocket.getManoeuvres().add(mano);
+                manoeuvreIndex=rocket.getManoeuvres().size()-1; 
                 //sollte jetzt natürlich das neue Manöver editieren, nicht bei jedem Update ein neues Manöver hinzufügen
             }
             else{ //neues Manöver an der gegebenen Stelle hinzufügen
-                rocket.manoeuvres.add(manoeuvreIndex,mano);
+                rocket.getManoeuvres().add(manoeuvreIndex,mano);
             }
             rocketInfo.setText("Rocket: " + "" + ";  mass: " + rocket.getMass());
-            fuelCost.setText("Fuelcost: " + "");
             ((JLabel) table[1][3]).setText(Long.toString(t1-t0));
             workspace.calcOrbits(ClientSettings.SPACE_CALC_TIME);
             t0=t0>=workspace.inGameTime ? t0 : workspace.inGameTime; //eher unschön, führt zu Veränderungen der Werte im Lauf der Zeit

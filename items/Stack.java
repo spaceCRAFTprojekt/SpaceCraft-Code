@@ -50,7 +50,7 @@ public class Stack implements Serializable
         return item;
     }
     public boolean take(int i){
-        count = count - 1;
+        count = count - i;  // wieso hab ich da -1 hin geschreiben 
         if(count < 0) {
             count = 0;
             return false;

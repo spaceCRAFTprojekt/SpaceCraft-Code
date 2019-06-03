@@ -15,9 +15,6 @@ import java.io.IOException;
  * 
  * Ich (unknown) glaube, dass die Klasse dafür verantwortlich ist, dass man den alten Spielstand laden kann. Wir haben (bis Linus sich Gedanken gemacht hat)
  * nur die Möglichkeit das ganze als BlackBox zu betrachten. Immerhin geht es :-)
- * Die wichtige Funktion ist read/writeObject. Beim (de-)serialisieren von Main passiert eigentlich gar nichts
- * (alle Attribute sind transient), aber es wird Main.readResolve/Main.writeReplace (automatisch) aufgerufen. Diese machen
- * dann die eigentliche Arbeit.
  */
 public class Serializer{
     public static void serialize(Main main){

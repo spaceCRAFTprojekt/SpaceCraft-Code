@@ -3,6 +3,8 @@ import util.geom.*;
 import java.util.Timer;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
+import java.util.ArrayList;
+import client.Manoeuvre;
 /**
  * Die Space Variante eines Planeten
  */
@@ -64,4 +66,14 @@ public class PlanetS extends Mass implements Serializable
     {
         return gravity;
     }
+    
+    public boolean isControllable(int playerID){
+        return false;
+    }
+    
+    public ArrayList<Manoeuvre> getManoeuvres(){
+        return new ArrayList<Manoeuvre>();
+    }
+    
+    public void setManoeuvres(ArrayList<Manoeuvre> manos){}
 }

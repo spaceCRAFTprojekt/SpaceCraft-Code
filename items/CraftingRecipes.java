@@ -23,4 +23,11 @@ public abstract class CraftingRecipes
         return null;
     }
     
+    public static int getCountPerItem(CraftingRecipe cpTest){
+        for(int i = 0; i < recipes.size(); i++){
+            CraftingRecipe cp = recipes.get(i);
+            if(cp.equals(cpTest))return cp.count;
+        }
+        return -1;
+    }
 }

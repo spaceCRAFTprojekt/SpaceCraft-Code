@@ -1,29 +1,19 @@
 package server;
 import util.geom.*;
 import client.Orbit;
+import client.AbstractMass;
 import java.util.Timer;
 import java.util.ArrayList;
 import java.io.Serializable;
-public abstract class Mass implements Serializable
+public abstract class Mass extends AbstractMass implements Serializable
 {
     public static final long serialVersionUID=0L;
     public Main main;
-    protected double m;
-    protected VektorD pos; //doubles sind mindestens genauso genau wie longs bis 2^63
-    protected VektorD vel;
-    protected Orbit o;
     protected transient Timer spaceTimer;
 
     public Mass(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer){
+        super(m,pos,vel);
         this.main=main;
-        this.m = m;
-        this.pos = pos;
-        this.vel = vel;
-        ArrayList<VektorD> poss=new ArrayList<VektorD>();
-        poss.add(pos);
-        ArrayList<Double> masss=new ArrayList<Double>();
-        masss.add(m);
-        this.o=new Orbit(poss,masss,0,0,Settings.SPACE_CALC_PERIOD_INGAME);
         this.spaceTimer=spaceTimer;
         spaceTimerSetup();
     }
@@ -35,34 +25,6 @@ public abstract class Mass implements Serializable
      * Gibt die Sandbox der Masse zurück
      */
     public abstract Sandbox getSandbox();
-    
-    public double getMass(){
-        return m;
-    }
-    
-    public VektorD getPos(){
-        return pos;
-    }
-    
-    public VektorD getVel(){
-        return vel;
-    }
-    
-    public void setPos(VektorD pos){
-        this.pos=pos;
-    }
-    
-    public void setVel(VektorD vel){
-        this.vel=vel;
-    }
-    
-    public Orbit getOrbit(){
-        return o;
-    }
-    
-    public void setOrbit(Orbit no){
-        o=no;
-    }
     
     public void setSpaceTimer(Timer spaceTimer){
         this.spaceTimer=spaceTimer;

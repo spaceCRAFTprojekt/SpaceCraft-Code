@@ -52,8 +52,8 @@ public class WorkspaceMenu{
             super(p,"Manöver wählen",new VektorI(p.getPlayerS().getWorkspace().getNumControllables()*120+16,200));
             int index=0; //Da ja nur die kontrollierbaren Schiffe angezeigt werden, ist das nicht i
             for (int i=0;i<p.getPlayerS().getWorkspace().masses.size();i++){
-                if (p.getPlayerS().getWorkspace().masses.get(i).isControllable()){
-                    String[] strs=new String[p.getPlayerS().getWorkspace().masses.get(i).manoeuvres.size()+1];
+                if (p.getPlayerS().getWorkspace().masses.get(i).isControllable(getPlayer().getID())){
+                    String[] strs=new String[p.getPlayerS().getWorkspace().masses.get(i).getManoeuvres().size()+1];
                     strs[0]="Neues Manöver";
                     for (int j=0;j<strs.length-1;j++){
                         strs[j+1]=Integer.toString(j);

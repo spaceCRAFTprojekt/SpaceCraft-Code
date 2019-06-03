@@ -58,8 +58,10 @@ public class InventoryMenu extends InvMenu  // wer macht da immer PlayerMenu dra
      */
     @Override public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack){
         if(miFrom == mi_output){
+            int countPerItem = CraftingRecipes.getCountPerItem(new CraftingRecipe(inv_crafting));
+            if(countPerItem <= 0)return false;
             for(int i = 0; i < 9; i++){ 
-                try{ inv_crafting.getStack(new VektorI(i/3, i%3)).take(stack.getCount());} catch(Exception e){}  // wenn der Stack null ist
+                try{ inv_crafting.getStack(new VektorI(i/3, i%3)).take(stack.getCount()/countPerItem);} catch(Exception e){}  // wenn der Stack null ist
             }
             mi_crafting.updateSlots();
         } else if(miTo == mi_output)return false;  
