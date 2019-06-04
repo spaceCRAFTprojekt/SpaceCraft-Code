@@ -5,6 +5,8 @@ DoTo:
 > Caching von Planetenbahnen
 > Mehr BlÃ¶cke
 > Space-Craft-Schnittstelle
+> (manchmal, abhängig von der Position?) Fehler beim Subsandbox-Zeichnen
+> Subsandbox-Interaktion
 
 Regeln:
 * Alle Klassen und Methoden werden (auf Deutsch) genau beschrieben (Getter und Setter nicht zwingend)
@@ -81,7 +83,8 @@ History:
  02.06.2019 v0.4.0_AK  * Offset Problem (#26) gelöst (Juhu); Inventar verbessert; DraggedItemImage hinzugefügt
  02.06.2019 v0.4.1_AK  * Kleine Verbesserungen Drop and Drag; CraftingRecipes implementiert; DataPanel nicht mehr enabled
  02.06.2019 v0.4.2_LG  * Große Teile von Space und Mass in den Client verlagert (vermeidet Redundanz)
- 03.06.2019 v0.4.3_MH  * Mapgen überarbeitet und Erze hinzugefügt
+ 04.06.2019 v0.4.3_MH  * Mapgen überarbeitet und Erze hinzugefügt
+ 04.06.2019 v0.3.4_LG  * schlechte Landung auf Planeten
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

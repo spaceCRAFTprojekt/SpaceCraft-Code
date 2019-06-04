@@ -35,6 +35,6 @@ public class ClientMass extends AbstractMass{
      * (Wenn es kein Schiff ist, ist diese Funktion egal)
      */
     public double getOutvel(){
-        return 1;
+        return 100;
     }
 }

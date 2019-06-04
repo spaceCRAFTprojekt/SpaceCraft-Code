@@ -32,4 +32,14 @@ public class Mapgen
             return map;
         }
     }
+    
+    static Block[][] getDummyShipMap(VektorI size){
+        Block[][] map=new Block[size.x][size.y];
+        for (int x = 0; x<size.x; x++){
+            for (int y = 0; y<size.y; y++){
+                map[x][y] = Blocks.blocks.get(4); //ein Schiff aus Gold
+            }
+        }
+        return map;
+    }
 }

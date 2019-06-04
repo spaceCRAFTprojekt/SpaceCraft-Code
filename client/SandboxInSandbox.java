@@ -12,7 +12,7 @@ public class SandboxInSandbox implements Serializable
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
      */
     public VektorD offset;
-    public VektorD vel; //Geschwindigkeit, nur zum Simulieren durch den Client
+    public VektorD vel; //Geschwindigkeit, nur zum Simulieren durch den Client, noch nicht implementiert
 
     public SandboxInSandbox(int index, VektorD offset, VektorD vel)
     {

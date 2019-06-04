@@ -3,11 +3,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import util.geom.*;
-import client.Orbit;
-import client.Manoeuvre;
 import client.ClientSettings;
 import client.ClientSpace;
 import client.AbstractMass;
+import client.SandboxInSandbox;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
@@ -31,9 +30,9 @@ public class Space extends ClientSpace implements Serializable
         masses.add(erde);
         PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",20,10,0,timer);
         masses.add(mond);
-        ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
+        ShipS schiff=new ShipS(main,20L,false,new VektorD(2000,0),new VektorD(0,10),timer);
         masses.add(schiff);
-        calcOrbits(Settings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
+        calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
     }
     
     public Object readResolve() throws ObjectStreamException{
@@ -64,8 +63,43 @@ public class Space extends ClientSpace implements Serializable
         }
     }
     
+    /**
+     * Testet, ob Schiffe mit Planeten kollidieren, und fügt dann eventuell Subsandboxen hinzu.
+     */
     @Override
     public void handleCollisions(){
-        
+        for (int i=0;i<masses.size();i++){
+            if (masses.get(i) instanceof ShipS){
+                ShipS ship=(ShipS) masses.get(i);
+                for (int j=0;j<masses.size();j++){
+                    if (masses.get(j) instanceof PlanetS){
+                        PlanetS planet=(PlanetS) masses.get(j);
+                        for (double t=inGameTime;t<inGameTime+inGameDTime;t=t+ship.getOrbit().dtime){
+                            //ob irgendwann in der Vergangenheit (denn diese Methode wird vor dem Erhöhen 
+                            //von inGameTime aufgerufen) ein Zusammenstoß stattgefunden hat
+                            VektorD dPos=ship.getOrbit().getPos((long) t).subtract(planet.getOrbit().getPos((long) t)); //Positionsunterschied
+                            if (!((Mass) masses.get(j)).getSandbox().isSubsandbox(i) && dPos.getLength()<=planet.getRadius()+20){
+                                //Hinzufügen der Subsandbox natürlich nur ein mal
+                                //etwas mehr als der Radius, da die Schiffe ja auf der Oberfläche anhalten (liegt in calcOrbits)
+                                //bisher haben die Planeten noch keine Drehung
+                                dPos.y=-dPos.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
+                                dPos.x=dPos.x+planet.getSandbox().map.length/2;
+                                dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten ist nicht bei (0|0)
+                                VektorD vel=ship.getOrbit().getVel((long) t); //falsch (da das Schiff ja anhält), aber bisher ohnehin irrelevant
+                                vel.y=-vel.y; //invertiert...
+                                SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel);
+                                System.out.println(dPos);
+                                planet.getSandbox().addSandbox(sbisb);
+                                for (int k=0;k<ship.ownerIDs.size();k++){
+                                    if (main.getPlayer(k).getPlayerS().reachedMassIDs.indexOf(j)==-1){
+                                        main.getPlayer(k).getPlayerS().reachedMassIDs.add(j);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

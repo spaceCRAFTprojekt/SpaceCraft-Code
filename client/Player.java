@@ -70,6 +70,7 @@ public class Player implements Serializable
         this.inCraft=false;
         //der Spawnpunkt muss nochmal überdacht werden
         this.playerS=new PlayerS(this,new VektorD(0,0),currentMassIndex);
+        this.playerS.reachedMassIDs.add(currentMassIndex);
         this.playerC=new PlayerC(this,new VektorD(50,50));  // spawn Position :)  Ein Herz für Benny :)
         //muss man hier auch schon synchronisieren?
     }
@@ -429,6 +430,7 @@ public class Player implements Serializable
         //playerS.posToMass=pOnServer.getPlayerS().posToMass;
         playerS.scale=pOnServer.getPlayerS().scale;
         playerS.focussedMassIndex=pOnServer.getPlayerS().focussedMassIndex;
+        playerS.reachedMassIDs=pOnServer.getPlayerS().reachedMassIDs;
         playerC.pos=pOnServer.getPlayerC().pos;
     }
     
@@ -479,7 +481,28 @@ public class Player implements Serializable
                                 playerS.getWorkspace().inGameTime=((Long) new Request(id,requestOut,requestIn,"Space.getInGameTime",Long.class).ret).longValue();
                             }
                         }
-                        catch(NumberFormatException e){}
+                        catch(Exception e){}
+                        break;
+                    case "teleportS":
+                        try{
+                            int index=Integer.parseInt(spl[1]);
+                            if (playerS.reachedMassIDs.indexOf(index)!=-1){
+                                currentMassIndex=index;
+                                new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class,currentMassIndex);
+                                System.out.println("Teleported to Mass "+index+".");
+                            }
+                        }
+                        catch(Exception e){}
+                        break;
+                    case "teleportC":
+                        try{
+                            double x=Double.parseDouble(spl[1]);
+                            double y=Double.parseDouble(spl[2]);
+                            playerC.pos=new VektorD(x,y);
+                            new Request(id,requestOut,requestIn,"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,playerC.pos);
+                            System.out.println("Teleported to ("+x+"|"+y+")");
+                        }
+                        catch(Exception e){}
                         break;
                     default:
                         addChatMsg("Unbekannter Command...");

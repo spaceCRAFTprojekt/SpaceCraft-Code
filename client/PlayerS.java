@@ -25,11 +25,11 @@ public class PlayerS implements Serializable
     public VektorD posToMass;
     public double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
     public int focussedMassIndex;
+    public ArrayList<Integer> reachedMassIDs; //für Teleportationen
     private transient VektorI lastDragPosition = null;
     private transient ClientSpace workspace; //Irgendwie mag ich diesen Namen. -LG //null=Darstellung des "echten" Space, nicht-null: Bearbeitungsmodus
     //auch der workspace verwendet zur Zeichnung und für die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher)
 
-    
     public transient OverlayPanelS opS;
     
     public PlayerS(Player player, VektorD pos, int focussedMassIndex)
@@ -37,6 +37,7 @@ public class PlayerS implements Serializable
         this.player = player;
         this.posToMass=pos;
         this.focussedMassIndex=focussedMassIndex;
+        this.reachedMassIDs=new ArrayList<Integer>();
         this.workspace=null;
     }
     

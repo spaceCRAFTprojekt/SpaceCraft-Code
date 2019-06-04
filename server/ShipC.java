@@ -18,6 +18,7 @@ public class ShipC extends Sandbox implements Serializable
     {
         super(main,size,spaceTimer);
         this.shipS = shipS;
+        setMap(Mapgen.getDummyShipMap(size));
     }
     
     public ShipC(Main main, Block[][] map, Meta[][] meta, ArrayList<SandboxInSandbox> subsandboxes, ShipS shipS, Timer spaceTimer){

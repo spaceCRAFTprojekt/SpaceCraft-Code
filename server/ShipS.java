@@ -16,6 +16,7 @@ public class ShipS extends Mass implements Serializable
     public ArrayList<Manoeuvre> manoeuvres = new ArrayList<Manoeuvre>();
     public ArrayList<Integer> ownerIDs=new ArrayList<Integer>(); //wenn diese Liste leer ist, dann ist das Schiff öffentlich
     public ShipC shipC;
+    public boolean isCollided;
     
     /**
      * Erstellt einen neuen Raumschiffs
@@ -23,10 +24,11 @@ public class ShipS extends Mass implements Serializable
      * - Masse
      * - Position
      */
-    public ShipS(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer)
+    public ShipS(Main main, double m, boolean isCollided, VektorD pos, VektorD vel, Timer spaceTimer)
     {
         super(main,m,pos,vel,spaceTimer);
         shipC=new ShipC(main,new VektorI(20,40),this,spaceTimer);
+        this.isCollided=isCollided;
     }
     
     public Object readResolve() throws ObjectStreamException{
@@ -72,15 +74,17 @@ public class ShipS extends Mass implements Serializable
     }
     
     public void setManoeuvres(ArrayList<Manoeuvre> manos){
-        /*
+        //(einfache Checks, ob der Client irgendwelchen Unsinn sendet)
         double dMassGes=0; //gesamte verlorene Masse, sollte natürlich nicht größer sein als die Masse des Schiffs
         for (int i=0;i<manos.size();i++){
-            if (manos.get(i).outvel>=getOutvel())
+            if (manos.get(i).outvel>getOutvel()){ //Ausstoßgeschwindigkeit zu groß
                 return;
+            }
             dMassGes=dMassGes+manos.get(i).dMass;
         }
-        if (-dMassGes>=m)
-            return;*/
+        if (-dMassGes>=m){
+            return;
+        }
         manoeuvres=manos;
     }
     
@@ -88,6 +92,6 @@ public class ShipS extends Mass implements Serializable
      * Siehe client.ClientMass.getOutvel()
      */
     public double getOutvel(){
-        return 1;
+        return 100;
     }
 }

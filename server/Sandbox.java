@@ -96,6 +96,10 @@ public abstract class Sandbox implements Serializable
         if(sbNeu!=null)
             subsandboxes.add(new SandboxInSandbox(main.getSpace().masses.indexOf(sbNeu.getMass()),offsetPos,new VektorD(0,0)));
     }
+    
+    public void addSandbox(SandboxInSandbox sbNeu){
+        subsandboxes.add(sbNeu);
+    }
 
     /**
      * Entfernt eine Sandbox
@@ -106,6 +110,15 @@ public abstract class Sandbox implements Serializable
 
     public ArrayList<SandboxInSandbox> getSubsandboxes(){
         return subsandboxes;
+    }
+    
+    public boolean isSubsandbox(int sandboxIndex){
+        for (int i=0;i<subsandboxes.size();i++){
+            if (subsandboxes.get(i).index==sandboxIndex){
+                return true;
+            }
+        }
+        return false;
     }
     
     /***********************************************************************************************************************************************************
