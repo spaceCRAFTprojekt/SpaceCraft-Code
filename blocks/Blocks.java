@@ -21,12 +21,18 @@ public abstract class Blocks
     
     static{
         //System.out.println("static");
-        new Block(000, "stone", "blocks_stone", true);
+        
+        new Block(000, "grass", "blocks_grass", true);
         new Block(001, "dirt", "blocks_dirt", true); 
-        new Block(002, "grass", "blocks_grass", true); 
+        new Block(002, "stone", "blocks_stone", true);
+        new Block(003, "silver", "blocks_silver_ore", true);
+        new Block(004, "gold", "blocks_gold_ore", true);
+        new Block(005, "copper", "blocks_copper_ore", true);
         new Block(010, "tree", "blocks_tree", true);
         new Block(011, "tree1", "blocks_tree1", true);
         new Block(013, "leaves", "blocks_leaves", true);
+         
+        
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(0, 0, 0, 0, -1, 0, 0, 0, 0, 100, 2));
         new Blocks_Chest(100);
         new Blocks_Note(104); // id kann noch verändert werden

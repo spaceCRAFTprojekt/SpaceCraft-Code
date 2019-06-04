@@ -40,6 +40,6 @@ public class Manoeuvre implements Serializable{
             dirAbs=dir.multiply(1/dir.getLength()); //Einheitsvektor
         }
         //p=F*t => F=p/t; p=dMass*outvel
-        return dirAbs.multiply(-dMass*outvel/ClientSettings.SPACE_CALC_PERIOD_INGAME);
+        return dirAbs.multiply(-dMass*outvel/(t1-t0));
     }
 } 

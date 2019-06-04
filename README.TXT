@@ -81,7 +81,7 @@ History:
  02.06.2019 v0.4.0_AK  * Offset Problem (#26) gelöst (Juhu); Inventar verbessert; DraggedItemImage hinzugefügt
  02.06.2019 v0.4.1_AK  * Kleine Verbesserungen Drop and Drag; CraftingRecipes implementiert; DataPanel nicht mehr enabled
  02.06.2019 v0.4.2_LG  * Große Teile von Space und Mass in den Client verlagert (vermeidet Redundanz)
-
+ 03.06.2019 v0.4.3_MH  * Mapgen überarbeitet und Erze hinzugefügt
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

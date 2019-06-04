@@ -73,7 +73,7 @@ public class ManoeuvreInfo extends PlayerMenu
         //separator2.setForeground(Color.gray);
 
         //fuelCost = new JLabel("Fuel Cost: - ");
-
+        
 
         layout.linkSize(SwingConstants.VERTICAL, angleField, accField);
         //layout.linkSize(SwingConstants.HORIZONTAL, table[1][1], table[2][1]);

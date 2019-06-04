@@ -64,6 +64,7 @@ public class ClientSpace implements Serializable
                         masses.get(i).setMass(o.getMass(inGameTime));
                     }
                 }
+                handleCollisions();
                 calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
             }
         },ClientSettings.SPACE_TIMER_PERIOD,ClientSettings.SPACE_TIMER_PERIOD);
@@ -319,4 +320,10 @@ public class ClientSpace implements Serializable
             ship.setManoeuvres(manoeuvres);
         }
     }
+    
+    /**
+     * Diese Methode überprüft, ob es Kollisionen gibt, und macht dann eventuell Zeug für Subsandboxen.
+     * (gedacht, um durch server.Space überschrieben zu werden)
+     */
+    public void handleCollisions(){}
 }

@@ -63,4 +63,9 @@ public class Space extends ClientSpace implements Serializable
             return null;
         }
     }
+    
+    @Override
+    public void handleCollisions(){
+        
+    }
 }
