@@ -64,7 +64,7 @@ public class ClientSpace implements Serializable
                         masses.get(i).setMass(o.getMass(inGameTime));
                     }
                 }
-                handleCollisions();
+                handleCollisions(inGameDTime);
                 calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
             }
         },ClientSettings.SPACE_TIMER_PERIOD,ClientSettings.SPACE_TIMER_PERIOD);
@@ -110,33 +110,6 @@ public class ClientSpace implements Serializable
      */
     public Integer getMassNumber(Integer playerID){
         return new Integer(masses.size());
-    }
-    
-    /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
-     * Vorwärts immer, rückwärts nimmer (und auch nur begrenzt vorwärts)
-     */
-    public void setTime(Integer playerID, Long time){
-        if (time>inGameTime && time<inGameTime+ClientSettings.SPACE_CALC_TIME){
-            handleCollisions(); //muss zuerst kommen, da es berechnet, ob eine Kollision geschehen ist, nicht, ob eine geschehen wird
-            inGameTime=time.longValue();
-            for (int i=0;i<masses.size();i++){
-                Orbit o=masses.get(i).getOrbit();
-                if (o.getPos(inGameTime)!=null){
-                    masses.get(i).setPos(o.getPos(inGameTime));
-                }
-                if (o.getVel(inGameTime)!=null){
-                    masses.get(i).setVel(o.getVel(inGameTime));
-                }
-                if (o.getMass(inGameTime)!=-1){
-                    masses.get(i).setMass(o.getMass(inGameTime));
-                }
-            }
-            calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
-        }
-        //eigentlich könnte man auch noch, wenn time größer als inGameTime+Settings.SPACE_CALC_TIME ist,
-        //einfach die Orbits noch für längere Zeit berechnen, aber das Problem damit ist, dass dann bei
-        //sehr großen Werten der Server Probleme bekommen könnte
     }
     
     public int getMassNumber(){
@@ -292,13 +265,6 @@ public class ClientSpace implements Serializable
     
     /**
      * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
-     */
-    public Long getInGameTime(Integer playerID){
-        return inGameTime;
-    }
-    
-    /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
      * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
@@ -336,8 +302,8 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Diese Methode überprüft, ob es Kollisionen gibt, und macht dann eventuell Zeug für Subsandboxen.
+     * Diese Methode überprüft, ob es in den nächsten dtime Sekunden (im Spiel) Kollisionen gibt, und macht dann eventuell Zeug für Subsandboxen.
      * (gedacht, um durch server.Space überschrieben zu werden)
      */
-    public void handleCollisions(){}
+    public void handleCollisions(long dtime){}
 }

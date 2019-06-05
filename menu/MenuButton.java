@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 /**
  * Vereinfachung für den Button
  * Gibt einen Button mit Listener zurück
@@ -34,6 +36,12 @@ public abstract class MenuButton extends JButton
                     onClick();
                 }
             });
+        addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                if (e.getKeyCode()==KeyEvent.VK_ENTER)
+                    onClick();
+            }
+        });
     }
 
     public MenuButton(Menu m, String text, VektorI pos, VektorI size){

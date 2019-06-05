@@ -65,11 +65,9 @@ public class WorkspaceMenu{
                     //recht hässlich
                     new MenuButton(this,"Editieren",new VektorI(index*120,0),new VektorI(120,30)){
                         public void onClick(){
-                            if (list.getSelectedIndex()==-1)
-                                return;
                             int k;
                             closeMenu();
-                            if (list.getSelectedIndex()==0)
+                            if (list.getSelectedIndex()==-1 || list.getSelectedIndex()==0)
                                 k=-1; //neues Manöver
                             else{
                                 k=Integer.parseInt((String) list.getSelectedValue());

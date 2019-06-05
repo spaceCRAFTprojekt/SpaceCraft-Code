@@ -51,6 +51,8 @@ public class Player implements Serializable
     public transient OverlayPanelA opA;
     public transient ChatPanel chatP;
     //transiente Variablen werden nicht synchronisiert
+    private boolean isAdmin; //bestimmte Kommandos (teleport, setTime,...) gehen nur als Admin
+    //dieses Attribut ist nur für die Kopie des Spielers am Server relevant, am Client nicht
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
@@ -61,11 +63,12 @@ public class Player implements Serializable
      * boolean onClient: ob der Player sich im Client befindet (ob also er synchronisiert wird oder nicht)
      * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), außer man weiß, was man tut.
      */
-    public Player(int id, String name, boolean onClient)
+    public Player(int id, String name, boolean onClient, boolean isAdmin)
     {
         this.id=id;
         this.name = name;
         this.onClient=onClient;
+        this.isAdmin=isAdmin;
         this.currentMassIndex=0;
         this.inCraft=false;
         //der Spawnpunkt muss nochmal überdacht werden
@@ -87,7 +90,7 @@ public class Player implements Serializable
             int id=(Integer) (new Request(-1,newPlayerOut,newPlayerIn,"Main.newPlayer",Integer.class,name,password).ret); //Kopie des Players am Server
             if (id!=-1){
                 s.close();
-                return new Player(id,name,true); //Player hier am Client, Passwort wird nicht am Client gespeichert
+                return new Player(id,name,true,false); //Player hier am Client, Passwort wird nicht am Client gespeichert
             }
             s.close();
         }
@@ -478,7 +481,7 @@ public class Player implements Serializable
                         }
                         catch(ArrayIndexOutOfBoundsException e){}
                         break;
-                    case "time":
+                    case "time": //hat Bugs
                         try{
                             long time=Long.parseLong(spl[1]);
                             new Request(id,requestOut,requestIn,"Space.setTime",null,time);
@@ -488,6 +491,17 @@ public class Player implements Serializable
                         }
                         catch(Exception e){}
                         break;
+                    /*
+                    case "timeSpeed": //hat Bugs
+                        try{
+                            long dtime=Long.parseLong(spl[1]);
+                            new Request(id,requestOut,requestIn,"Space.setDTime",null,dtime);
+                            if (playerS.getWorkspace()!=null){
+                                playerS.getWorkspace().inGameDTime=((Long) new Request(id,requestOut,requestIn,"Space.getInGameDTime",Long.class).ret).longValue();
+                            }
+                        }
+                        catch(Exception e){}
+                        break;*/
                     case "teleportS":
                         try{
                             int index=Integer.parseInt(spl[1]);
@@ -575,5 +589,9 @@ public class Player implements Serializable
     
     public void setOnline(boolean b){ //wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout()
         this.online=b;
+    }
+    
+    public boolean isAdmin(){
+        return isAdmin;
     }
 }

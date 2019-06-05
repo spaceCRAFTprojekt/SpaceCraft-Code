@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
+import util.geom.VektorD;
 import items.*;
 
 import blocks.*;
@@ -239,8 +240,13 @@ public class Main implements Serializable
      */
     public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
-            //hier sollte wahrscheinlich eine Überprüfung stattfinden, ob dieser Wert überhaupt gültig ist
             Player p=players.get(playerID);
+            //schlechte Sicherheits�berpr�fungen
+            if (!p.isAdmin())
+                if (varname=="currentMassIndex" && p.getPlayerS().reachedMassIDs.indexOf((int) value)==-1)
+                    noAdminMsg(playerID);
+                else if (varname=="isAdmin")
+                    noAdminMsg(playerID);
             Class pc=Player.class;
             Field f=pc.getDeclaredField(varname);
             f.set(p,value);
@@ -251,6 +257,9 @@ public class Main implements Serializable
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerS p=players.get(playerID).getPlayerS();
+            if (!players.get(playerID).isAdmin())
+                if (varname=="reachedMassIDs")
+                    noAdminMsg(playerID);
             Class pc=PlayerS.class;
             Field f=pc.getDeclaredField(varname);
             f.set(p,value);
@@ -261,6 +270,9 @@ public class Main implements Serializable
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerC p=players.get(playerID).getPlayerC();
+            if (!players.get(playerID).isAdmin())
+                if (varname=="pos" && p.pos.subtract((VektorD) value).getLength()>20)
+                    noAdminMsg(playerID);
             Class pc=PlayerC.class;
             Field f=pc.getDeclaredField(varname);
             f.set(p,value);
@@ -279,7 +291,11 @@ public class Main implements Serializable
     {
         if (getPlayer(name) != null)return new Integer(-1);
         int id=players.size();
-        Player p=new Player(id, name, false);
+        Player p;
+        if (id==0) //der erste Spieler ist automatisch Administrator
+            p=new Player(id, name, false, true);
+        else
+            p=new Player(id, name, false, false);
         players.add(p);
         passwords.add(password);
         return id;
@@ -353,6 +369,13 @@ public class Main implements Serializable
             }
         }
         return (ret.toArray());
+    }
+    
+    /**
+     * etwas bequemer
+     */
+    public void noAdminMsg(int playerID){
+        newTask(playerID,"Player.addChatMsg","Du bist kein Administrator.");
     }
 }
 // Hallo ~unknown

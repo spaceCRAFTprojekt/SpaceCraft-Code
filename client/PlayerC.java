@@ -86,12 +86,8 @@ public class PlayerC implements Serializable
                 },0,ClientSettings.PLAYERC_TIMER_PERIOD);
             timer.schedule(new TimerTask(){
                     public void run(){
-                        synchronizeWithServer();
-                    }
-                },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
-            timer.schedule(new TimerTask(){
-                    public void run(){
-                        if (player.isOnline()){
+                        synchronizeWithServer(); //Variablen des Spielers
+                        if (player.isOnline()){ //holt sich einen neuen MapIDCache
                             mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,player.currentMassIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
                             mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
                             Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
@@ -106,7 +102,7 @@ public class PlayerC implements Serializable
                             }
                         }
                     }
-                },0,1000);
+                },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
             timer.schedule(new TimerTask(){ //Warum war dieser Timer nochmal im PlayerC und nicht im Player? -LG
                     public void run(){
                         if (player.getMenu() instanceof ManoeuvreInfo)
@@ -187,8 +183,8 @@ public class PlayerC implements Serializable
         if (type == 'c'){
             if (!player.isOnline() || !player.onClient())return;
             VektorI clickPos = new VektorI(e);  // Position in Pixeln am Bildschirm
-            VektorI sPos=getPosToPlayer(pos,clickPos,blockBreite); //Position in der Sandbox
-            VektorI cPos=getPosToCache(sPos);  // Position im mapIDCache
+            VektorD sPos=getPosToPlayer(pos,clickPos,blockBreite); //Position in der Sandbox
+            VektorI cPos=getPosToCache(player.currentMassIndex,sPos);  // Position im mapIDCache
             if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
                 //System.out.println("Tried to break block at "+sPos.toString());
                 if(mapIDCache[cPos.x][cPos.y] == -1)return;  // wenn da kein block ist => nichts machen
@@ -200,7 +196,7 @@ public class PlayerC implements Serializable
                 // wenn der Block wahrscheinlich zerst√∂rt werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // f√ºr den Fall, dass es nicht geht, wird der Block bei der n√§chsten synchronisierung wieder hergestellt
 
-                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.getCurrentMassIndex(),sPos);
+                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.getCurrentMassIndex(),sPos.toInt());
                 
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(mapIDCache[cPos.x][cPos.y] == -1){
@@ -216,18 +212,18 @@ public class PlayerC implements Serializable
                     if(blockID == -1 || Blocks.get(blockID) == null) return;
                     if(Blocks.get(blockID).placement_prediction){
                         mapIDCache[cPos.x][cPos.y] = blockID;  
-                        // wenn der Block wahrscheinlich plaziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
+                        // wenn der Block wahrscheinlich platziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                         // f√ºr den Fall, dass es nicht geht, wird der Block bei der n√§chsten synchronisierung wieder entfernt
                         hotStack.setCount(hotStack.getCount() -1);
                         hotbar.updateSlots();
                     }
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos, blockID);      
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos.toInt(), blockID);      
                 }else{
                     //leftclick
                     //System.out.println("Tried to leftclick block at "+sPos.toString());
                     Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
                     if(block instanceof SBlock){
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos);      
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos.toInt());      
                     }
                 }
             }
@@ -289,11 +285,55 @@ public class PlayerC implements Serializable
     
     /***********************************************************************************************************************************************************
     /*********3. Methoden f√ºr Subsandboxes und Raketenstart*****************************************************************************************************
-    /***********************************************************************************************************************************************************
-
+    /***********************************************************************************************************************************************************/
+    
+    /**
+     * Gibt den Index der ersten freien Sandbox (im Space.masses-Array) zur¸ck, die an sPos leer ist, oder -1, wenn gar keine dort leer ist.
+     * @param:
+     * sPos: Position im allgemeinen Map Array (l√§sst sich mit getPosToPlayer() aus einer Klick-Position berechnen)
+     * Siehe auch: getPosToCache
+     */
+    public int getEmptySandboxIndex(VektorD sPos){
+        //bevorzugt die Hauptsandbox, ist das gut so?
+        VektorI cPos=getPosToCache(player.currentMassIndex,sPos);
+        if (mapIDCache[cPos.x][cPos.y]==-1){
+            return player.currentMassIndex;
+        }
+        
+        for (int i=0;i<subData.length;i++){
+            int index=subData[i].index;
+            VektorI cPosSub=getPosToCache(index,sPos);
+            if (subMapIDCache[i][cPosSub.x][cPosSub.y]==-1){
+                return index;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * Siehe auch: getEmptySandboxIndex, nur testet diese Funktion eben nach existierenden Blˆcken. -1 bedeutet, dass in keiner Sandbox dort ein Block vorhanden ist.
+     * Die Sandboxen sollen sich (definitiv noch nicht implementiert) eigentlich nie so ¸berschneiden, dass es hier 2 mˆgliche g‰be.
+     */
+    public int getFullSandboxIndex(VektorD sPos){
+        //bevorzugt die Subsandboxen, ist das gut so?
+        for (int i=0;i<subData.length;i++){
+            int index=subData[i].index;
+            VektorI cPos=getPosToCache(index,sPos);
+            if (subMapIDCache[i][cPos.x][cPos.y]!=-1){
+                return index;
+            }
+        }
+        int index=player.currentMassIndex;
+        VektorI cPos=getPosToCache(index,sPos);
+        if (mapIDCache[cPos.x][cPos.y]!=-1){
+            return index;
+        }
+        return -1;
+    }
+    
     /***********************************************************************************************************************************************************
     /*********4. Methoden f√ºr Ansicht und Grafikausgabe*********************************************************************************************************
-    /***********************************************************************************************************************************************************
+    /***********************************************************************************************************************************************************/
 
      /**
      * Gibt die obere linken Ecke (int Bl√∂cken) der aktuellen Spieleransicht an
@@ -314,26 +354,36 @@ public class PlayerC implements Serializable
     }
     
     /**
-     * Gibt die Position eines Blocks an
+     * Gibt die Position eines Blocks (erstmal noch als VektorD, falls noch ein VektorD-Subsandbox-Offset dazuaddiert werden muss)
      * 
      * @param: 
      * posRel: Position des Spielers relativ zu der Sandbox, mit der er interagiert
      * bPos: Position des Klicks
      * blockBreite: Breite eines Blocks in Pixeln
      */
-    public VektorI getPosToPlayer(VektorD posRel, VektorI bPos, int blockBreite){
+    public VektorD getPosToPlayer(VektorD posRel, VektorI bPos, int blockBreite){
         //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
-        return (getUpperLeftCorner(posRel).add(bPos.toDouble().divide(blockBreite))).toInt();
+        return (getUpperLeftCorner(posRel).add(bPos.toDouble().divide(blockBreite)));
     }
     
     /**
      * Gibt die Position eines Blocks in cache Array an
      * 
      * @param: 
+     * sandboxIndex: Index der Sandbox, mit der der Spieler interagiert, im Normalfall player.currentMassIndex
      * sPos: Position im allgemeinen Map Array (l√§sst sich mit getPosToPlayer() berechnen)
      */
-    public VektorI getPosToCache(VektorI sPos){
-        return sPos.subtract(mapIDCachePos);
+    public VektorI getPosToCache(int sandboxIndex, VektorD sPos){
+        if (sandboxIndex==player.currentMassIndex)
+            return sPos.subtract(mapIDCachePos.toDouble()).toInt();
+        else{
+            for (int i=0;i<subData.length;i++){
+                if (subData[i].index==sandboxIndex){
+                    return sPos.subtract(subMapIDCachePos[i].toDouble()).subtract(subData[i].offset).toInt();
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -352,6 +402,11 @@ public class PlayerC implements Serializable
                 ColorModel cm=ColorModel.getRGBdefault();
                 BufferedImage image=new BufferedImage(cm,cm.createCompatibleWritableRaster((maxX-minX)*blockBreite,(maxY-minY)*blockBreite),false,new Hashtable<String,Object>());
                 //alle hier erstellten BufferedImages haben den TYPE_INT_ARGB
+                int drawX=(int) ((minX-pos.x+((fieldOfView.x)/2))*blockBreite); //es wird nur ein Teil des Bilds gezeichnet (ein Rechteck von (drawX|drawY) mit Breite width und Hˆhe height
+                int drawY=(int) ((minY-pos.y+((fieldOfView.y)/2))*blockBreite);
+                int width=(int) (fieldOfView.x*blockBreite);
+                int height=(int) (fieldOfView.y*blockBreite);
+                
                 int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     
                 Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
@@ -415,7 +470,7 @@ public class PlayerC implements Serializable
                             int minYSub=(int) Math.floor(posRel.y-fieldOfView.y/2)-1;
                             int maxYSub=(int) Math.ceil(posRel.y+fieldOfView.y/2)+1;
                             ColorModel subCm=ColorModel.getRGBdefault();
-                            BufferedImage subImage=new BufferedImage(subCm,subCm.createCompatibleWritableRaster((maxX-minX)*blockBreite,(maxY-minY)*blockBreite),false,new Hashtable<String,Object>());
+                            BufferedImage subImage=new BufferedImage(subCm,subCm.createCompatibleWritableRaster((maxXSub-minXSub)*blockBreite,(maxYSub-minYSub)*blockBreite),false,new Hashtable<String,Object>());
                             int[] oldSubImageData = ((DataBufferInt) subImage.getRaster().getDataBuffer()).getData();
                 
                             Hashtable<Integer,BufferedImage> subBlockImages=new Hashtable<Integer,BufferedImage>();
@@ -462,17 +517,18 @@ public class PlayerC implements Serializable
                                     catch(ArrayIndexOutOfBoundsException e){}
                                 }
                             }
-                            g2.drawImage(subImage,0,0,new Color(255,255,255,0),null); //unfertig
+                            int drawXSub=(int) ((minXSub-posRel.x+((fieldOfView.x)/2))*blockBreite);
+                            int drawYSub=(int) ((minYSub-posRel.y+((fieldOfView.y)/2))*blockBreite);
+                            int widthSub=(int) (fieldOfView.x*blockBreite);
+                            int heightSub=(int) (fieldOfView.y*blockBreite);
+                            subImage=subImage.getSubimage(-drawXSub,-drawYSub,widthSub,heightSub);
+                            g2.drawImage(subImage,-drawX,-drawY,new Color(255,255,255,0),null); //keine Ahnung warum -drawX, -drawY, aber es geht
                         }
                     }
                 }
                 
                 g.setColor(new Color(0,0,0,1));
                 Color background = new Color(180,230,255,255);// hier kann der Hintergrund ver√§ndert werden
-                int drawX=(int) ((minX-pos.x+((fieldOfView.x)/2))*blockBreite);
-                int drawY=(int) ((minY-pos.y+((fieldOfView.y)/2))*blockBreite);
-                int width=(int) (fieldOfView.x*blockBreite);
-                int height=(int) (fieldOfView.y*blockBreite);
                 //System.out.println(drawX+" "+drawY+" "+width+" "+height+" "+image.getWidth()+" "+image.getHeight());
                 image=image.getSubimage(-drawX,-drawY,width,height);
                 g.drawImage(image,0,0,background,null);

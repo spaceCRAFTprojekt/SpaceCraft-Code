@@ -8,6 +8,7 @@ import client.ClientSpace;
 import client.AbstractMass;
 import client.SandboxInSandbox;
 import client.Task;
+import client.Orbit;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
@@ -65,17 +66,17 @@ public class Space extends ClientSpace implements Serializable
     }
     
     /**
-     * Testet, ob Schiffe mit Planeten kollidieren, und fügt dann eventuell Subsandboxen hinzu.
+     * Testet, ob in der Zeit dtime Schiffe mit Planeten kollidieren, und fügt dann eventuell Subsandboxen hinzu.
      */
     @Override
-    public void handleCollisions(){
+    public void handleCollisions(long dtime){
         for (int i=0;i<masses.size();i++){
             if (masses.get(i) instanceof ShipS){
                 ShipS ship=(ShipS) masses.get(i);
                 for (int j=0;j<masses.size();j++){
                     if (masses.get(j) instanceof PlanetS){
                         PlanetS planet=(PlanetS) masses.get(j);
-                        for (double t=inGameTime;t<inGameTime+inGameDTime;t=t+ship.getOrbit().dtime){
+                        for (double t=inGameTime;t<inGameTime+dtime;t=t+ship.getOrbit().dtime){
                             //ob irgendwann in der Vergangenheit (denn diese Methode wird vor dem Erhöhen 
                             //von inGameTime aufgerufen) ein Zusammenstoß stattgefunden hat
                             VektorD dPos=ship.getOrbit().getPos((long) t).subtract(planet.getOrbit().getPos((long) t)); //Positionsunterschied
@@ -95,18 +96,18 @@ public class Space extends ClientSpace implements Serializable
                                         int ownerID=ship.ownerIDs.get(k);
                                         if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
                                             main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
-                                            if (main.getPlayer(ownerID).isOnline())
-                                                main.newTask(ownerID,"Player.addChatMsg","Eines deiner Schiffe landete auf dem Planet "+j+" an der Stelle "+dPos+".");
                                         }
+                                        if (main.getPlayer(ownerID).isOnline())
+                                            main.newTask(ownerID,"Player.addChatMsg","Eines deiner Schiffe landete auf dem Planet "+j+" an der Stelle ("+((int) dPos.x)+"|"+((int) dPos.y)+").");
                                     }
                                 }
                                 else{ //allgemeines Schiff ohne Besitzer
                                     for (int ownerID=0;ownerID<main.getPlayerNumber();ownerID++){
                                         if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
                                             main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
-                                            if (main.getPlayer(ownerID).isOnline())
-                                                main.newTask(ownerID,"Player.addChatMsg","Ein offenes Schiff landete auf dem Planet "+j+" an der Stelle "+dPos+".");
                                         }
+                                        if (main.getPlayer(ownerID).isOnline())
+                                            main.newTask(ownerID,"Player.addChatMsg","Ein offenes Schiff landete auf dem Planet "+j+" an der Stelle "+dPos.toInt()+".");
                                     }
                                 }
                             }
@@ -115,5 +116,63 @@ public class Space extends ClientSpace implements Serializable
                 }
             }
         }
+    }
+    
+    /**
+     * Request
+     * Vorwärts immer, rückwärts nimmer (und auch nur begrenzt vorwärts)
+     */
+    public void setTime(Integer playerID, Long time){
+        if (main.getPlayer(playerID).isAdmin()){
+            if (time>inGameTime && time<inGameTime+ClientSettings.SPACE_CALC_TIME){
+                handleCollisions(time-inGameTime); //muss zuerst kommen, da es berechnet, ob eine Kollision geschehen ist, nicht, ob eine geschehen wird
+                inGameTime=time.longValue();
+                for (int i=0;i<masses.size();i++){
+                    Orbit o=masses.get(i).getOrbit();
+                    if (o.getPos(inGameTime)!=null){
+                        masses.get(i).setPos(o.getPos(inGameTime));
+                    }
+                    if (o.getVel(inGameTime)!=null){
+                        masses.get(i).setVel(o.getVel(inGameTime));
+                    }
+                    if (o.getMass(inGameTime)!=-1){
+                        masses.get(i).setMass(o.getMass(inGameTime));
+                    }
+                }
+                calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
+            }
+            //eigentlich könnte man auch noch, wenn time größer als inGameTime+Settings.SPACE_CALC_TIME ist,
+            //einfach die Orbits noch für längere Zeit berechnen, aber das Problem damit ist, dass dann bei
+            //sehr großen Werten der Server Probleme bekommen könnte
+        }
+        else{
+            main.noAdminMsg(playerID);
+        }
+    }
+    
+    /**
+     * Request
+     */
+    public void setDTime(Integer playerID, Long dtime){
+        if(main.getPlayer(playerID).isAdmin()){
+            if (dtime.longValue()>=0 && dtime.longValue()<=1000)
+                inGameDTime=dtime.longValue();
+        }
+        else
+            main.noAdminMsg(playerID);
+    }
+    
+    /**
+     * Request
+     */
+    public Long getInGameTime(Integer playerID){
+        return inGameTime;
+    }
+    
+    /**
+     * Request
+     */
+    public long getInGameDTime(Integer playerID){
+        return inGameDTime;
     }
 }
