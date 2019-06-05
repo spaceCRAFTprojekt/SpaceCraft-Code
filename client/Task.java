@@ -12,6 +12,7 @@ public class Task implements Serializable{
      * Liste aller Task-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Player.showMenu(String menuName, Object[] menuParams)
      * Player.repaint()
+     * Player.addChatMsg(String msg)
      * Player.logoutTask() (bei Main.exit o.Ä.)
      */
     public static final long serialVersionUID=0L;

@@ -328,6 +328,11 @@ public class Player implements Serializable
      */
     public void keyEvent(KeyEvent e, char type) {
         if (!isActive())return;  // wenn ein Menü offen ist, dann passiert nichts
+        if (e.getID() == KeyEvent.KEY_TYPED && e.getKeyChar()=='!'){ //kann den KeyCode nicht hernehmen, da es eine Kombination ist
+            ChatWriterMenu cwm=new ChatWriterMenu(this);
+            cwm.mtf.setText("!");
+            return;
+        }
         switch (e.getKeyCode()){
             case Shortcuts.open_escape_menu: 
                 if (type != 'p') break;
@@ -489,7 +494,7 @@ public class Player implements Serializable
                             if (playerS.reachedMassIDs.indexOf(index)!=-1){
                                 currentMassIndex=index;
                                 new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class,currentMassIndex);
-                                System.out.println("Teleported to Mass "+index+".");
+                                addChatMsg("Teleported to Mass "+index+".");
                             }
                         }
                         catch(Exception e){}
@@ -500,7 +505,7 @@ public class Player implements Serializable
                             double y=Double.parseDouble(spl[2]);
                             playerC.pos=new VektorD(x,y);
                             new Request(id,requestOut,requestIn,"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,playerC.pos);
-                            System.out.println("Teleported to ("+x+"|"+y+")");
+                            addChatMsg("Teleported to ("+x+"|"+y+")");
                         }
                         catch(Exception e){}
                         break;

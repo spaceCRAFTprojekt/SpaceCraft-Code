@@ -7,6 +7,7 @@ import client.ClientSettings;
 import client.ClientSpace;
 import client.AbstractMass;
 import client.SandboxInSandbox;
+import client.Task;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
@@ -84,15 +85,28 @@ public class Space extends ClientSpace implements Serializable
                                 //bisher haben die Planeten noch keine Drehung
                                 dPos.y=-dPos.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
                                 dPos.x=dPos.x+planet.getSandbox().map.length/2;
-                                dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten ist nicht bei (0|0)
+                                dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten in Craft ist nicht bei (0|0)
                                 VektorD vel=ship.getOrbit().getVel((long) t); //falsch (da das Schiff ja anhält), aber bisher ohnehin irrelevant
                                 vel.y=-vel.y; //invertiert...
                                 SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel);
-                                System.out.println(dPos);
                                 planet.getSandbox().addSandbox(sbisb);
-                                for (int k=0;k<ship.ownerIDs.size();k++){
-                                    if (main.getPlayer(k).getPlayerS().reachedMassIDs.indexOf(j)==-1){
-                                        main.getPlayer(k).getPlayerS().reachedMassIDs.add(j);
+                                if (ship.ownerIDs.size()>0){
+                                    for (int k=0;k<ship.ownerIDs.size();k++){
+                                        int ownerID=ship.ownerIDs.get(k);
+                                        if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
+                                            main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                                            if (main.getPlayer(ownerID).isOnline())
+                                                main.newTask(ownerID,"Player.addChatMsg","Eines deiner Schiffe landete auf dem Planet "+j+" an der Stelle "+dPos+".");
+                                        }
+                                    }
+                                }
+                                else{ //allgemeines Schiff ohne Besitzer
+                                    for (int ownerID=0;ownerID<main.getPlayerNumber();ownerID++){
+                                        if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
+                                            main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                                            if (main.getPlayer(ownerID).isOnline())
+                                                main.newTask(ownerID,"Player.addChatMsg","Ein offenes Schiff landete auf dem Planet "+j+" an der Stelle "+dPos+".");
+                                        }
                                     }
                                 }
                             }

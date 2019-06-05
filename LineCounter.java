@@ -9,17 +9,19 @@ public class LineCounter{
     public LineCounter(){
         count();
     }
-    public static void count(){
+    public static int count(){
         try{
-            System.out.println("Lines: "+getLines("."));
-        }catch(Exception e){}
+            int ret=getLines(".");
+            System.out.println("Lines: "+ret);
+        }catch(Exception e){e.printStackTrace();}
+        return 0;
     }
     
     /**
      * rekursiv
      */
     public static int getLines(String pathname){
-        if (!new File(pathname).isDirectory() && pathname.indexOf(".java")!=-1){
+        if (!new File(pathname).isDirectory() && pathname.substring(pathname.length()>=5 ? pathname.length()-5: 0).equals(".java")){
             int num=0;
             try{
                 FileInputStream fi=new FileInputStream(pathname);

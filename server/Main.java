@@ -145,6 +145,10 @@ public class Main implements Serializable
         }
         return null;
     }
+    
+    public int getPlayerNumber(){
+        return players.size();
+    }
 
     public void exitIfNoPlayers(){
         for(int i = 0; i<players.size();i++){

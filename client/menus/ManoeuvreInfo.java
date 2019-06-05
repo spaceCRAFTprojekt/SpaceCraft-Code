@@ -5,6 +5,8 @@ import javax.swing.*;
 import menu.*;
 import client.*;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
 
 /**
  * Zum einstellen eines Manoeuvres
@@ -52,6 +54,12 @@ public class ManoeuvreInfo extends PlayerMenu
         accField = new JTextField();
         angleField = new JTextField();
         angleToggle = new JToggleButton("rel");
+        angleToggle.addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                if (e.getKeyCode()==KeyEvent.VK_ENTER)
+                    angleToggle.doClick();
+            }
+        });
 
         separator1 = new JSeparator(JSeparator.HORIZONTAL);
         separator1.setForeground(Color.gray);

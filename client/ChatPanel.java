@@ -48,7 +48,7 @@ public class ChatPanel extends JPanel
         chatlist.setForeground(new Color(0,0,0));
         chatlist.setVisible(true);
         add(chatlist);  // und fügt es zur Pane hinzu
-        opA.add(this);    
+        opA.add(this);
         this.setVisible(true);
     }
     
