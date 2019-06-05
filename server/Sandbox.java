@@ -89,38 +89,6 @@ public abstract class Sandbox implements Serializable
      */
     public abstract Mass getMass();
     
-    /**
-     * Fügt eine Sandbox hinzu
-     */
-    public void addSandbox(Sandbox sbNeu, VektorD offsetPos){
-        if(sbNeu!=null)
-            subsandboxes.add(new SandboxInSandbox(main.getSpace().masses.indexOf(sbNeu.getMass()),offsetPos,new VektorD(0,0)));
-    }
-    
-    public void addSandbox(SandboxInSandbox sbNeu){
-        subsandboxes.add(sbNeu);
-    }
-
-    /**
-     * Entfernt eine Sandbox
-     */
-    public void removeSandbox(Sandbox sbR){
-        if(sbR!=null)subsandboxes.remove(sbR);
-    }
-
-    public ArrayList<SandboxInSandbox> getSubsandboxes(){
-        return subsandboxes;
-    }
-    
-    public boolean isSubsandbox(int sandboxIndex){
-        for (int i=0;i<subsandboxes.size();i++){
-            if (subsandboxes.get(i).index==sandboxIndex){
-                return true;
-            }
-        }
-        return false;
-    }
-    
     /***********************************************************************************************************************************************************
     /*********2. Methoden fÃ¼r BlÃ¶cke (setBlock(),...)***********************************************************************************************************
     /***********************************************************************************************************************************************************/
@@ -279,8 +247,84 @@ public abstract class Sandbox implements Serializable
     /***********************************************************************************************************************************************************
     /*********3. Methoden fÃ¼r Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
-    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){
+    
+    /**
+     * Fügt eine Sandbox hinzu
+     */
+    public void addSandbox(Sandbox sbNeu, VektorD offsetPos){
+        if(sbNeu!=null){
+            int index=main.getSpace().masses.indexOf(sbNeu.getMass());
+            subsandboxes.add(new SandboxInSandbox(index,offsetPos,new VektorD(0,0),sbNeu.getSize()));
+        }
+    }
+    
+    public void addSandbox(SandboxInSandbox sbNeu){
+        subsandboxes.add(sbNeu);
+    }
+
+    /**
+     * Entfernt eine Sandbox
+     */
+    public void removeSandbox(Sandbox sbR){
+        if(sbR!=null)subsandboxes.remove(sbR);
+    }
+
+    public ArrayList<SandboxInSandbox> getAllSubsandboxes(){ //kein Request
+        return subsandboxes;
+    }
+    
+    public boolean isSubsandbox(int sandboxIndex){
+        for (int i=0;i<subsandboxes.size();i++){
+            if (subsandboxes.get(i).index==sandboxIndex){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){ //Request
         return subsandboxes.toArray(new SandboxInSandbox[subsandboxes.size()]);
+    }
+    
+    /**
+     * Gibt die Position zurück, an der sich die Subsandbox, wenn sie sich mit vel weiterbewegen würde, zum ersten Mal mit einem Objekt in dieser Sandbox kollidieren würde
+     * (wird gebraucht, um sie sich bewegen zu lassen). Wenn die Sandbox nicht kollidiert, wird offset+vel zurückgegeben
+     * => der Timer, der die Sandboxen bewegt, der SpaceTimer, kann einfach diesen Wert übernehmen und als neue Position setzen.
+     * dtime ist die Zeit, für die das berechnet wird, in Sekunden (im Spiel).
+     * Diese Methode kann vermutlich noch stark optimiert werden.
+     */
+    public VektorD collisionPoint(SandboxInSandbox sub, long dtime){
+        for (double t=0;t<dtime;t=t+ClientSettings.SANDBOX_CALC_PERIOD_INGAME){
+            VektorD offsetNew=sub.offset.add(sub.vel.multiply(t));
+            for (double x=offsetNew.x;x<offsetNew.x+sub.size.x;x++){
+                for (double y=offsetNew.y;y<offsetNew.y+sub.size.y;y++){
+                    try{
+                        if (map[(int) x][(int) y]!=null){
+                            return offsetNew.subtract(sub.vel.multiply(ClientSettings.SANDBOX_CALC_PERIOD_INGAME));
+                        }
+                    }
+                    catch(ArrayIndexOutOfBoundsException e){}
+                }
+            }
+            for (int i=0;i<subsandboxes.size();i++){
+                if (subsandboxes.get(i).index!=sub.index){ //keine Kollision mit der Subsandbox selbst
+                    SandboxInSandbox sub2=subsandboxes.get(i);
+                    VektorD sub2OffsetNew=sub2.offset.add(sub2.vel.multiply(t));
+                    Sandbox sb=((Mass) main.getSpace().masses.get(subsandboxes.get(i).index)).getSandbox(); //Das ist der Weg, um von einer SandboxInSandbox auf die dazugehörige Sandbox zu kommen, und er ist überhaupt nicht umständlich.
+                    for (double x=offsetNew.x-sub2OffsetNew.x;x<offsetNew.x-sub2OffsetNew.x+sub.size.x;x++){ //Positionen relativ zur anderen Subsandbox
+                        for (double y=offsetNew.y-sub2OffsetNew.y;y<offsetNew.y-sub2OffsetNew.y+sub.size.y;y++){
+                            try{
+                                if (sb.map[(int) x][(int) y]!=null){
+                                    return offsetNew.subtract(sub.vel.multiply(ClientSettings.SANDBOX_CALC_PERIOD_INGAME));
+                                }
+                            }
+                            catch(ArrayIndexOutOfBoundsException e){}
+                        }
+                    }
+                }
+            }
+        }
+        return sub.offset.add(sub.vel.multiply(dtime-ClientSettings.SANDBOX_CALC_PERIOD_INGAME));
     }
 
     /***********************************************************************************************************************************************************

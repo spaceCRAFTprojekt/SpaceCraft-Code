@@ -22,18 +22,18 @@ public class Orbit implements Serializable{
         this.t1=t1;
         this.dtime=dtime; //Zeitdifferenz zwischen zwei Positionen in pos
     }
-    public VektorD getPos(long t){
+    public VektorD getPos(double t){
         if (t0>t || t1<=t){
             return null;
         }
-        int i=(int) Math.round(((double) t-t0)/dtime);
+        int i=(int) Math.round((t-t0)/dtime);
         return pos.get(i);
     }
-    public VektorD getVel(long t){
+    public VektorD getVel(double t){
         if (t0>t || t1<=t){
             return null;
         }
-        int i=(int) Math.round((double) (t-t0)/dtime);
+        int i=(int) Math.round((t-t0)/dtime);
         /*
         if (i<0 || i>=pos.size()-1){
             return null;
@@ -48,19 +48,19 @@ public class Orbit implements Serializable{
             return (pos.get(i).subtract(pos.get(i-1))).divide(dtime);
         }
     }
-    public double getMass(long t){
+    public double getMass(double t){
         if (t0>t || t1<=t){
             return -1;
         }
-        int i=(int) Math.round((double) (t-t0)/dtime);
+        int i=(int) Math.round((t-t0)/dtime);
         return mass.get(i);
     }
-    public double getTravelledDistance(long tStart, long tEnd){
+    public double getTravelledDistance(double tStart, double tEnd){
         if (t0>tStart || t0>tEnd || t1<=tStart || t1<=tEnd || tEnd<tStart)
             return -1;
         double ret=0;
-        int iStart=(int) Math.round((double) (tStart-t0)/dtime);
-        int iEnd=(int) Math.round((double) (tEnd-t0)/dtime);
+        int iStart=(int) Math.round((tStart-t0)/dtime);
+        int iEnd=(int) Math.round((tEnd-t0)/dtime);
         for (int i=iStart+1;i<iEnd;i++){
             ret=ret+pos.get(i).subtract(pos.get(i-1)).getLength();
         }

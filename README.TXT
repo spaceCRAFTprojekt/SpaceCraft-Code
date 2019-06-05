@@ -84,7 +84,8 @@ History:
  02.06.2019 v0.4.1_AK  * Kleine Verbesserungen Drop and Drag; CraftingRecipes implementiert; DataPanel nicht mehr enabled
  02.06.2019 v0.4.2_LG  * Große Teile von Space und Mass in den Client verlagert (vermeidet Redundanz)
  04.06.2019 v0.4.3_MH  * Mapgen überarbeitet und Erze hinzugefügt
- 04.06.2019 v0.3.4_LG  * schlechte Landung auf Planeten, ein bisschen Subsandboxes-Zeug
+ 04.06.2019 v0.4.4_LG  * schlechte Landung auf Planeten, ein bisschen Subsandbox-Zeug
+ 05.06.2019 v0.4.5_LG  * Abbauen und Platzieren in Subsandboxen
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  
 Hinweis:

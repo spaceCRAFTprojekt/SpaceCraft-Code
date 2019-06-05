@@ -27,7 +27,6 @@ public class Space extends ClientSpace implements Serializable
     {
         super(new ArrayList<AbstractMass>(),0,inGameDTime);
         this.main=main;
-        timer=new Timer();
         PlanetS erde=new PlanetS(main,1000000000L,new VektorD(0,0),new VektorD(10,0),"Erde",250,10,0,timer);
         masses.add(erde);
         PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",20,10,0,timer);
@@ -38,10 +37,25 @@ public class Space extends ClientSpace implements Serializable
     }
     
     public Object readResolve() throws ObjectStreamException{
-        this.timer=new Timer();
         timerSetup();
         calcOrbits(inGameDTime*20+1);
         return this;
+    }
+    
+    @Override
+    public void timerSetup(){
+        super.timerSetup();
+        timer.schedule(new TimerTask(){
+            public void run(){ //Bewegen von Subsandboxen
+                for (int i=0;i<masses.size();i++){
+                    Sandbox sb=((Mass) masses.get(i)).getSandbox(); //in diesem serverseitigen Space sind ohnehin alle Masses, nicht nur AbstractMasses
+                    for (int j=0;j<sb.getAllSubsandboxes().size();j++){
+                        SandboxInSandbox sbisb=sb.getAllSubsandboxes().get(j);
+                        sbisb.offset=sb.collisionPoint(sbisb,inGameDTime);
+                    }
+                }
+            }
+        },0,ClientSettings.SPACE_TIMER_PERIOD);
     }
 
     /**
@@ -80,16 +94,23 @@ public class Space extends ClientSpace implements Serializable
                             //ob irgendwann in der Vergangenheit (denn diese Methode wird vor dem Erhöhen 
                             //von inGameTime aufgerufen) ein Zusammenstoß stattgefunden hat
                             VektorD dPos=ship.getOrbit().getPos((long) t).subtract(planet.getOrbit().getPos((long) t)); //Positionsunterschied
-                            if (!((Mass) masses.get(j)).getSandbox().isSubsandbox(i) && dPos.getLength()<=planet.getRadius()+20){
+                            if (!((Mass) masses.get(j)).getSandbox().isSubsandbox(i) && dPos.getLength()<=planet.getRadius()+100){
                                 //Hinzufügen der Subsandbox natürlich nur ein mal
-                                //etwas mehr als der Radius, da die Schiffe ja auf der Oberfläche anhalten (liegt in calcOrbits)
+                                //mehr als der Radius, da die Schiffe ja auf der Oberfläche anhalten (liegt in calcOrbits)
                                 //bisher haben die Planeten noch keine Drehung
                                 dPos.y=-dPos.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
                                 dPos.x=dPos.x+planet.getSandbox().map.length/2;
                                 dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten in Craft ist nicht bei (0|0)
-                                VektorD vel=ship.getOrbit().getVel((long) t); //falsch (da das Schiff ja anhält), aber bisher ohnehin irrelevant
+                                VektorD vel=ship.getOrbit().getVel(t-ship.getOrbit().dtime*2); //das Schiff hält direkt bei t ja an
+                                if (vel==null)
+                                    vel=ship.getVel(); //wenn der Crash direkt am Anfang stattfindet
+                                double angle=Math.acos((dPos.x*vel.x+dPos.y*vel.y)/(dPos.getLength()*vel.getLength())); //Winkel zwischen vel und dPos, berechnet durch das Skalarprodukt
+                                if (Math.abs(angle)>=Math.PI/2) //komischer Space-Berechnungsfehler
+                                    vel=dPos.multiply(-1);
                                 vel.y=-vel.y; //invertiert...
-                                SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel);
+                                //Eigentlich muss vel sich ja erhöhen, das ist derzeit nicht der Fall
+                                vel=vel.multiply(1/vel.getLength()); //"Abbremsen über dem Planeten", so kann man sie fallen sehen
+                                SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel,ship.getSandbox().getSize());
                                 planet.getSandbox().addSandbox(sbisb);
                                 if (ship.ownerIDs.size()>0){
                                     for (int k=0;k<ship.ownerIDs.size();k++){

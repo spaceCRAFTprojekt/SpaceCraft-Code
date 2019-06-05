@@ -1,5 +1,6 @@
 package client;
 import util.geom.VektorD;
+import util.geom.VektorI;
 import java.io.Serializable;
 /**
  * Enthält den Index einer Sandbox (in der Space.masses-Liste) und die Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
@@ -12,12 +13,20 @@ public class SandboxInSandbox implements Serializable
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
      */
     public VektorD offset;
-    public VektorD vel; //Geschwindigkeit, nur zum Simulieren durch den Client, noch nicht implementiert
+    /**
+     * Geschwindigkeit
+     */
+    public VektorD vel;
+    /**
+     * Größe der Subsandbox in Blöcken
+     */
+    public VektorI size;
 
-    public SandboxInSandbox(int index, VektorD offset, VektorD vel)
+    public SandboxInSandbox(int index, VektorD offset, VektorD vel, VektorI size)
     {
         this.index = index;
         this.offset = offset;
         this.vel=vel;
+        this.size=size;
     }
 }

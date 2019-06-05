@@ -184,23 +184,34 @@ public class PlayerC implements Serializable
             if (!player.isOnline() || !player.onClient())return;
             VektorI clickPos = new VektorI(e);  // Position in Pixeln am Bildschirm
             VektorD sPos=getPosToPlayer(pos,clickPos,blockBreite); //Position in der Sandbox
-            VektorI cPos=getPosToCache(player.currentMassIndex,sPos);  // Position im mapIDCache
+            int sbIndex=getInteractSandboxIndex(sPos);
+            VektorI cPos; // Position im mapIDCache
+            if (sbIndex==-1) //Interaktion mit der Hauptsandbox
+                cPos=getPosToCache(player.currentMassIndex,sPos);
+            else{ //Interaktion mit einer Subsandbox
+                cPos=getPosToCache(subData[sbIndex].index,sPos);
+            }
+            int[][] interactMapCache;
+            if (sbIndex==-1)
+                interactMapCache=mapIDCache;
+            else
+                interactMapCache=subMapIDCache[sbIndex];
             if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
-                //System.out.println("Tried to break block at "+sPos.toString());
-                if(mapIDCache[cPos.x][cPos.y] == -1)return;  // wenn da kein block ist => nichts machen
-                Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
+                Block block=Blocks.get(interactMapCache[cPos.x][cPos.y]);
+                if (block==null) return; // wenn da kein block ist => nichts machen
                 if(block.breakment_prediction){
-                    mapIDCache[cPos.x][cPos.y] = -1;  
+                    interactMapCache[cPos.x][cPos.y] = -1;
                     if(block.drop_prediction && block.item != null)getInv().addStack(new Stack(block.item, 1));
                 }
                 // wenn der Block wahrscheinlich zerstÃ¶rt werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // fÃ¼r den Fall, dass es nicht geht, wird der Block bei der nÃ¤chsten synchronisierung wieder hergestellt
-
-                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",Boolean.class,player.getCurrentMassIndex(),sPos.toInt());
-                
+                if (sbIndex==-1)
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,player.currentMassIndex,sPos.toInt());
+                else
+                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
-                if(mapIDCache[cPos.x][cPos.y] == -1){
-                    //plazieren
+                if(interactMapCache[cPos.x][cPos.y] == -1){
+                    //platzieren
                     //System.out.println("Tried to place block at "+sPos.toString());
                     Stack hotStack = inv.getHotStack();
                     if(hotStack == null || hotStack.count < 1)return;
@@ -211,19 +222,23 @@ public class PlayerC implements Serializable
                     catch(Exception e1){return;}// => Craftitem
                     if(blockID == -1 || Blocks.get(blockID) == null) return;
                     if(Blocks.get(blockID).placement_prediction){
-                        mapIDCache[cPos.x][cPos.y] = blockID;  
+                        interactMapCache[cPos.x][cPos.y] = blockID;  
                         // wenn der Block wahrscheinlich platziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                         // fÃ¼r den Fall, dass es nicht geht, wird der Block bei der nÃ¤chsten synchronisierung wieder entfernt
                         hotStack.setCount(hotStack.getCount() -1);
                         hotbar.updateSlots();
                     }
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos.toInt(), blockID);      
+                    if (sbIndex==-1)
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos.toInt(), blockID);
+                    else
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt(), blockID);
                 }else{
-                    //leftclick
-                    //System.out.println("Tried to leftclick block at "+sPos.toString());
-                    Block block = Blocks.get(mapIDCache[cPos.x][cPos.y]);
+                    Block block = Blocks.get(interactMapCache[cPos.x][cPos.y]);
                     if(block instanceof SBlock){
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos.toInt());      
+                        if (sbIndex==-1)
+                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos.toInt());
+                        else
+                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
                     }
                 }
             }
@@ -288,47 +303,34 @@ public class PlayerC implements Serializable
     /***********************************************************************************************************************************************************/
     
     /**
-     * Gibt den Index der ersten freien Sandbox (im Space.masses-Array) zurück, die an sPos leer ist, oder -1, wenn gar keine dort leer ist.
+     * Gibt den Index der ersten Sandbox (im subMapIDCache-Array, also nicht im Space.masses-Array, oder -1 => Hauptsandbox) zurück, mit der der Spieler interagieren kann.
+     * Bevorzugt wird immer eine Subsandbox.
+     * Die Subsandboxen sollten sich also nicht überschneiden (außer mit der Hauptsandbox), sonst gibt es hier Probleme.
      * @param:
      * sPos: Position im allgemeinen Map Array (lÃ¤sst sich mit getPosToPlayer() aus einer Klick-Position berechnen)
-     * Siehe auch: getPosToCache
      */
-    public int getEmptySandboxIndex(VektorD sPos){
+    public int getInteractSandboxIndex(VektorD sPos){
+        for (int i=0;i<subData.length;i++){
+            VektorD posRel=sPos.subtract(subData[i].offset);
+            if (posRel.x>=0 && posRel.y>=0 && posRel.x<subData[i].size.x && posRel.y<subData[i].size.y)
+                return i;
+        }
+        return -1;
+        /*
         //bevorzugt die Hauptsandbox, ist das gut so?
         VektorI cPos=getPosToCache(player.currentMassIndex,sPos);
         if (mapIDCache[cPos.x][cPos.y]==-1){
-            return player.currentMassIndex;
+        return player.currentMassIndex;
         }
         
         for (int i=0;i<subData.length;i++){
-            int index=subData[i].index;
-            VektorI cPosSub=getPosToCache(index,sPos);
-            if (subMapIDCache[i][cPosSub.x][cPosSub.y]==-1){
-                return index;
-            }
+        int index=subData[i].index;
+        VektorI cPosSub=getPosToCache(index,sPos);
+        if (subMapIDCache[i][cPosSub.x][cPosSub.y]==-1){
+        return index;
         }
-        return -1;
-    }
-    
-    /**
-     * Siehe auch: getEmptySandboxIndex, nur testet diese Funktion eben nach existierenden Blöcken. -1 bedeutet, dass in keiner Sandbox dort ein Block vorhanden ist.
-     * Die Sandboxen sollen sich (definitiv noch nicht implementiert) eigentlich nie so überschneiden, dass es hier 2 mögliche gäbe.
-     */
-    public int getFullSandboxIndex(VektorD sPos){
-        //bevorzugt die Subsandboxen, ist das gut so?
-        for (int i=0;i<subData.length;i++){
-            int index=subData[i].index;
-            VektorI cPos=getPosToCache(index,sPos);
-            if (subMapIDCache[i][cPos.x][cPos.y]!=-1){
-                return index;
-            }
         }
-        int index=player.currentMassIndex;
-        VektorI cPos=getPosToCache(index,sPos);
-        if (mapIDCache[cPos.x][cPos.y]!=-1){
-            return index;
-        }
-        return -1;
+        return -1;*/
     }
     
     /***********************************************************************************************************************************************************
@@ -370,7 +372,7 @@ public class PlayerC implements Serializable
      * Gibt die Position eines Blocks in cache Array an
      * 
      * @param: 
-     * sandboxIndex: Index der Sandbox, mit der der Spieler interagiert, im Normalfall player.currentMassIndex
+     * sandboxIndex: Index der Sandbox, mit der der Spieler interagiert, im Space.masses-Array, im Normalfall player.currentMassIndex
      * sPos: Position im allgemeinen Map Array (lÃ¤sst sich mit getPosToPlayer() berechnen)
      */
     public VektorI getPosToCache(int sandboxIndex, VektorD sPos){

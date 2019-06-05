@@ -17,7 +17,7 @@ public class ChestMenu extends InvMenu{
 
     VektorI pos;
     public ChestMenu(Player p, VektorI pos, Inv inv_main){
-        super(p,"Note-Block", new VektorI(550,500));
+        super(p,"Chest", new VektorI(550,500));
         
         this.inv_main = inv_main;
         invM_main = new MenuInv(this, inv_main, new VektorI(20,20));
