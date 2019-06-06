@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import items.Inv;
 import items.Stack;
 import items.Items;
-import items.PlayerInv;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
@@ -232,10 +231,6 @@ public class Player implements Serializable
                 this.online = true;
                 makeFrame();
                 playerC.timerSetup();
-                
-                
-                
-                
             }
             else{
                 System.out.println("No success when trying to log in");
@@ -248,7 +243,7 @@ public class Player implements Serializable
     public void logout(){
         if(!online)return;
         if (onClient){
-            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.logout",Boolean.class, playerC.getInv()).ret);
+            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.logout",Boolean.class).ret);
             if (success){
                 this.online = false;
                 try{

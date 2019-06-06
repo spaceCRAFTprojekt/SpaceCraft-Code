@@ -26,7 +26,7 @@ public class MenuInv extends JPanel
     public transient Inv inv;
     private transient VektorI draggedItemPos = null;
     /**
-     * wird nicht automatische zur Contentpane hinzugefügt
+     * wird nicht automatische zu Contentpane hinzugefügt
      */
     public MenuInv(Inv inv){
         super();

@@ -32,17 +32,15 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
     /**
      * wird aufgerufen, wenn ein Stack gedroppt wird
      * @return: boolean: Ob der Spieler den Stack droppen darf
-     * @param: boolean singleItem: Ob nur ein Item (rechte Maustaste) vom Stack gedropped werden soll
      */
-    public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack, boolean singleItem){
+    public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack){
         return true;
     }
    
     /**
      * wird aufgerufen, nachdem ein Stack gedroppt wurde
-     * @param Stack actDroppedStack: der Stack, der tatsächlich verschoben wurde
      */
-    public void afterDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack actDroppedStack){}
+    public void afterDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo){}
     
     /**
      * wird aufgerufen, wenn ein Stack gedragged wird
@@ -123,10 +121,6 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         System.out.println("Item at pos "+draggedItemImage.getPos()+ " dragged.");
     }
     
-    /**
-     * die Methode ist wichtig, aber ich gehe davon aus, dass die Funktion mit dem Namen beschrieben ist und die genaue
-     * Funktionsweise m ganzen nicht relevant ist. ~AK
-     */
     public void dropStack(ItemImage dropItemImage, boolean singleItem){
         
         if (dropItemImage == null || draggedItemImage == null)return;  // bei ersten halbieren???
@@ -136,38 +130,27 @@ public abstract class InvMenu extends PlayerMenu implements MouseMotionListener,
         VektorI dragItemPos = draggedItemImage.getPos();
         if(draggedStack == null || draggedStack.getCount() <= 0) {removeDragData(); return;}
         
-        if(!onDrop(dragMenuInv,draggedItemImage.getPos(),dropMenuInv,dragItemPos,draggedStack, singleItem)){resetDrag(); return;}
+        if(!onDrop(dragMenuInv,draggedItemImage.getPos(),dropMenuInv,dragItemPos,draggedStack)){resetDrag(); return;}
         
         if (dropStack == null) {
             dropStack = new Stack(null , 0);
             dropMenuInv.getInv().setStack(dropItemImage.getPos(), dropStack);
         }
-        
         Stack actDroppedStack;
-        if(singleItem){
+        Stack leftover;
+        if(singleItem){ 
             draggedStack.take(1);
             actDroppedStack = new Stack(draggedStack.getItem(), 1);
-            Stack leftover = dropStack.add(actDroppedStack);
-            if(leftover != null && leftover.getCount() > 0){
-                draggedStack.add(leftover);
-                actDroppedStack.take(1);    // => leerer Stack, da nichts verschoben wurde
-            }
-        }else{ 
-            Stack leftover = dropStack.add(draggedStack);
-            if(leftover == null || leftover.getCount() <= 0){
-                actDroppedStack = draggedStack;
-                draggedStack = null;
-            }else{
-                actDroppedStack = new Stack(draggedStack.getItem(), draggedStack.getCount() -leftover.getCount());
-                draggedStack = leftover;
-            }
-            
-        }    
-        
-        
-        if(draggedStack == null || draggedStack.getCount() <= 0)removeDragData();
+            leftover = dropStack.add(actDroppedStack);
+            if(!(leftover == null || leftover.getCount() <= 0)){draggedStack.add(leftover); return;}
+        }
+        else leftover = dropStack.add(draggedStack);
+        draggedStack = leftover;
+        if(leftover == null || leftover.getCount() <= 0)removeDragData();
         else dii.update(draggedStack);
-        afterDrop(dragMenuInv, dragItemPos,dropMenuInv,dropItemImage.getPos(), actDroppedStack);
+        System.out.println("Item to pos "+dropItemImage.getPos()+ " dropped.");
+        
+        afterDrop(dragMenuInv,dragItemPos,dropMenuInv,dropItemImage.getPos());
         
         dropMenuInv.updateSlots();
         

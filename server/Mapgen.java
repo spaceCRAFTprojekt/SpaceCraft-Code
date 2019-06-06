@@ -11,7 +11,7 @@ public class Mapgen
         switch(type){
             case "moonlike": return map;
             default:
-            // Nur ein Quadrat aus Stein mit Gras (keine Drogen) und Erde zum testen :)
+            // Nur ein Quadrat aus Stein zum testen :)
             for (int x = (size.x / 2)-radius; x<=(size.x / 2)+radius; x++){
                 for (int y = (size.y / 2)-radius; y<=(size.y / 2)+radius; y++){
                     if((size.x / 2)-radius == x || (size.x / 2)+radius == x ||

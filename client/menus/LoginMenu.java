@@ -39,7 +39,7 @@ public class LoginMenu extends Menu{
                     Player player;
                     String password=new String(pw.getPassword());
                     if (pOnServer!=null){
-                        player=new Player(pOnServer.getID(),pOnServer.getName(),true, false);
+                        player=new Player(pOnServer.getID(),pOnServer.getName(),true,false);
                         player.synchronizeWithPlayerFromServer(pOnServer);
                     }
                     else{

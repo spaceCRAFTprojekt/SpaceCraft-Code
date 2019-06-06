@@ -4,11 +4,11 @@ import util.geom.*;
 import menu.MenuSettings;
 import menu.Hotbar;
 /**
- * Ein SpielerInventar (Also das inventar mit der entsprechenden Größe)
+ * Ein SpielerInventar
  */
 public class PlayerInv extends Inv
 {
-    public transient Hotbar hotbar;
+    private transient Hotbar hotbar;
     public PlayerInv(){
         super(MenuSettings.INV_SIZE);
         
