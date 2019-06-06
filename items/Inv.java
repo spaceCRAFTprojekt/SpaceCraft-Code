@@ -77,7 +77,13 @@ public class Inv implements Serializable
     public boolean inBounds(VektorI v){
         try{ Stack s = stacks[v.x][v.y]; }catch(Exception e){return false;}return true;  // Damit k�nnte ich einen Sch�nheitswettbewerb gewinnen xD ~unknown
     } 
-    
+    public boolean isEmpty(){
+        for(int i = 0; i < stacks[0].length*stacks.length; i++){
+            Stack s = stacks[i%stacks[0].length][i/stacks.length];
+            if(s == null || s.count <= 0)return false;
+        }
+        return true;
+    }
     
     public void update(){}  // kann überschrieben werden, damit man bei jeder Änderung das Inv neu läd
 }

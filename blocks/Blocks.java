@@ -33,7 +33,7 @@ public abstract class Blocks
         new Block(013, "leaves", "blocks_leaves", true);
          
         
-        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(0, 0, 0, 0, -1, 0, 0, 0, 0, 100, 2));
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(2,2,2,2, -1, 2,2,2,2, 100, 2));
         new Blocks_Chest(100);
         new Blocks_Note(104); // id kann noch verändert werden
         new Blocks_Piston(300);

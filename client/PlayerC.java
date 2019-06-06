@@ -45,15 +45,14 @@ public class PlayerC implements Serializable
     public transient SandboxInSandbox[] subData;
     public transient int[][][] subMapIDCache;
     public transient VektorI[] subMapIDCachePos;
-    
+
     public transient OverlayPanelC opC;
     public PlayerTexture playerTexture;
     public transient OtherPlayerTexturesPanel otherPlayerTexturesPanel;
     public transient DataPanel dataP;
     private PlayerInv inv;
     public transient Hotbar hotbar;
-    
-    
+
     public PlayerC(Player player, VektorD pos)
     {
         this.player = player;
@@ -111,14 +110,23 @@ public class PlayerC implements Serializable
                 },0,100);
         }
     }
-    
+
     public void makeFrame(Frame frame){
         this.opC = frame.getOverlayPanelC();
         this.playerTexture.makeFrame(opC,player.getScreenSize(), getBlockWidth());
         this.otherPlayerTexturesPanel = new OtherPlayerTexturesPanel(opC, this, player.getScreenSize());
+        // setup des Invs und der Hotbar
+        setPlayerInv((PlayerInv)(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getPlayerInv",PlayerInv.class).ret));
+        this.dataP = new DataPanel(player.getScreenSize(), this, opC);
+    }
+
+    public void setupHotbar(){
+        if(hotbar != null){ // wenn eine alte Hotbar da ist diese entfernen
+            hotbar.setVisible(false);
+            opC.remove(hotbar);
+        }
         this.hotbar = new Hotbar(opC, inv, player.getScreenSize());   // wird automatisch dem Overlaypanel geadded
         inv.setHotbar(hotbar);
-        this.dataP = new DataPanel(player.getScreenSize(), this, opC);
     }
 
     Object readResolve() throws ObjectStreamException{
@@ -244,7 +252,7 @@ public class PlayerC implements Serializable
             }
         }
     }
-    
+
     /**
      * Mausrad"Event"
      * @param:
@@ -258,25 +266,36 @@ public class PlayerC implements Serializable
             //System.out.println(e.getWheelRotation());
         }catch(Exception ichhattekeinelustzuueberpruefenobhotbarnullist){}
     }
-    
+
     // und die Methoden, die fÃ¼r diese Events gebraucht werden
     public void openInventory(){
-        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ã‚ˆã??ç§?ã?¯çŸ¥ã‚‰ã?ªã?„ã€?ã‚ˆã??ã?‚ã?ªã?Ÿã?ŒçŸ¥ã?£ã?¦ã?„ã‚‹ ~unknown
+        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ã‚ˆã??ç§?ã?¯çŸ¥ã‚‰ã?ªã?„ã€?ã‚ˆã??ã?‚ã?ªã?Ÿã?ŒçŸ¥ã?£ã?¦ã?„ã‚‹(Das waren mal japanische Schriftzeichen, aber alle Unicode Zeichen sind weg :( ) ~unknown
         if (inv == null)return;
-        /*
-        inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
-        inv.setStack(new VektorI(3,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),90));
-        inv.setStack(new VektorI(7,3),new Stack(new CraftItem(1, "", BlocksC.images.get(1)),34));
-        inv.addStack(new Stack(new CraftItem(2, "", BlocksC.images.get(2)),34));
-        inv.addStack(new Stack(new CraftItem(0, "", BlocksC.images.get(0)),34));
-        */
+
         new InventoryMenu(player, this.inv);
     }
-    
+
     public PlayerInv getInv(){
         return inv; //von LG zum Testen, auch wenn ich eigentlich keine Ahnung vom inv habe
     }
+
+    /**
+     * setzt das Inv ohne die Hotbar upzudaten (nur für den Server)
+     */
+    public void setInv(PlayerInv inv){
+        this.inv = inv;
+    }
     
+    /**
+     * setzt das Inv und updated die Hotbar (nur für den Client)
+     */
+    public void setPlayerInv(PlayerInv inv){
+        this.inv = inv;
+        setupHotbar();
+
+        hotbar = inv.hotbar;
+    }
+
     public int getBlockWidth(){
         return blockBreite;  // Naming on point !!
     }
@@ -284,11 +303,11 @@ public class PlayerC implements Serializable
     public void setPlayerTexture(int id){
         playerTexture.setTexture(id);
     }
-    
+
     public PlayerTexture getPlayerTexture(){
         return playerTexture;
     }
-    
+
     /**
      * geht nicht oder doch?
      */
@@ -296,12 +315,11 @@ public class PlayerC implements Serializable
         new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"playerTexture",PlayerTexture.class,playerTexture);
     }
 
-
     
     /***********************************************************************************************************************************************************
     /*********3. Methoden fÃ¼r Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
-    
+
     /**
      * Gibt den Index der ersten Sandbox (im subMapIDCache-Array, also nicht im Space.masses-Array, oder -1 => Hauptsandbox) zurück, mit der der Spieler interagieren kann.
      * Bevorzugt wird immer eine Subsandbox.
@@ -322,7 +340,7 @@ public class PlayerC implements Serializable
         if (mapIDCache[cPos.x][cPos.y]==-1){
         return player.currentMassIndex;
         }
-        
+
         for (int i=0;i<subData.length;i++){
         int index=subData[i].index;
         VektorI cPosSub=getPosToCache(index,sPos);
@@ -332,18 +350,18 @@ public class PlayerC implements Serializable
         }
         return -1;*/
     }
-    
+
     /***********************************************************************************************************************************************************
     /*********4. Methoden fÃ¼r Ansicht und Grafikausgabe*********************************************************************************************************
     /***********************************************************************************************************************************************************/
 
-     /**
+    /**
      * Gibt die obere linken Ecke (int BlÃ¶cken) der aktuellen Spieleransicht an
      */
     public VektorD getUpperLeftCorner(){
         return getUpperLeftCorner(pos);
     }
-   
+
     /**
      * Gibt die obere linken Ecke (int BlÃ¶cken) der Spieleransicht an
      * @param: pos: Position des Spielers relativ zur oberen linken Ecke der Sandbox
@@ -354,7 +372,7 @@ public class PlayerC implements Serializable
         // 2.6.2019 AK: .subtract(new VektorD(0.5,0.5)) ist richtig. (Stichwort obere linke ecke des Blocks & Rundung)
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5).subtract(new VektorD(0.5,0.5)) );
     }
-    
+
     /**
      * Gibt die Position eines Blocks (erstmal noch als VektorD, falls noch ein VektorD-Subsandbox-Offset dazuaddiert werden muss)
      * 
@@ -367,7 +385,7 @@ public class PlayerC implements Serializable
         //System.out.println(bPos.toString()+" "+bPos.toDouble().divide(blockBreite).toString());
         return (getUpperLeftCorner(posRel).add(bPos.toDouble().divide(blockBreite)));
     }
-    
+
     /**
      * Gibt die Position eines Blocks in cache Array an
      * 
@@ -387,7 +405,7 @@ public class PlayerC implements Serializable
         }
         return null;
     }
-    
+
     /**
      * Grafik ausgeben
      */
@@ -408,9 +426,9 @@ public class PlayerC implements Serializable
                 int drawY=(int) ((minY-pos.y+((fieldOfView.y)/2))*blockBreite);
                 int width=(int) (fieldOfView.x*blockBreite);
                 int height=(int) (fieldOfView.y*blockBreite);
-                
+
                 int[] oldImageData = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-    
+
                 Hashtable<Integer,BufferedImage> blockImages=new Hashtable<Integer,BufferedImage>(); //Skalierung
                 for (int x = 0; x<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x; x++){
                     for (int y = 0; y<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y; y++){
@@ -456,7 +474,7 @@ public class PlayerC implements Serializable
                         catch(ArrayIndexOutOfBoundsException e){}
                     }
                 }
-                
+
                 Graphics2D g2=image.createGraphics();
                 //Zeichnen von Subsandboxen, recht Ã¤hnlich zu dem Zeichnen der Sandbox oberhalb
                 if (subData!=null && subMapIDCache!=null && subMapIDCachePos!=null){
@@ -466,7 +484,7 @@ public class PlayerC implements Serializable
                         VektorI smicp=subMapIDCachePos[i];
                         if (sd!=null && smic!=null && smicp!=null){
                             VektorD posRel=pos.subtract(sd.offset);
-                                        
+
                             int minXSub=(int) Math.floor(posRel.x-fieldOfView.x/2)-1;
                             int maxXSub=(int) Math.ceil(posRel.x+fieldOfView.x/2)+1;
                             int minYSub=(int) Math.floor(posRel.y-fieldOfView.y/2)-1;
@@ -474,7 +492,7 @@ public class PlayerC implements Serializable
                             ColorModel subCm=ColorModel.getRGBdefault();
                             BufferedImage subImage=new BufferedImage(subCm,subCm.createCompatibleWritableRaster((maxXSub-minXSub)*blockBreite,(maxYSub-minYSub)*blockBreite),false,new Hashtable<String,Object>());
                             int[] oldSubImageData = ((DataBufferInt) subImage.getRaster().getDataBuffer()).getData();
-                
+
                             Hashtable<Integer,BufferedImage> subBlockImages=new Hashtable<Integer,BufferedImage>();
                             for (int x = 0; x<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x; x++){
                                 for (int y = 0; y<=ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y; y++){
@@ -528,7 +546,7 @@ public class PlayerC implements Serializable
                         }
                     }
                 }
-                
+
                 g.setColor(new Color(0,0,0,1));
                 Color background = new Color(180,230,255,255);// hier kann der Hintergrund verÃ¤ndert werden
                 //System.out.println(drawX+" "+drawY+" "+width+" "+height+" "+image.getWidth()+" "+image.getHeight());
@@ -543,7 +561,7 @@ public class PlayerC implements Serializable
     public void repaint(){
         player.repaint();
     }
-    
+
     public void synchronizeWithServer(){
         player.synchronizeWithServer();
     }
