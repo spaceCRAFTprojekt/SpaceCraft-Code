@@ -9,9 +9,7 @@ import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 /**
- * wird angezeigt beim Start des Spiels:
- * Möglichkeit der Kartenauswahl und Starten des Spiels.
- * VG von MH 06.05.2019
+ * Login-Menü
  */
 public class LoginMenu extends Menu{
     private JButton login;

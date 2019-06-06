@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Nur eine Auflistung von Positionen ab einer bestimmten Zeit.
  * Generiert werden muss das Ganze mit dem newtonschen Gravitationsgesetz, und zwar alle Orbits zur
- * selben Zeit in Space (da es ein MehrkÃ¶rperproblem ist).
+ * selben Zeit in (Client)Space (da es ein Mehrkörperproblem ist).
  */
 public class Orbit implements Serializable{
     public static final long serialVersionUID=0L;

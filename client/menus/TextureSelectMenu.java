@@ -11,10 +11,7 @@ import util.ImageTools;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 /**
- * Write a description of class TextureSelectMenu here.
- *
- * @author (your name)
- * @version (a version number or a date)
+ * Untermenü im Inventar, lässt den Spieler seine Textur wählen
  */
 public class TextureSelectMenu extends PlayerMenu
 {

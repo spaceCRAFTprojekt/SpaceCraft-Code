@@ -15,6 +15,7 @@ import java.io.IOException;
  * 
  * Ich (unknown) glaube, dass die Klasse dafür verantwortlich ist, dass man den alten Spielstand laden kann. Wir haben (bis Linus sich Gedanken gemacht hat)
  * nur die Möglichkeit das ganze als BlackBox zu betrachten. Immerhin geht es :-)
+ * Diese Klasse speichert den Spielstand in der Datei gamesaves/main.ser.
  */
 public class Serializer{
     public static void serialize(Main main){

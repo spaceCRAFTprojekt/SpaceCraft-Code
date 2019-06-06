@@ -23,9 +23,9 @@ import blocks.*;
  * 
  * @Content:
  *  1. Methoden zum Erstellen der Sandbox
- *  2. Methoden fÃ¼r BlÃ¶cke (setBlock(),...)
- *  3. Methoden fÃ¼r Subsandboxes und Raketenstart
- *  4. Methoden fÃ¼r Ansicht und Grafikausgabe
+ *  2. Methoden für Blöcke (setBlock(),...)
+ *  3. Methoden für Subsandboxes und Raketenstart
+ *  4. Methoden für Ansicht und Grafikausgabe
  */
 public abstract class Sandbox implements Serializable
 {
@@ -33,7 +33,9 @@ public abstract class Sandbox implements Serializable
     protected Main main;
     public Block[][]map;
     public Meta[][]meta;
-    // Sandboxen kÃ¶nnen Sandboxen enthalten, z.B.: Schiff auf Planet
+    /**
+     * Sandboxen können Sandboxen enthalten, z.B.: Schiff auf Planet
+     */
     protected ArrayList<SandboxInSandbox> subsandboxes = new ArrayList<SandboxInSandbox>();
     protected transient Timer spaceTimer; //nur eine Referenz
 
@@ -43,7 +45,7 @@ public abstract class Sandbox implements Serializable
 
     /**
      * erstellt eine neue Sandbox
-     * @param: Vektor size: gibt die grÃ¶ÃŸe der Sandbox an (Bereich in dem BlÃ¶cke sein kÃ¶nnen)
+     * @param: Vektor size: gibt die Größe der Sandbox an (Bereich in dem Blöcke sein können)
      */
     public Sandbox(Main main, VektorI size, Timer spaceTimer){
         map = new Block[size.x][size.y];
@@ -71,7 +73,7 @@ public abstract class Sandbox implements Serializable
     //Nur hier kÃ¶nnen neue TimerTasks hinzugefÃ¼gt werden.
 
     /**
-     * gibt die GrÃ¶ÃŸe der Sandbox zurÃ¼ck
+     * gibt die Größe der Sandbox zurÃ¼ck
      */
     public VektorI getSize(){
         return new VektorI(map.length, map[0].length);
@@ -90,7 +92,7 @@ public abstract class Sandbox implements Serializable
     public abstract Mass getMass();
     
     /***********************************************************************************************************************************************************
-    /*********2. Methoden fÃ¼r BlÃ¶cke (setBlock(),...)***********************************************************************************************************
+    /*********2. Methoden für Blöcke (setBlock(),...)***********************************************************************************************************
     /***********************************************************************************************************************************************************/
 
     /**
@@ -108,7 +110,7 @@ public abstract class Sandbox implements Serializable
             if (map[pos.x][pos.y] == null){
                 //placeBlock(Blocks.blocks.get(104), pos, playerID);
             }else{
-                ((SBlock)map[pos.x][pos.y]).onRightclick(this, pos, playerID);
+                ((SBlock)map[pos.x][pos.y]).onRightclick(this, main.getSpace().masses.indexOf(getMass()), pos, playerID);
                 System.out.println("Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");
             }
         }catch(Exception e){ //block auÃŸerhalb der Map oder kein Special Block => kein rightclick mÃ¶glich
@@ -125,7 +127,7 @@ public abstract class Sandbox implements Serializable
      */
     public void placeBlock(Block block, VektorI pos, int playerID){
         try{
-            if(!((SBlock)block).onPlace(this, pos, playerID))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
+            if(!((SBlock)block).onPlace(this, main.getSpace().masses.indexOf(getMass()), pos, playerID))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
         }catch(Exception e){} // => kein SpecialBlock => kann immer plaziert werden
         if(!block.placement_prediction)return;
         setBlock(block, pos);
@@ -133,7 +135,7 @@ public abstract class Sandbox implements Serializable
     }
     
     /**
-     * Und das gleiche fÃ¼r einen Request
+     * Und das gleiche für einen Request
      */
     public void placeBlock(Integer playerID, Integer sandboxIndex, VektorI pos, Integer BlockID){
         Block block = Blocks.get(BlockID);
@@ -141,7 +143,7 @@ public abstract class Sandbox implements Serializable
     }
 
     /**
-     * Ein Block wird ausnahmelos gesetzt. Die Metadaten werden aber Ã¼berschrieben und das onConstruct Event aufgerufen
+     * Ein Block wird ausnahmelos gesetzt. Die Metadaten werden aber überschrieben und das onConstruct Event aufgerufen
      * 
      * @param:
      *  * Block block: Block der gesetzt werden soll
@@ -151,7 +153,7 @@ public abstract class Sandbox implements Serializable
         swapBlock(block, pos);
         removeMeta(pos);
         try{
-            ((SBlock)block).onConstruct(this, pos);  // ruft onConstruct auf, wenn es ein Special Block ist. 
+            ((SBlock)block).onConstruct(this, main.getSpace().masses.indexOf(getMass()), pos);  // ruft onConstruct auf, wenn es ein Special Block ist. 
         }catch(Exception e){} // => kein SpecialBlock
     }
 
@@ -169,7 +171,7 @@ public abstract class Sandbox implements Serializable
     }
     
     /**
-     * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurÃ¼ckgibt und lÃ¶scht die Metadaten
+     * Spieler baut einen Block in die Welt ab, wenn das onBreak() Event true zurückgibt und löscht die Metadaten
      * @param:
      *  * VektorI pos: Position des Blocks
      *  * int playerID
@@ -177,7 +179,7 @@ public abstract class Sandbox implements Serializable
     public void breakBlock(VektorI pos, int playerID){
         if (map[pos.x][pos.y] == null) return;
         try{
-            if (((SBlock)map[pos.x][pos.y]).onBreak(this, pos, playerID)){
+            if (((SBlock)map[pos.x][pos.y]).onBreak(this, main.getSpace().masses.indexOf(getMass()), pos, playerID)){
                 breakBlock(pos);
                 System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
             }
@@ -188,7 +190,7 @@ public abstract class Sandbox implements Serializable
     }
 
     /**
-     * Das gleiche fÃ¼r ein Request
+     * Das gleiche für ein Request
      */
     public void breakBlock(Integer playerID, Integer sandboxIndex, VektorI pos){
         breakBlock(pos, playerID);
@@ -203,13 +205,13 @@ public abstract class Sandbox implements Serializable
     public void breakBlock(VektorI pos){
         map[pos.x][pos.y] = null;
         try{
-            ((SBlock)map[pos.x][pos.y]).onDestruct(this, pos);
+            ((SBlock)map[pos.x][pos.y]).onDestruct(this, main.getSpace().masses.indexOf(getMass()), pos);
         }catch(Exception e){}
         removeMeta(pos);
     }
 
     /**
-     * Gibt das Block-Object zurÃ¼ck
+     * Gibt das Block-Object zurück
      */
     public Block getBlock(VektorI pos){
         try{
@@ -218,7 +220,7 @@ public abstract class Sandbox implements Serializable
     }
 
     /**
-     * gibt das Metadaten Object zurÃ¼ck
+     * gibt das Metadaten Object zurück
      */
     public Meta getMeta(VektorI pos){
         try{
@@ -330,17 +332,9 @@ public abstract class Sandbox implements Serializable
     /***********************************************************************************************************************************************************
     /*********4. Methoden fÃ¼r Ansicht und Grafikausgabe*********************************************************************************************************
     /***********************************************************************************************************************************************************/
-
-    /**
-     * Gibt die obere rechte Ecke (int BlÃ¶cken) der Spieleransicht an
-     * @param: pos: Position des Spielers relativ zur oberen rechten Ecke der Sandbox
-     */
-    public VektorD getUpperLeftCorner(VektorD pos){
-        return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5) ).add(new VektorD(0.5,0.5));
-    }
     
     /**
-     * Request-Funktion
+     * Request-Funktion => mapIDCache im client.PlayerC
      */
     public int[][] getMapIDs(Integer playerID, Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner){
         int[][] ret=new int[bottomRightCorner.x-upperLeftCorner.x+1][bottomRightCorner.y-upperLeftCorner.y+1];

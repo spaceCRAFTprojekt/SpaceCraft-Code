@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 /**
  * ImageTools
- * get() gibt ein Image zurÃ¼ck
+ * get() gibt ein Image zurück
  * v0.0.1 by AK
  */
 public abstract class ImageTools

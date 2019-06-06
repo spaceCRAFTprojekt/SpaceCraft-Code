@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.awt.*;
 import java.awt.Font;
 /**
- * nur fÃ¼r den Transport der Daten zum Client
+ * nur für den Transport der Daten zum Client
  * nicht nur die Textur, sondern allgemein die Daten des Spielers!
  */
 public class OtherPlayerTexture implements Serializable
@@ -34,5 +34,4 @@ public class OtherPlayerTexture implements Serializable
         g.drawString(name, (int)(pixPos.x+(blockWidth/2)-(width/2)), pixPos.y-(blockWidth/3));
         PlayerTexture.paint(g, textureID, mode, blockWidth, pixPos);
     }
-    
 }

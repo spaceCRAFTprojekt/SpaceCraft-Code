@@ -11,9 +11,9 @@ import items.*;
  * hier wird je ein Objekt jedes Blocks gespeichert (z.B.: Erde, Sand, Stein, Wasser)
  * Soll nie initialisiert werden!
  * 
- * v0.0.6 AK * Alles geÃ¤ndert
+ * v0.0.6 AK * Alles geändert
  * 
- * v0.3.2_AK * mit { @Override public void setProperties(){breakment_prediction = false;}};  kÃ¶nnen Properties von BlÃ¶cken Ã¼berschrieben werden
+ * v0.3.2_AK * mit { @Override public void setProperties(){breakment_prediction = false;}};  können Properties von Blöcken überschrieben werden
  */
 public abstract class Blocks
 {
@@ -42,7 +42,7 @@ public abstract class Blocks
         // piston_front: 302
     }
     /**
-     * gibt den Block mit der id zuÃ¼ck
+     * gibt den Block mit der id zuück
      */
     public static Block get(int id){
         return blocks.get(id);
@@ -53,8 +53,8 @@ public abstract class Blocks
         else return null;
     }
     /**
-     * gibt den Block mit dem Namen name zurÃ¼ck.
-     * Wenn mÃ¶glich besser get(int id) verwenden, da dafÃ¼r weniger Rechenzeit benÃ¶tigt wird!
+     * gibt den Block mit dem Namen name zurück.
+     * Wenn möglich besser get(int id) verwenden, da dafür weniger Rechenzeit benötigt wird!
      */
     public static Block get(String name){
         for (Entry<Integer, Block> entry : blocks.entrySet()) {

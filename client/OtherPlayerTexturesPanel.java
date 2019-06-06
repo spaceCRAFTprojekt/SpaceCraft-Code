@@ -6,7 +6,7 @@ import javax.swing.JComponent;
 import java.awt.Graphics;
 import util.geom.*;
 /**
- * Bewerten Sie diesen Namen auf einer Skale von 1 - 10:
+ * Bewerten Sie diesen Namen auf einer Skale von 1 - 10 - AK:
  * 4+3i -LG
  */
 public class OtherPlayerTexturesPanel extends JComponent

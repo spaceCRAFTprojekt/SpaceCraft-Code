@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 /**
- * Ein item, das mit einem Block verlinkt ist
+ * Ein Item, das mit einem Block verlinkt ist
  */
 public class BlockItem extends Item implements Serializable
 {

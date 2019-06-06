@@ -10,9 +10,9 @@ import menu.*;
 import util.geom.*;
 
 /**
- * Frame fÃ¼r DAS Inventar eines Spielers (mit Crafting-Feld)
+ * Frame für DAS Inventar eines Spielers (mit Crafting-Feld)
  * 
- * AbkÃ¼rzung InvMenu leider schon belegt
+ * Abkürzung InvMenu leider schon belegt
  */
 public class InventoryMenu extends InvMenu  // wer macht da immer PlayerMenu draus??
 {

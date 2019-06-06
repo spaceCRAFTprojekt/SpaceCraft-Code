@@ -31,7 +31,7 @@ public class Space extends ClientSpace implements Serializable
         masses.add(erde);
         PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",20,10,0,timer);
         masses.add(mond);
-        ShipS schiff=new ShipS(main,20L,false,new VektorD(2000,0),new VektorD(0,10),timer);
+        ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
         masses.add(schiff);
         calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
     }

@@ -1,7 +1,5 @@
 package blocks;
 
- 
-
 import java.util.ArrayList;
 import util.geom.*;
 import util.ImageTools;
@@ -15,24 +13,46 @@ import items.*;
 public class Block implements Serializable
 {
     public static final long serialVersionUID=0L;
-    private final int id; //Index in der blocks-Tabelle, das einzige, was serialisiert wird (alle anderen Attribute sollten "transient" sein)
+    /**
+     * Index in der blocks-Liste, das einzige, was serialisiert wird (alle anderen Attribute sollten "transient" sein)
+     */
+    private final int id;
     
     private transient BufferedImage img;
     private transient String name;
-    
-    public transient boolean walkable = true;  // ob ein Spieler durch z.B.: durch B√§ume durchgehen kann
-    public transient int light = 0;  // ob der Block Licht ausstrahlt
-    public transient boolean light_propagates = true;   // ob der Block lichtdurchl√§ssig ist
-    public transient boolean climbable = false;  // ob man an dem Block hochklettern kann (muss walkable false sein)
-    public transient Item item = null; // falls der Block ein Item hat
-
-    public transient boolean placement_prediction = true; // ob der Block im normalfall plaziert werden kann
-    public transient boolean breakment_prediction = true; //  "  gebreakt " " ; goodest EnglisCh
-    public transient boolean drop_prediction = true;      // ob der Block das zugeh√∂rige Item droppt
-    // ich hab das jetzt man alles public gemacht, weil man sonst so viele getter braucht. Nat√ºrlich kann man dann die Wert sp√§ter ver√§ndern, aber wer macht das schon... ~AK
     /**
-     * nur static m√∂glich, nicht in-Game (wegen der Bilder f√ºr den Client)
+     * ob ein Spieler durch z.B.: durch B‰ume durchgehen kann
      */
+    public transient boolean walkable = true;
+    /**
+     * ob der Block Licht ausstrahlt (noch nicht implementiert?)
+     */
+    public transient int light = 0;
+    /**
+     * ob der Block lichtdurchl‰ssig ist (noch nicht implementiert?)
+     */
+    public transient boolean light_propagates = true;
+    /**
+     * ob man an dem Block hochklettern kann (muss walkable false sein) (noch nicht implementiert?)
+     */
+    public transient boolean climbable = false;
+    /**
+     * falls der Block ein Item hat
+     */
+    public transient Item item = null;
+    /**
+     * ob der Block im normalfall platziert werden kann
+     */
+    public transient boolean placement_prediction = true;
+    /**
+     *  "  gebreakt " " ; goodest EnglisCh
+     */
+    public transient boolean breakment_prediction = true;
+    /**
+     * ob der Block das zugehˆrige Item droppt
+     */
+    public transient boolean drop_prediction = true;
+    // ich hab das jetzt man alles public gemacht, weil man sonst so viele getter braucht. Nat¸rlich kann man dann die Wert sp‰ter ver‰ndern, aber wer macht das schon... ~AK
     public Block(int id, String name, String imageString, boolean hasItem)
     {
         this(id, name, hasItem);
@@ -62,7 +82,7 @@ public class Block implements Serializable
     }
     
     /**
-     * Gibt die Textur des Blocks zur√ºck
+     * Gibt die Textur des Blocks zur¸ck
      */
     public BufferedImage getImage()
     {
@@ -78,7 +98,7 @@ public class Block implements Serializable
     }
     
     /**
-     * Gibt den Namen des Blocks zur√ºck
+     * Gibt den Namen des Blocks zur¸ck
      */
     public String getName()
     {
