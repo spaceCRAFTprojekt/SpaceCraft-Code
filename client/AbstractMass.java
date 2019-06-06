@@ -4,11 +4,6 @@ import client.Orbit;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.io.Serializable;
-/**
- * Die Superklasse für alle Massen (also ClientMass, server.PlanetS und server.ShipS)
- * Die abstrakte Klasse server.Mass hat zusätzlich noch die Qualität, dass sie eine Referenz auf
- * eine Sandbox hat und dazu noch einen Timer und eine Referenz auf ein Main-Objekt 
- */
 public abstract class AbstractMass implements Serializable
 {
     public static final long serialVersionUID=0L;

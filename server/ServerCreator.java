@@ -10,19 +10,6 @@ import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.EOFException;
-/**
- * Diese Klasse erledigt die ganzen Formalia, die mit dem Server zu tun haben:
- * * erstellt einen ServerSocket, der auf Clients wartet, die dann in Request- und Task-Clients eingeteilt werden,
- *   abhängig von dem ersten boolean, den sie senden müssen
- * * Es gibt pro Spieler 2 Sockets/Clients, einen für Tasks (die vom Server ausgehen) und einen für Requests (die vom Client ausgehen).
- * * Der outputStream eines Task-Clients wird in taskOutputStreams mit dem Index der ID des Players geschrieben, 
- *   so dass mit Main.newTask (das intern ServerCreator.sendTask aufruft) Tasks an den Client geschickt werden können.
- *   Für eine vermutlich nicht vollständige Liste aller Tasks siehe client.Task
- * * (ein deutlich wichtigerer) Request-Client bekommt einen eigenen Thread, der nur auf Requests wartet und diese dann ausführt.
- *   Das ist vermutlich größtenteils ziemlich unsicher.
- *   Sollte ein Request-Client lange keinen Request schreiben (das ist der Fall für 2 Request-Clients, die für Player.login und Player.newPlayer
- *   benötigt werden, wird dieser Socket und der dazugehörige Thread geschlossen.
- */
 public class ServerCreator{
     Main main;
     Hashtable<Integer,ObjectOutputStream> taskOutputStreams;
@@ -113,9 +100,6 @@ public class ServerCreator{
         }
     }
     
-    /**
-     * Führt Requests aus, die der Server erhält
-     */
     public Object resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         if (ClientSettings.PRINT_COMMUNICATION){
             System.out.println("Resolving Request "+req);
@@ -155,9 +139,6 @@ public class ServerCreator{
         return req.ret;
     }
     
-    /**
-     * wird von Main.newTask aufgerufen
-     */
     public void sendTask(int playerID, Task task){
         if (main.getPlayer(playerID).isOnline()){
             try{

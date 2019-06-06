@@ -10,9 +10,9 @@ import menu.*;
 import util.geom.*;
 
 /**
- * Frame für DAS Inventar eines Spielers (mit Crafting-Feld)
+ * Frame fÃ¼r DAS Inventar eines Spielers (mit Crafting-Feld)
  * 
- * Abkürzung InvMenu leider schon belegt
+ * AbkÃ¼rzung InvMenu leider schon belegt
  */
 public class InventoryMenu extends InvMenu  // wer macht da immer PlayerMenu draus??
 {
@@ -56,17 +56,29 @@ public class InventoryMenu extends InvMenu  // wer macht da immer PlayerMenu dra
      * wird aufgerufen, wenn ein Stack gedroppt wird
      * @return: boolean: Ob der Spieler den Stack droppen darf
      */
-    @Override public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack){
-        if(miFrom == mi_output){
-            int countPerItem = CraftingRecipes.getCountPerItem(new CraftingRecipe(inv_crafting));
-            if(countPerItem <= 0)return false;
-            for(int i = 0; i < 9; i++){ 
-                try{ inv_crafting.getStack(new VektorI(i/3, i%3)).take(stack.getCount()/countPerItem);} catch(Exception e){}  // wenn der Stack null ist
-            }
-            mi_crafting.updateSlots();
-        } else if(miTo == mi_output)return false;  
+    @Override public boolean onDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack stack, boolean singleItem){
+        
+        if(miTo == mi_output)return false;
+        if(miFrom == mi_output && singleItem && stack.getCount() != 1) return false; // Das nehmen von mehr als einem Item kann zu Bugs führen (Da wenn der output count > 1, halbe items genommen werden müssten)
         return true;
     }  
+    
+    /**
+     * wird aufgerufen, nachdem ein Stack gedroppt wurde
+     * @param Stack actDroppedStack: der Stack, der tatsächlich verschoben wurde
+     */
+    public void afterDrop(MenuInv miFrom, VektorI vFrom, MenuInv miTo, VektorI vTo, Stack actDroppedStack){
+        if(miFrom == mi_output){
+            int countPerItem = CraftingRecipes.getCountPerItem(new CraftingRecipe(inv_crafting));
+            if(countPerItem <= 0)countPerItem = 0; // sollte nicht passieren
+            for(int i = 0; i < 9; i++){ 
+                try{ inv_crafting.getStack(new VektorI(i/3, i%3)).take((int)Math.ceil((double)actDroppedStack.getCount()/(double)countPerItem));} catch(Exception e){}  // wenn der Stack null ist
+                // es wird nach oben gerundet, damit der Spieler, wenn er aus irgendeinem Grund nur ein item nimmt nicht kein item vom Stack abgezogen wird, sondern eins... (sollte eig. aber nicht möglich sein)
+            }
+            mi_crafting.updateSlots();
+        } 
+        if(miFrom == mi_crafting || miTo == mi_crafting)updateCraftingOutput();
+    }
     
     /**
      * wird aufgerufen, nachdem ein Stack gedroppt wurde

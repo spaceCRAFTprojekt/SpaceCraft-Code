@@ -1,4 +1,7 @@
 package client;
+
+ 
+
 import javax.swing.JComponent;
 
 import java.awt.image.BufferedImage;
@@ -10,7 +13,7 @@ import java.util.AbstractMap.SimpleEntry;
 import util.ImageTools;
 import util.geom.*;
 /**
- * Da der Spieler, wenn er in der Grafik gepaintet wird immer flackert, wird der Spieler als eigenes JComponent in
+ * Da der Spieler, wenn er in der Grafik gepaintet wird immer flackert, wird der Spieler als eigenes JComponent in 
  * das OverlayPanel gemalt
  * 
  * Die SpielerTexturen müssen im Ordner texturesC sein.

@@ -14,39 +14,21 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 import menu.MenuSettings;
 /**
- * der Space-Teil eines Spielers
- * Alle Variablen, die synchronisiert werden müssen, müssen public sein.
+ * ein Spieler in der Space Ansicht
+ * test
  */
 public class PlayerS implements Serializable
 {
     public static final long serialVersionUID=0L;
+    //alle Variablen, die synchronisiert werden müssen, müssen public sein
     private Player player;
-    /**
-     * Index der gerade fokussierten Masse in der (Client)Space.masses-Liste
-     */
-    public int focussedMassIndex;
-    /**
-     * Position der Grafik relativ zur fokussierten Masse
-     */
     public VektorD posToMass;
-    /**
-     * eine Einheit im Space => scale Pixel auf dem Frame
-     */
-    public double scale=0.05;
-    /**
-     * für Teleportationen
-     */
-    public ArrayList<Integer> reachedMassIDs;
-    /**
-     * für das drop and drag der Maus
-     */
+    public double scale=0.05; //eine Einheit im Space => scale Pixel auf dem Frame
+    public int focussedMassIndex;
+    public ArrayList<Integer> reachedMassIDs; //für Teleportationen
     private transient VektorI lastDragPosition = null;
-    /**
-     * ein "Arbeitsweltraum", in dem der Spieler Manöver einstellen kann
-     * null=Darstellung des "echten" Space, nicht-null: Bearbeitungsmodus
-     * Auch der workspace verwendet zur Zeichnung und für die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher).
-     */
-    private transient ClientSpace workspace; //Irgendwie mag ich diesen Namen. -LG
+    private transient ClientSpace workspace; //Irgendwie mag ich diesen Namen. -LG //null=Darstellung des "echten" Space, nicht-null: Bearbeitungsmodus
+    //auch der workspace verwendet zur Zeichnung und für die Events die Variablen posToMass, scale und focussedMassIndex (macht es einfacher)
 
     public transient OverlayPanelS opS;
     
@@ -59,9 +41,6 @@ public class PlayerS implements Serializable
         this.workspace=null;
     }
     
-    /**
-     * Diese Methode wird von Player.makeFrame aufgerufen.
-     */
     public void makeFrame(Frame frame){
 
     }
@@ -187,7 +166,7 @@ public class PlayerS implements Serializable
     }
     
     /**
-     * Zeichnen
+     * Grafik ausgeben
      */
     public void paint(Graphics g, VektorI screenSize){
         if (player.onClient() && player.isOnline()){
@@ -309,9 +288,6 @@ public class PlayerS implements Serializable
         }
     }
     
-    /**
-     * erstellt einen neuen Arbeitsweltraum mit den Daten des "richtigen" Weltraums
-     */
     public void openWorkspace(){
         ArrayList<ClientMass> masses=(ArrayList<ClientMass>) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getAllMassesInaccurate",ArrayList.class).ret);
         Long inGameTime=(Long) (new Request(this.player.getID(),player.getRequestOut(),player.getRequestIn(),"Space.getInGameTime",Long.class).ret);
@@ -323,12 +299,7 @@ public class PlayerS implements Serializable
         }
         workspace=new ClientSpace(clientMasses,inGameTime.longValue(),1);
     }
-    
-    /**
-     * schließt den Arbeitsweltraum
-     * @param: 
-     * boolean applyChanges: ob versucht werden soll, die Änderungen anzuwenden, oder nicht
-     */
+
     public void closeWorkspace(boolean applyChanges){
         if (workspace!=null){
             workspace.timer.cancel();

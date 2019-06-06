@@ -1,5 +1,6 @@
 package client;
 
+ 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import javax.swing.JPanel;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import util.ImageTools;
 import java.awt.Graphics;
 /**
- * Grafikdarstellung für einen Spieler
+ * Grafikdarstellung fÃ¼r einen Spieler
  */
 public class Frame extends JFrame{
     private Player p;
@@ -81,10 +82,8 @@ public class Frame extends JFrame{
     public OverlayPanelA getOverlayPanelA(){
         return opA;
     }
-    
-    /**
-     * Grafik
-     */
+
+        // Grafik:
     public void paint(Graphics g){
         if(pp!= null){
             pp.repaint();

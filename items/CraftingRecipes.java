@@ -3,7 +3,7 @@ package items;
 
 import java.util.ArrayList;
 /**
- * Hier werden alle Crafting "Rezepte" gespeichert.
+ * Hier werden alle Crafting "Rezepte" gespeichert
  */
 public abstract class CraftingRecipes
 {

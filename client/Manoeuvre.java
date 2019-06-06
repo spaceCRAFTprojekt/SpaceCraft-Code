@@ -2,26 +2,14 @@ package client;
 import util.geom.VektorD;
 import java.io.Serializable;
 /**
- * ein Manöver eines Schiffes
+ * ein Manöver
  */
 public class Manoeuvre implements Serializable{
     public static final long serialVersionUID=0L;
-    /**
-     * Richtung, in die sich das Schiff bewegen soll
-     */
-    public VektorD dir;
-    /**
-     * true: Richtung der Kraft immer relativ zur Bewegungsrichtung des Schiffs
-     */
-    public boolean rel;
-    /**
-     * Massenauswurf von dMass von t0 bis t1 (positiv: Massenzunahme!)
-     */
-    public double dMass;
-    /**
-     * Auswurfgeschwindigkeit
-     */
-    public double outvel;
+    public VektorD dir; //Richtung, in die sich das Schiff bewegen soll
+    public boolean rel; //true: Richtung der Kraft immer relativ zur Bewegungsrichtung des Schiffs
+    public double outvel; //Auswurfgeschwindigkeit
+    public double dMass; //Massenauswurf von dMass von t0 bis t1 (positiv: Massenzunahme!)
     public long t0; //inGame-Zeiten
     public long t1;
     public Manoeuvre(VektorD dir, boolean rel, double dMass, double outvel, long t0, long t1){

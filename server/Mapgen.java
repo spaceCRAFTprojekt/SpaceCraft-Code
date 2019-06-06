@@ -1,9 +1,6 @@
 package server;
 import util.geom.VektorI;
 import blocks.*;
-/**
- * unfertig
- */
 public class Mapgen
 {
     static Block[][] generateMap(String type, VektorI size, int radius){
@@ -11,7 +8,7 @@ public class Mapgen
         switch(type){
             case "moonlike": return map;
             default:
-            // Nur ein Quadrat aus Stein zum testen :)
+            // Nur ein Quadrat aus Stein mit Gras (keine Drogen) und Erde zum testen :)
             for (int x = (size.x / 2)-radius; x<=(size.x / 2)+radius; x++){
                 for (int y = (size.y / 2)-radius; y<=(size.y / 2)+radius; y++){
                     if((size.x / 2)-radius == x || (size.x / 2)+radius == x ||

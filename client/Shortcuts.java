@@ -1,8 +1,8 @@
 package client;
 import java.awt.event.KeyEvent;
 /**
- * Alle Tastenkürzel werden hier als static int vermerkt
- * Tastenkürzel Abfragen (mit KeyEvent e):
+ * Alle TastenkÃ¼rzel werden hier als static int vermerkt
+ * TastenkÃ¼rzel Abfragen (mit KeyEvent e):
  * if (e.getKeyCode() == Shortcuts.move_left ) {...}
  */
 public abstract class Shortcuts

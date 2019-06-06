@@ -2,9 +2,6 @@ package client;
 import java.util.ArrayList;
 import java.util.Timer;
 import util.geom.*;
-/**
- * Die Client-Variante einer Masse. Es wird hier nicht zwischen Planeten und Schiffen unterschieden, da es egal ist.
- */
 public class ClientMass extends AbstractMass{
     private boolean isControllable;
     private ArrayList<Manoeuvre> manoeuvres;

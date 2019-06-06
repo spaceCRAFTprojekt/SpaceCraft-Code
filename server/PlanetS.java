@@ -21,7 +21,7 @@ public class PlanetS extends Mass implements Serializable
      * @Params:
      * - Masse
      * - Position
-     * - Geschwindigkeit
+     * - Orbit
      * - Name
      * - Radius (m)
      * - Planetanziehungskraft
@@ -67,22 +67,13 @@ public class PlanetS extends Mass implements Serializable
         return gravity;
     }
     
-    /**
-     * (nötig, da es client.AbstractMass erweitert)
-     */
     public boolean isControllable(int playerID){
         return false;
     }
     
-    /**
-     * (nötig, da es client.AbstractMass erweitert)
-     */
     public ArrayList<Manoeuvre> getManoeuvres(){
         return new ArrayList<Manoeuvre>();
     }
     
-    /**
-     * (nötig, da es client.AbstractMass erweitert)
-     */
     public void setManoeuvres(ArrayList<Manoeuvre> manos){}
 }

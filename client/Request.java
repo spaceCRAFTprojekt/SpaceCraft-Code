@@ -7,19 +7,20 @@ import java.io.ObjectInputStream;
 /**
  * Ein Player (Client) sendet nur Requests an den Server => im client-package keine Referenzen auf
  * das Server-package!
- * Wenn ein neuer Socket erstellt wird, muss er zuallererst einen boolean senden, damit der Server weiß, was es für ein Client ist.
- * True steht für Request-Client, false für Task-Client.
- * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen (wahrscheinlich trotzdem unvollständig):
+ * Wenn ein neuer Socket erstellt wird, muss er zuallererst einen boolean senden, damit der Server weiÃŸ, was es fÃ¼r ein Client ist.
+ * True steht fÃ¼r Request-Client, false fÃ¼r Task-Client.
+ * Liste aller Request-Funktionen - sollte aktualisiert werden, wenn neue dazukommen:
      * Main.exit()
      * Main.exitIfNoPlayers()
      * Main.newPlayer(String name,String password)
      * Main.getPlayer(String name)
      * Main.login(String password)
-     * Main.logout()
+     * Main.logout(PlayerInv inv)
+     * Main.getPlayerInv()
      * Main.returnFromMenu(String menuName, Object[] menuParams)
      * Main.synchronizePlayerVariable(String varname, Class class, Object value)
      * Main.synchronizePlayerSVariable(String varname, Class class, Object value)
-     * Main.synchronizePlayerCVariable(String varname, Class class, Object value) (diese drei setzen Werte von Variablen der Kopie des Players am Server auf den angegebenen Wert)
+     * Main.synchronizePlayerCVariable(String varname, Class class, Object value) (diese drei setzen Werte von Variablen der Kopie des Players am Server zu dem angegebenen Wert)
      * Main.retrievePlayer() (id wird ja schon mitgegeben) (zur Synchronisierung)
      * Main.writeIntoChat(String message)
      * Main.getChatContent(int numLines)
@@ -36,7 +37,7 @@ import java.io.ObjectInputStream;
      * Sandbox.getMapIDs(Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * Sandbox.getAllSubsandboxes(Integer sandboxIndex)
      * 
-     * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
+     * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Ãœbergabewert auch noch die ID des players)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params der currentMassIndex des Players.
  */
 public class Request implements Serializable{
@@ -47,22 +48,22 @@ public class Request implements Serializable{
     public volatile Object ret; //muss wahrscheinlich nicht volatile sein
     public Class retClass;
     /**
-     * Der Player mit der gegebenen PlayerID stellt den Request, dass der Server todo tut, er übergibt die Parameter params.
-     * Es sollte jedes Mal überprüft werden, ob der Player überhaupt auf dem Client und online ist.
+     * Der Player mit der gegebenen PlayerID stellt den Request, dass der Server todo tut, er Ã¼bergibt die Parameter params.
+     * Es sollte jedes Mal Ã¼berprÃ¼ft werden, ob der Player Ã¼berhaupt auf dem Client und online ist.
      * Konvention: todo=Klassenname+"."+Methodenname
-     * ret=irgendein Rückgabewert (der formale Rückgabewert ist void)
+     * ret=irgendein RÃ¼ckgabewert (der formale RÃ¼ckgabewert ist void)
      * (    <IrgendeineKlasse> obj = <IrgendeinKonstruktorOderNull>;
      *      Request req = new Request(p, todo, <IrgendeineKlasse>.class, params);
      *      obj = (<CastAufIrgendeineKlasse>) req.ret;
      *      req = null; //nur Code-Stil, da der Request jetzt nutzlos geworden ist
-     *      oder so ähnlich
+     *      oder so Ã¤hnlich
      * )
      * Wenn retClass gleich null ist, dann ist es ein Request, auf dessen Antwort nicht gewartet wird
-     * (dieser hat dann auch keinen Rückgabewert) (z.B. Main.synchronizePlayerVariable).
-     * Da alle Request-Methoden, auf die gewartet wird, also ein Rückgabeobjekt haben müssen, ist hiermit Konvention,
+     * (dieser hat dann auch keinen RÃ¼ckgabewert) (z.B. Main.synchronizePlayerVariable).
+     * Da alle Request-Methoden, auf die gewartet wird, also ein RÃ¼ckgabeobjekt haben mÃ¼ssen, ist hiermit Konvention, 
      * dass es bei eigentlichen void-Methoden ein Boolean (Objekt) ist (wird true, wenn der Request erfolgreich war).
-     * Übergabewerte der Methode im Server: playerID, params, wobei alle primitiven Parameter zu Objekten konvertiert werden (Arrays sind keine primitiven Objekte.).
-     * Über den Nutzen von retClass lÃ¤sst sich streiten.
+     * Ãœbergabewerte der Methode im Server: playerID, params, wobei alle primitiven Parameter zu Objekten konvertiert werden (Arrays sind keine primitiven Objekte.).
+     * Ãœber den Nutzen von retClass lÃ¤sst sich streiten.
      */
     public Request(int playerID, ObjectOutputStream socketOut, ObjectInputStream socketIn, String todo, Class retClass, Object... params){
         if (ClientSettings.PRINT_COMMUNICATION)
