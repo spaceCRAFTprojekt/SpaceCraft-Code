@@ -223,12 +223,19 @@ public class Main implements Serializable
         return new Boolean(false);
     }
     
-    /**
+    public PlayerInv getPlayerInv(Integer playerID){
+            return players.get(playerID).getPlayerC().getInv(); // Kopie des Spielers am Server
+    }
+
+	/**
      * Request-Funktion
      */
-    public Boolean logout(Integer playerID){
-        players.get(playerID).setOnline(false); //siehe login(Integer playerID)
-        sc.taskOutputStreams.remove(playerID);
+    public Boolean logout(Integer playerID, PlayerInv inv){
+        Player player = players.get(playerID);
+		player.setOnline(false); //siehe login(Integer playerID)
+        player.getPlayerC().setInv(inv);
+        player.setOnline(false); //siehe login(Integer playerID)
+		sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
     
