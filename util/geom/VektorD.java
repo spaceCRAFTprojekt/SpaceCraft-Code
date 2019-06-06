@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Simple Integer Vektor
- * Bei Ver‰nderung Bitte in der readme Datei erw‰hnen!!!
+ * Bei Ver√§nderung Bitte in der readme Datei erw√§hnen!!!
  * 0.0.1: erstellt
  * 0.0.2: SDivision und toIntFloor/Ceil erg√§nzt
  */
@@ -67,6 +67,10 @@ public class VektorD implements Serializable
     public VektorI toInt()
     {
         return new VektorI((int) Math.round(x),(int) Math.round(y));
+    }
+    
+    public VektorL toLong(){
+        return new VektorL(Math.round(x),Math.round(y));
     }
     
     /**

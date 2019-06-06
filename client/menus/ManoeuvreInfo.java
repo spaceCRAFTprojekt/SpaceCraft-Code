@@ -20,7 +20,7 @@ public class ManoeuvreInfo extends PlayerMenu
     private JLabel rocketInfo;
     private JSeparator separator0;
     private JLabel accLabel;
-    public JTextField accField; //Diese Namen entsprechen nicht alle dem, was damit eingestellt wird. -LG
+    public JTextField accField;
     private JLabel angleLabel;
     public JTextField angleField;
     public JToggleButton angleToggle;

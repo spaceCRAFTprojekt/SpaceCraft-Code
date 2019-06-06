@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 /**
- * Ein Item, das nicht mit einem Block verlinkt ist
+ * 
  */
 public class CraftItem extends Item implements Serializable
 {

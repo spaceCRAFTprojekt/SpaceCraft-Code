@@ -13,11 +13,12 @@ public class ChestMenu extends InvMenu{
     MenuInv invM_player;
     Inv inv_main;
     MenuInv invM_main;
-    int sandboxIndex;
+    
+
     VektorI pos;
-    public ChestMenu(Player p, int sandboxIndex, VektorI pos, Inv inv_main){
+    public ChestMenu(Player p, VektorI pos, Inv inv_main){
         super(p,"Chest", new VektorI(550,500));
-        this.sandboxIndex=sandboxIndex;
+        
         this.inv_main = inv_main;
         invM_main = new MenuInv(this, inv_main, new VektorI(20,20));
         invM_player = new MenuInv(this, p.getPlayerC().getInv(), new VektorI(20,250));
@@ -28,7 +29,7 @@ public class ChestMenu extends InvMenu{
     
     
     @Override public void closeMenu(){
-        Object[] menuParams={sandboxIndex,pos,inv_main};
+        Object[] menuParams={getPlayer().getCurrentMassIndex(),pos,inv_main};
         Boolean success=(Boolean) (new Request(getPlayer().getID(),getPlayer().getRequestOut(),getPlayer().getRequestIn(),"Main.returnFromMenu",Boolean.class,"ChestMenu",menuParams).ret);
         super.closeMenu();
     }

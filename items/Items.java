@@ -2,14 +2,13 @@ package items;
 import java.util.HashMap;
 import java.util.Map.Entry;
 /**
- * Hier werden alle Items gespeichert. Diese Klasse sollte nie instanziiert werden.
+ * Hier werden alle Items gespeichert
  */
 public abstract class Items
 {
-    /**
-     * id 0-10000 ist reserviert für BlockItems
-     */
     private static HashMap<Integer,Item> items=new HashMap<Integer,Item>();
+    // Blockitems ( id 0 - 10000 ist reserviert fÃ¼r Block Items)
+    //Craftitems:
     
     public static void registerItem(Item item){
         synchronized(items){

@@ -1,9 +1,6 @@
 package server;
 import util.geom.VektorI;
 import blocks.*;
-/**
- * unfertig
- */
 public class Mapgen
 {
     static Block[][] generateMap(String type, VektorI size, int radius){

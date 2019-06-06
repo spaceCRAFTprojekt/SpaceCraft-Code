@@ -2,9 +2,15 @@
 dependency1.from=VektorD
 dependency1.to=VektorI
 dependency1.type=UsesDependency
-dependency2.from=VektorI
-dependency2.to=VektorD
+dependency2.from=VektorD
+dependency2.to=VektorL
 dependency2.type=UsesDependency
+dependency3.from=VektorI
+dependency3.to=VektorD
+dependency3.type=UsesDependency
+dependency4.from=VektorL
+dependency4.to=VektorD
+dependency4.type=UsesDependency
 objectbench.height=93
 objectbench.width=451
 package.divider.horizontal=0.599476439790576
@@ -13,15 +19,12 @@ package.editor.height=393
 package.editor.width=670
 package.editor.x=32
 package.editor.y=32
-<<<<<<< HEAD
 package.frame.height=600
 package.frame.width=800
 package.numDependencies=4
 package.numTargets=3
-=======
 package.numDependencies=2
 package.numTargets=2
->>>>>>> mitDok
 package.showExtends=true
 package.showUses=true
 readme.height=58
@@ -45,7 +48,6 @@ target2.type=ClassTarget
 target2.width=80
 target2.x=160
 target2.y=70
-<<<<<<< HEAD
 target3.height=50
 target3.name=VektorL
 target3.naviview.expanded=true
@@ -54,5 +56,3 @@ target3.type=ClassTarget
 target3.width=80
 target3.x=10
 target3.y=90
-=======
->>>>>>> mitDok

@@ -3,8 +3,7 @@ import util.geom.*;
 import java.io.Serializable;
 
 /**
- * Ein Inventar
- * Wichtig: Für alle Änderungen von Slots immer die Methode setStack() verwenden!!!
+ * Wichtig: FÃ¼r alle Ã„nderungen von Slots immer die Methode setStack() verwenden!!!
  */
 public class Inv implements Serializable
 {
@@ -15,7 +14,7 @@ public class Inv implements Serializable
     }
     
     /**
-     * fügt ein Stack an den nächsten freien Slot, wenn kein Platz, dann returns leftover
+     * fï¿½gt ein Stack an den nï¿½chsten freien Slot, wenn kein Platz, dann returns leftover
      */
     public Stack addStack(Stack s){
         Stack leftover = s;
@@ -87,10 +86,8 @@ public class Inv implements Serializable
         return true;
     }
     
-
     /**
-     * kann überschrieben werden, damit man bei jeder Änderung das Inv neu lädt
+     * kann Ã¼berschrieben werden, damit man bei jeder Ã„nderung das Inv neu lÃ¤dt
      */
     public void update(){}
-
 }

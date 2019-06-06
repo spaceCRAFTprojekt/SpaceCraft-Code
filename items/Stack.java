@@ -4,7 +4,10 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 /**
- * Ein Stapel Objekte in einem Inventar
+ * Write a description of class Stack here.
+ *
+ * @author (your name)
+ * @version (a version number or a date)
  */
 public class Stack implements Serializable
 {
