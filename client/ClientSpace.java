@@ -26,7 +26,7 @@ public class ClientSpace implements Serializable
     /**
      * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
      * Es ist der Index des Planeten an pos.
-     * hier kein Request (da ohnehin clientseitig)
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      */
     public int getFocussedMassIndex(VektorI posClick, VektorD posToNull, VektorI screenSize, double scale){
         posClick.y=-posClick.y+screenSize.y; //invertiertes Koordinatensystem
@@ -74,7 +74,7 @@ public class ClientSpace implements Serializable
     }
 
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      */
     public ArrayList<ClientMass> getAllMasses(Integer playerID){
         ArrayList<ClientMass> ret=new ArrayList<ClientMass>();
@@ -85,7 +85,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      * Wie getAllMasses, nur dass die Orbits nicht alle Punkte enthalten (sollte eher verwendet werden, da sonst zu große Datenmengen verschickt werden)
      */
     public ArrayList<ClientMass> getAllMassesInaccurate(Integer playerID){
@@ -106,7 +106,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      */
     public Integer getMassNumber(Integer playerID){
         return new Integer(masses.size());
@@ -240,6 +240,9 @@ public class ClientSpace implements Serializable
         }
     }
     
+    /**
+     * gibt die Anzahl der kontrollierbaren Objekte in diesem Space zurück, nur für einen ClientSpace (also keinen server.Space) korrekt
+     */
     public int getNumControllables(){
         int num=0;
         for (int i=0;i<masses.size();i++){
@@ -250,7 +253,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request (Player-ID standardmäßig als Übergabeparameter)
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request (Player-ID standardmäßig als Übergabeparameter)
      */
     public VektorD getMassPos(Integer playerID, Integer index){
         VektorD ret=new VektorD(Double.NaN,Double.NaN);
@@ -264,7 +267,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      * Die Parameter kommen von einem PlayerS (zur Fokussierung auf einen Planeten).
      * Es ist der Index des Planeten an pos.
      * Einige der Parameter sind Standard mit Requests (=unnötig)
@@ -292,7 +295,7 @@ public class ClientSpace implements Serializable
     }
     
     /**
-     * Request-Funktion in server.Space (das diese Klasse hier extended), hier natürlich kein Request
+     * Request-Funktion in server.Space (das diese Klasse hier extended), wenn clientseitig (als Player.PlayerS.workspace) natürlich kein Request
      */
     public void setManoeuvres(Integer playerID, Integer shipID, ArrayList<Manoeuvre> manoeuvres){
         AbstractMass ship= masses.get(shipID);

@@ -8,27 +8,31 @@ import java.io.Serializable;
 import java.io.ObjectStreamException;
 /**
  * Die Space Variante eines Raumschiffs
- * Unfertig!
  */
 public class ShipS extends Mass implements Serializable
 {
     public static final long serialVersionUID=0L;
+    /**
+     * Liste aller Manöver, die das Schiff macht.
+     */
     public ArrayList<Manoeuvre> manoeuvres = new ArrayList<Manoeuvre>();
-    public ArrayList<Integer> ownerIDs=new ArrayList<Integer>(); //wenn diese Liste leer ist, dann ist das Schiff öffentlich
+    /**
+     * wenn diese Liste leer ist, dann ist das Schiff öffentlich
+     */
+    public ArrayList<Integer> ownerIDs=new ArrayList<Integer>();
     public ShipC shipC;
-    public boolean isCollided;
     
     /**
-     * Erstellt einen neuen Raumschiffs
+     * Erstellt ein neues Raumschiff
      * @Params:
      * - Masse
      * - Position
+     * - Geschwindigkeit
      */
-    public ShipS(Main main, double m, boolean isCollided, VektorD pos, VektorD vel, Timer spaceTimer)
+    public ShipS(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer)
     {
         super(main,m,pos,vel,spaceTimer);
         shipC=new ShipC(main,new VektorI(20,40),this,spaceTimer);
-        this.isCollided=isCollided;
     }
     
     public Object readResolve() throws ObjectStreamException{
@@ -61,6 +65,9 @@ public class ShipS extends Mass implements Serializable
         return ownerIDs.indexOf(playerID)!=-1 || ownerIDs.size()==0;
     }
     
+    /**
+     * benötigt, da es client.AbstractMass erweitert
+     */
     public boolean isControllable(int playerID){
         return isOwner(playerID);
     }

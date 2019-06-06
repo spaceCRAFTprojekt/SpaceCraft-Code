@@ -25,25 +25,46 @@ import java.awt.Graphics;
 
 import java.io.Serializable;
 import java.io.ObjectStreamException;
-// ich hab das mal geordnet ~ MÃ¼llmann
+// ich hab das mal geordnet ~ Müllmann
 
 /**
- * ein Spieler in der Craft Ansicht
+ * der Craft-Teil eines Spielers
+ * alle Variablen, die synchronisiert werden, müssen public sein
  */
 public class PlayerC implements Serializable
 {
     public static final long serialVersionUID=0L;
-    //alle Variablen, die synchronisiert werden, mÃ¼ssen public sein
     public transient Timer timer; //public, damit er in logout() beendet werden kann
-
-    private int blockBreite = 32;  // Breite eines Blocks in Pixeln
+    
+    /**
+     * Breite eines Blocks in Pixeln
+     */
+    private int blockBreite = 32; //Hiermit präsentiere ich Ihnen die einzige deutsche Variablenbezeichnung im ganzen Spiel (geschätzt).
     private Player player;
+    /**
+     * Position
+     */
     public VektorD pos;
     @Deprecated private VektorD hitbox = new VektorD(1,2);
+    /**
+     * Ein Teil der Welt, in der sich der Spieler befindet, wird gecacht und nur jede Sekunde aktualisiert. Das macht das ganze hoffentlich schneller.
+     */
     public transient int[][] mapIDCache;
-    public transient VektorI mapIDCachePos; //Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
+    /**
+     * Position der oberen rechten Ecke des mapIDCaches (relativ zur oberen rechten Ecke der gesamten Map)
+     */
+    public transient VektorI mapIDCachePos;
+    /**
+     * Daten zu allen Subsandboxes der Sandbox, in der sich der Spieler gerade befindet (Index, Position, Geschwindigkeit)
+     */
     public transient SandboxInSandbox[] subData;
+    /**
+     * MapIDCaches für jede Subsandbox
+     */
     public transient int[][][] subMapIDCache;
+    /**
+     * MapIDCache-Positionen für jede Subsandbox
+     */
     public transient VektorI[] subMapIDCachePos;
     
     public transient OverlayPanelC opC;
@@ -75,8 +96,12 @@ public class PlayerC implements Serializable
     private void makeTexture(){
 
     }
-
-    public void timerSetup(){ //wird von Player.login aufgerufen
+    
+    /**
+     * Diese Methode wird von Player.login aufgerufen.
+     * Aus irgendeinem Grund hat nämlich der PlayerC einen Timer, aber der Player selbst nicht.
+     */
+    public void timerSetup(){
         if (player.onClient()){
             this.timer=new Timer();
             timer.schedule(new TimerTask(){
@@ -86,7 +111,7 @@ public class PlayerC implements Serializable
                 },0,ClientSettings.PLAYERC_TIMER_PERIOD);
             timer.schedule(new TimerTask(){
                     public void run(){
-                        synchronizeWithServer(); //Variablen des Spielers
+                        player.synchronizeWithServer(); //Variablen des Spielers
                         if (player.isOnline()){ //holt sich einen neuen MapIDCache
                             mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,player.currentMassIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
                             mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
@@ -103,7 +128,7 @@ public class PlayerC implements Serializable
                         }
                     }
                 },0,ClientSettings.SYNCHRONIZE_REQUEST_PERIOD);
-            timer.schedule(new TimerTask(){ //Warum war dieser Timer nochmal im PlayerC und nicht im Player? -LG
+            timer.schedule(new TimerTask(){
                     public void run(){
                         if (player.getMenu() instanceof ManoeuvreInfo)
                             ((ManoeuvreInfo) player.getMenu()).update();
@@ -112,6 +137,9 @@ public class PlayerC implements Serializable
         }
     }
     
+    /**
+     * Diese Methode wird von Player.makeFrame aufgerufen.
+     */
     public void makeFrame(Frame frame){
         this.opC = frame.getOverlayPanelC();
         this.playerTexture.makeFrame(opC,player.getScreenSize(), getBlockWidth());
@@ -131,7 +159,7 @@ public class PlayerC implements Serializable
     }
 
     /**
-     * Setze Spieler in einer andere Sandbox
+     * Setze den Spieler in einer andere Sandbox.
      */
     public void setSandbox(int sandboxIndex, VektorD pos){
         this.pos = pos;
@@ -177,7 +205,7 @@ public class PlayerC implements Serializable
      *             'r': released
      *             'c': clicked
      *             'd': dragged
-     * entered und exited wurde nicht implementiert, weil es dafÃ¼r bisher keine Verwendung gab
+     * entered und exited wurde nicht implementiert, weil es dafür bisher keine Verwendung gab
      */
     public void mouseEvent(MouseEvent e, char type) {
         if (type == 'c'){
@@ -249,8 +277,6 @@ public class PlayerC implements Serializable
      * Mausrad"Event"
      * @param:
      * irgend ein EventObjekt; Keine Ahnung was das kann
-     * 
-     * 
      */
     public void mouseWheelMoved(MouseWheelEvent e){
         try{
@@ -259,9 +285,9 @@ public class PlayerC implements Serializable
         }catch(Exception ichhattekeinelustzuueberpruefenobhotbarnullist){}
     }
     
-    // und die Methoden, die fÃ¼r diese Events gebraucht werden
+    // und die Methoden, die für diese Events gebraucht werden
     public void openInventory(){
-        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ã‚ˆã??ç§?ã?¯çŸ¥ã‚‰ã?ªã?„ã€?ã‚ˆã??ã?‚ã?ªã?Ÿã?ŒçŸ¥ã?£ã?¦ã?„ã‚‹ ~unknown
+        //Just for testing purpose ~unknown //Pourquoi parles-tu en anglais? ~LG // ???????????????????? ~unknown
         if (inv == null)return;
         /*
         inv.addStack(new Stack(new CraftItem(1, "", BlocksC.images.get(1)),99));
@@ -273,8 +299,8 @@ public class PlayerC implements Serializable
         new InventoryMenu(player, this.inv);
     }
     
-    public PlayerInv getInv(){
-        return inv; //von LG zum Testen, auch wenn ich eigentlich keine Ahnung vom inv habe
+    public PlayerInv getInv(){ //von LG zum Testen, auch wenn ich eigentlich keine Ahnung vom inv habe
+        return inv;
     }
     
     public int getBlockWidth(){
@@ -289,9 +315,6 @@ public class PlayerC implements Serializable
         return playerTexture;
     }
     
-    /**
-     * geht nicht oder doch?
-     */
     public void synchronizePlayerTexture(){
         new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"playerTexture",PlayerTexture.class,playerTexture);
     }
@@ -307,7 +330,7 @@ public class PlayerC implements Serializable
      * Bevorzugt wird immer eine Subsandbox.
      * Die Subsandboxen sollten sich also nicht überschneiden (außer mit der Hauptsandbox), sonst gibt es hier Probleme.
      * @param:
-     * sPos: Position im allgemeinen Map Array (lÃ¤sst sich mit getPosToPlayer() aus einer Klick-Position berechnen)
+     * sPos: Position im allgemeinen Map Array (lässt sich mit getPosToPlayer() aus einer Klick-Position berechnen)
      */
     public int getInteractSandboxIndex(VektorD sPos){
         for (int i=0;i<subData.length;i++){
@@ -316,47 +339,30 @@ public class PlayerC implements Serializable
                 return i;
         }
         return -1;
-        /*
-        //bevorzugt die Hauptsandbox, ist das gut so?
-        VektorI cPos=getPosToCache(player.currentMassIndex,sPos);
-        if (mapIDCache[cPos.x][cPos.y]==-1){
-        return player.currentMassIndex;
-        }
-        
-        for (int i=0;i<subData.length;i++){
-        int index=subData[i].index;
-        VektorI cPosSub=getPosToCache(index,sPos);
-        if (subMapIDCache[i][cPosSub.x][cPosSub.y]==-1){
-        return index;
-        }
-        }
-        return -1;*/
     }
     
     /***********************************************************************************************************************************************************
-    /*********4. Methoden fÃ¼r Ansicht und Grafikausgabe*********************************************************************************************************
+    /*********4. Methoden für Ansicht und Grafikausgabe*********************************************************************************************************
     /***********************************************************************************************************************************************************/
 
      /**
-     * Gibt die obere linken Ecke (int BlÃ¶cken) der aktuellen Spieleransicht an
+     * Gibt die obere linken Ecke (int Blöcken) der aktuellen Spieleransicht an
      */
     public VektorD getUpperLeftCorner(){
         return getUpperLeftCorner(pos);
     }
    
     /**
-     * Gibt die obere linken Ecke (int BlÃ¶cken) der Spieleransicht an
+     * Gibt die obere linken Ecke (int Blöcken) der Spieleransicht an
      * @param: pos: Position des Spielers relativ zur oberen linken Ecke der Sandbox
      */
     public VektorD getUpperLeftCorner(VektorD pos){
-        // das -0.5 ist eine hÃ¤ssliche LÃ¶sung von issue #26. Ich hab kleine Ahnung warum es geht aber es geht...
-        //ist jetzt wieder rausgenommen, vorher .subtract(new VektorD(0.5,0.5)) o.Ä.
         // 2.6.2019 AK: .subtract(new VektorD(0.5,0.5)) ist richtig. (Stichwort obere linke ecke des Blocks & Rundung)
         return pos.add(ClientSettings.PLAYERC_FIELD_OF_VIEW.toDouble().multiply(-0.5).subtract(new VektorD(0.5,0.5)) );
     }
     
     /**
-     * Gibt die Position eines Blocks (erstmal noch als VektorD, falls noch ein VektorD-Subsandbox-Offset dazuaddiert werden muss)
+     * gibt die Position eines Blocks (erstmal noch als VektorD, falls noch ein VektorD-Subsandbox-Offset dazuaddiert werden muss)
      * 
      * @param: 
      * posRel: Position des Spielers relativ zu der Sandbox, mit der er interagiert
@@ -369,7 +375,7 @@ public class PlayerC implements Serializable
     }
     
     /**
-     * Gibt die Position eines Blocks in cache Array an
+     * gibt die Position eines Blocks im Cache-Array an
      * 
      * @param: 
      * sandboxIndex: Index der Sandbox, mit der der Spieler interagiert, im Space.masses-Array, im Normalfall player.currentMassIndex
@@ -389,7 +395,7 @@ public class PlayerC implements Serializable
     }
     
     /**
-     * Grafik ausgeben
+     * Zeichnen
      */
     public void paint(Graphics g, VektorI screenSize){
         //Request r = new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class);
@@ -539,12 +545,8 @@ public class PlayerC implements Serializable
             dataP.update();
         }
     }
-
+    
     public void repaint(){
         player.repaint();
-    }
-    
-    public void synchronizeWithServer(){
-        player.synchronizeWithServer();
     }
 }

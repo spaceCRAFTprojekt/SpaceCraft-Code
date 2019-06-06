@@ -10,8 +10,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-/***
- * Ã„nderungen in 0.1.3_AK
+/**
+ * zuständig, sämtliche Events an die entsprechende Funktion im Player weiterzugeben
+ * Änderungen in 0.1.3_AK
  *               0.1.4_AK
  */
 public class Listener implements MouseListener, KeyListener, WindowListener, MouseWheelListener, MouseMotionListener{

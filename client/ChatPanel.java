@@ -22,10 +22,7 @@ import java.util.List;
 import java.util.Collections;
 
 /**
- * Beschreiben Sie hier die Klasse ChatPanel.
- * 
- * @author (Ihr Name) 
- * @version (eine Versionsnummer oder ein Datum)
+ * Panel, das den Chat enthält
  */
 public class ChatPanel extends JPanel
 {

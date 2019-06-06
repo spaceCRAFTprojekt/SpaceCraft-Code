@@ -9,9 +9,7 @@ import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 /**
- * wird angezeigt beim Start des Spiels:
- * Möglichkeit der Kartenauswahl und Starten des Spiels.
- * VG von MH 06.05.2019
+ * Login-Menü
  */
 public class LoginMenu extends Menu{
     private JButton login;
@@ -41,7 +39,7 @@ public class LoginMenu extends Menu{
                     Player player;
                     String password=new String(pw.getPassword());
                     if (pOnServer!=null){
-                        player=new Player(pOnServer.getID(),pOnServer.getName(),true);
+                        player=new Player(pOnServer.getID(),pOnServer.getName(),true,false);
                         player.synchronizeWithPlayerFromServer(pOnServer);
                     }
                     else{

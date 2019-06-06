@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.border.Border;
 import javax.swing.*;
 /**
- * Kleines Infofeld in der SpaceAnsicht
+ * Kleines Infofeld in der SpaceAnsicht, wird bisher nicht benötigt
  */
 public class InfoPopup extends JPanel
 {

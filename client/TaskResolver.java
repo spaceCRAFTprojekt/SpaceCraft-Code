@@ -7,11 +7,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.EOFException;
+/**
+ * Diese Klasse geht mit Tasks um, die der Server an den Client sendet.
+ */
 public class TaskResolver{
     Player p;
     ObjectOutputStream out; //eigentlich sinnlos, da Tasks ja nie etwas zurückgeben
     ObjectInputStream in;
     volatile boolean open; //kann nicht einfach p.isOnline() sein, da ja vor dem Login p.isOnline() falsch ist, der Thread aber trotzdem laufen sollte
+    //muss das volatile sein?
     public TaskResolver(Player p){
         this.p=p;
         this.out=p.getTaskOut();

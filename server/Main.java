@@ -24,8 +24,7 @@ import items.*;
 
 import blocks.*;
 /**
- * Der Server.
- * EnthÃ¤lt die main-Methode
+ * Der Server, der große Teile des Spielinhalts erledigt. Für Formalia ist der ServerCreator zuständig.
  * History:
  * 0.0.2 AK * erstellt
  * 0.0.3 AK * Spawnplanet in Player verlegt
@@ -33,25 +32,34 @@ import blocks.*;
  */
 public class Main implements Serializable
 {
-    public static Main main; 
-    //nur ein Main pro Kopie des Spiels.
-    //(es sind ja sowieso alle Mains (bisher) am selben Port, also ist das vielleicht gar nicht so blÃ¶d, wie es aussieht. Vielleicht.
-    //eigentlich nicht nÃ¶tig
+    /**
+     * Nur ein Main pro Kopie des Spiels. (Es sind ja sowieso alle Mains (bisher) am selben Port und werden
+     * in der selben Datei gespeichert, also ist das vielleicht gar nicht so blöd, wie es aussieht. Vielleicht.
+     */
+    //eigentlich nicht nötig
+    public static Main main;
     public static final long serialVersionUID=0L;
-
+    
+    /**
+     * Liste aller Spieler (Kopien), wird mit dem Client synchronisiert.
+     */
     private ArrayList<Player> players = new ArrayList<Player>();
-    // Kopie der Player, muss synchronisiert werden!
-    // normalerweise nur ein Spieler
     private ArrayList<String> passwords = new ArrayList<String>(); //ziemlich unsicher!
     private transient ArrayList<String> chat=new ArrayList<String>();
+    /**
+     * Der Weltraum, der Massen enthält, die Sandboxen enthalten
+     */
     private Space space;
+    /**
+     * Dieser kümmert sich um die tatsächliche Server-Client-Verbindung.
+     */
     private transient ServerCreator sc;
 
     /**
      * "Lasset die Spiele beginnen" ~ Kim Jong Un
      * @param:
      * boolean useOldData: true = "alten" Spielstand laden
-     *                     false = neues Spiel beginnen  !Ã¼berschreibt "alten" Spielstand!
+     *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
      */
     public static Main newMain(boolean useOldData){
         String folder=Settings.GAMESAVE_FOLDER;
@@ -70,13 +78,10 @@ public class Main implements Serializable
         return m;
     }
 
-    public static void main(String[]Args){
-        newMain(false);
-    }
-
     /**
      * Konstruktor
      * erstellt ein neues Spiel und keinen neuen Spieler
+     * Privat, da newMain verwendet werden sollte.
      */
     private Main()
     {
@@ -89,9 +94,8 @@ public class Main implements Serializable
      * "Ich warte" ~ DB Kunde
      * auf die Beschreibung @LG LG
      * Setup-Funktion, aufgerufen nach der Deserialisierung.
+     * "Transiente" Variablen werden nicht serialisiert, müssen also hier neu erstellt werden.
      * LG
-     * Oder mit anderen Worten: Liest den aktuellen Spielstand aus den gamesaves und erstellt damit alle nÃ¶tigen Objekte
-     * AK
      */
     public Object readResolve() throws ObjectStreamException{
         serverCreatorSetup();
@@ -123,14 +127,14 @@ public class Main implements Serializable
     }
 
     /**
-     * gibt das Space Objekt zurÃ¼ck
+     * gibt das Space Objekt zurück
      */
     public Space getSpace(){
         return space;
     }
 
     /**
-     * gibt das Spieler Objekt mit dem Namen name zurÃ¼ck
+     * gibt das Spieler Objekt mit dem Namen name zurück
      * wenn der Spieler nicht vorhanden ist: null
      */
     public Player getPlayer(String name){
@@ -159,7 +163,7 @@ public class Main implements Serializable
     }
 
     /**
-     * SchlieÃŸt das Spiel UND speichert den Spielstand!!!
+     * Schließt das Spiel UND speichert den Spielstand!!!
      */
     public void exit(){
         System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
@@ -178,22 +182,39 @@ public class Main implements Serializable
     public ServerCreator getServerCreator(){
         return sc;
     }
-
+    
+    /**
+     * Diese Funktion sollte verwendet werden, um neue Tasks zu erstellen.
+     */
     public void newTask(int playerID, String todo, Object... params){
         Task task=new Task(todo, params);
         sc.sendTask(playerID,task);
     }
 
     //Ab hier Request-Funktionen
-
+    /**
+     * Request-Funktion
+     */
     public void exit(Integer playerID){
-        exit();
+        if (players.get(playerID).isAdmin())
+            exit();
+        else
+            noAdminMsg(playerID);
     }
-
+    
+    /**
+     * Request-Funktion
+     */
     public void exitIfNoPlayers(Integer playerID){
-        exitIfNoPlayers();
+        if (players.get(playerID).isAdmin())
+            exitIfNoPlayers();
+        else
+            noAdminMsg(playerID);
     }
-
+    
+    /**
+     * Request-Funktion
+     */
     public Boolean login(Integer playerID, String password){
         if (passwords.get(playerID).equals(password)){
             players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
@@ -201,13 +222,20 @@ public class Main implements Serializable
         }
         return new Boolean(false);
     }
-
+    
+    /**
+     * Request-Funktion
+     */
     public Boolean logout(Integer playerID){
         players.get(playerID).setOnline(false); //siehe login(Integer playerID)
         sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
     
+    /**
+     * Request-Funktion
+     * sollte aufgerufen werden, wenn der Spieler ein Menü schließt
+     */
     public Boolean returnFromMenu(Integer playerID, String menuName, Object[] menuParams){
         try{
             if (menuName.equals("NoteblockMenu")){  // @KÃ¤pt'n ernsthaft? Kann man das nicht in die entsprechende Klasse auslagern???
@@ -231,12 +259,12 @@ public class Main implements Serializable
         return new Boolean(false);
     }
     
-    public Sandbox getSandbox(Integer sandboxIndex){
+    public Sandbox getSandbox(Integer sandboxIndex){ //Ich glaube, dass diese Funktion meistens vergessen wird und die hässliche Schreibweise verwendet wird.
         return ((Mass) space.masses.get(sandboxIndex)).getSandbox();
     }
 
     /**
-     * Der Status des Players im Client hat sich verÃ¤ndert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
+     * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
     public void synchronizePlayerVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
@@ -253,7 +281,11 @@ public class Main implements Serializable
         }
         catch(IndexOutOfBoundsException e){} //Warum das? Ich habe es selbst geschrieben und wieder vergessen. -LG
     }
-
+    
+    /**
+     * Request-Funktion
+     * Siehe synchronizePlayerVariable
+     */
     public void synchronizePlayerSVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerS p=players.get(playerID).getPlayerS();
@@ -266,7 +298,11 @@ public class Main implements Serializable
         }
         catch(IndexOutOfBoundsException e){}
     }
-
+    
+    /**
+     * Request-Funktion
+     * Siehe synchronizePlayerVariable
+     */
     public void synchronizePlayerCVariable(Integer playerID, String varname, Class cl, Object value) throws NoSuchFieldException, IllegalAccessException{
         try{
             PlayerC p=players.get(playerID).getPlayerC();
@@ -281,7 +317,7 @@ public class Main implements Serializable
     }
 
     /**
-     * neuer Spieler (vorerst nur zu Testzwecken)
+     * neuer Spieler
      * Request-Funktion!
      * playerID wird bei Requests standardmäßig übergeben, ist hier aber ohne Belang (-1).
      * Return-Wert: Kein Erfolg: -1, sonst die ID
@@ -302,12 +338,16 @@ public class Main implements Serializable
     }
 
     /**
+     * Request-Funktion
      * Gibt die Kopie des Players hier vom Server zurÃ¼ck. Zur Synchronisierung (siehe Player.synchronizeWithServer)
      */
     public Player retrievePlayer(Integer playerID){
         return players.get(playerID);
     }
-
+    
+    /**
+     * Request-Funktion
+     */
     public void writeIntoChat(Integer playerID, String message){
         String msg = players.get(playerID).getName()+": "+message;
         chat.add(msg);
@@ -317,6 +357,9 @@ public class Main implements Serializable
             }
         }
     }
+    /**
+     * Request-Funktion
+     */
     public void serverChatMsg(Integer playerID, String message){
         String msg = message;
         chat.add(msg);
@@ -326,7 +369,10 @@ public class Main implements Serializable
             }
         }
     }
-
+    
+    /**
+     * Request-Funktion
+     */
     public String[] getChatContent(Integer playerID, Integer numLines){
         //die letzten (numLines) Zeilen
         String[] ret=new String[numLines];
@@ -341,8 +387,11 @@ public class Main implements Serializable
         }
         return ret;
     }
-
-    public Player getPlayer(Integer playerID, String name){ //playerID=-1
+    
+    /**
+     * Request-Funktion mit üblicherweise playerID=-1 (ist egal)
+     */
+    public Player getPlayer(Integer playerID, String name){
         for(int i = 0; i<players.size(); i++){
             //aus irgendeinem Grund geht == nicht mit Requests
             if(players.get(i).getName().equals(name)) return players.get(i);
@@ -351,8 +400,8 @@ public class Main implements Serializable
     }
 
     /**
-     * Warum kann ich ein scheiÃŸ Object[] nicht in ein noch blÃ¶deres OtherPlayerTexture[] casten?!?!?!
-     * Daher wird Ihnen hier ein scheiÃŸ Obejct[] zurÃ¼ckgeben :(  
+     * Warum kann ich ein scheiß Object[] nicht in ein noch blÃ¶deres OtherPlayerTexture[] casten?!?!?!
+     * Daher wird Ihnen hier ein scheiß Obejct[] zurückgegeben :(  
      */
     public Object[] getOtherPlayerTextures(Integer playerID, VektorI upperLeftCorner, VektorI bottomRightCorner){
         if(players.size() < 2)return null; // wenn es nur einen Spieler gibt (Singleplayer), dann null.

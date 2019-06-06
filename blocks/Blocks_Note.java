@@ -1,6 +1,5 @@
 package blocks;
 
- 
 import util.geom.*;
 import menu.*;
 import server.*;
@@ -17,17 +16,17 @@ public class Blocks_Note extends SBlock
     }
     
     @Override
-    public void onConstruct(Sandbox sb, VektorI pos){
+    public void onConstruct(Sandbox sb, int sandboxIndex, VektorI pos){
         Meta meta = new Meta();
         meta.put("text", "Hallo auf einer Metaebene!");
         sb.setMeta(pos,meta);
     }
     
     @Override
-    public void onRightclick(Sandbox sb, VektorI pos, int playerID){
+    public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
         Meta meta = sb.getMeta(pos);
         String text = (String)meta.get("text");
-        Object[] menuParams={pos,text};
+        Object[] menuParams={sandboxIndex,pos,text};
         sb.getMain().newTask(playerID,"Player.showMenu","NoteblockMenu",menuParams);
     }
 }

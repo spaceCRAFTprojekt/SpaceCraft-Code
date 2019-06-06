@@ -24,35 +24,73 @@ import items.Items;
 /**
  * Ein Spieler
  * Kann entweder in der Craft oder in der Space Ansicht sein
+ * Alle Variablen, die synchronisiert werden müssen, müssen public und nicht transient sein.
  */
 public class Player implements Serializable
 {
     public static final long serialVersionUID=0L;
-    //alle Variablen, die synchronisiert werden mÃ¼ssen, mÃ¼ssen public sein
     private String name;
-    private int id; //zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
-    private transient Socket requestSocket;
-    private transient ObjectOutputStream requestOut;
-    private transient ObjectInputStream requestIn;
-    private transient Socket taskSocket;
-    private transient ObjectOutputStream taskOut;
-    private transient ObjectInputStream taskIn;
-    private transient TaskResolver tr;
-    private transient boolean online = false;  // aktuell ob der Frame des Spielers gerade offen ist
-    //Warum ist das transient? Ich fÃ¤nde es sehr sinnvoll, das zu serialisieren. -LG
-    // SpÃ¤terstens wenn der Spielstand gespeichert wird ist doch der Spieler offline ?!?!
-    private boolean onClient;
-    public boolean inCraft;
-    private transient Frame frame;
+    /**
+     * zum Senden von Daten, um ihn eindeutig zu identifizieren, Index in der server.Main.players-ArrayList
+     */
+    private int id;
     private PlayerS playerS;
     private PlayerC playerC;
-    private transient Menu openedMenu = null;  // wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Requests)
+     */
+    private transient Socket requestSocket;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Requests)
+     */
+    private transient ObjectOutputStream requestOut;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Requests)
+     */
+    private transient ObjectInputStream requestIn;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Tasks)
+     */
+    private transient Socket taskSocket;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Tasks)
+     */
+    private transient ObjectOutputStream taskOut;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Tasks)
+     */
+    private transient ObjectInputStream taskIn;
+    /**
+     * Variable für die Kommunikation zwischen Server und Client (Tasks)
+     */
+    private transient TaskResolver tr;
+    private transient boolean online = false;
+    /**
+     * true: Der Spieler befindet sich am Client.
+     * false: Der Spieler ist nur eine Kopie (d.h. ohne Sockets, Frame, Listener, Panels, Timer...) am Server
+     */
+    private boolean onClient;
+    /**
+     * true: die Ansicht des PlayerC wird gezeichnet
+     * false: die Ansicht des PlayerS wird gezeichnet
+     */
+    public boolean inCraft;
+    private transient Frame frame;
+    /**
+     * wenn ein Menu (z.B.: Escape Menu; ChestInterface gerade offen ist)
+     */
+    private transient Menu openedMenu = null;
+    /**
+     * der Index des Planeten, auf dem sich der Spieler gerade befindet
+     */
     public int currentMassIndex;
     public transient OverlayPanelA opA;
     public transient ChatPanel chatP;
-    //transiente Variablen werden nicht synchronisiert
-    private boolean isAdmin; //bestimmte Kommandos (teleport, setTime,...) gehen nur als Admin
-    //dieses Attribut ist nur für die Kopie des Spielers am Server relevant, am Client nicht
+    /**
+     * Bestimmte Sachen (große Teleport-Sprünge in Craft, setTime,...) gehen nur als Administrator.
+     * Dieses Attribut ist nur für die Kopie des Spielers am Server relevant, am Client nicht.
+     */
+    private boolean isAdmin;
     
     /**
      * Erstellt neuen Spieler in einem Weltraum
@@ -61,6 +99,7 @@ public class Player implements Serializable
      * int id: Index in der Playerliste in Main
      * String name: Name des Players
      * boolean onClient: ob der Player sich im Client befindet (ob also er synchronisiert wird oder nicht)
+     * boolean isAdmin: ob der Player Administrator ist
      * Sollte nicht verwendet werden (stattdessen static newPlayer(String name)), außer man weiß, was man tut.
      */
     public Player(int id, String name, boolean onClient, boolean isAdmin)
@@ -78,6 +117,11 @@ public class Player implements Serializable
         //muss man hier auch schon synchronisieren?
     }
     
+    /**
+     * Diese Funktion erstellt einen neuen Spieler auf einem Server an der Adresse 
+     * ClientSettings.SERVER_ADDRESS und dem Port ClientSettings.SERVER_PORT
+     * (und macht einen Request, dass das auch am Server geschieht).
+     */
     public static Player newPlayer(String name, String password){
         try{
             Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
@@ -100,7 +144,10 @@ public class Player implements Serializable
         return null;
     }
     
-    private void makeFrame(){ //Frame-Vorbereitung (Buttons, Listener etc.) nur hier
+    /**
+     * Frame-Vorbereitung (Buttons, Listener etc.) nur hier
+     */
+    private void makeFrame(){
         this.frame = new Frame(name,new VektorI(928,608),this);
         Listener l=new Listener(this);
         this.frame.addKeyListener(l);
@@ -137,6 +184,9 @@ public class Player implements Serializable
         return this;
     }
     
+    /**
+     * Erstellen zweier Sockets/Clients, einen für Requests, einen für Tasks
+     */
     public void socketSetup() throws UnknownHostException, IOException{
         this.requestSocket=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
         this.requestOut=new ObjectOutputStream(requestSocket.getOutputStream());
@@ -243,7 +293,7 @@ public class Player implements Serializable
     }
     
     /**
-     * Wechselt die Ansicht zur Space Ansicht
+     * Wechselt die Ansicht zur Craft Ansicht
     */
     public void toCraft()
     {
@@ -265,7 +315,7 @@ public class Player implements Serializable
     }
     
     /**
-     * soll aufgerufen werden, wenn ein Fenster geÃ¶ffnet wird
+     * soll aufgerufen werden, wenn ein Fenster geöffnet wird
      */
     public void openMenu(Menu menu)
     {
@@ -281,7 +331,7 @@ public class Player implements Serializable
     }
     
     /**
-     * schlieÃŸt das gerade geÃ¶ffnete Menu
+     * schließt das gerade geöffnete Menu
      */
     public void closeMenu()
     {
@@ -291,7 +341,7 @@ public class Player implements Serializable
     }
     
     /**
-     * gibt false zurÃ¼ck, wenn gerade ein MenÃ¼ offen ist
+     * gibt false zurück, wenn gerade ein Menü offen ist
      */
     public boolean isActive()
     {
@@ -307,14 +357,14 @@ public class Player implements Serializable
      */
     public void showMenu(String menuName, Object[] menuParams){
         if (menuName.equals("NoteblockMenu")){
-            new NoteblockMenu(this,(VektorI) menuParams[0],(String) menuParams[1]);
+            new NoteblockMenu(this,(int) menuParams[0], (VektorI) menuParams[1],(String) menuParams[2]);
         }else if(menuName.equals("ChestMenu")){
-            new ChestMenu(this,(VektorI) menuParams[0],(Inv) menuParams[1]);
+            new ChestMenu(this,(int) menuParams[0], (VektorI) menuParams[1],(Inv) menuParams[2]);
         }
     }
     
     /**
-     * schlieÃŸt das gesamte Spiel
+     * schließt das gesamte Spiel (also auch den Server), falls möglich
      */
     public void exit(){
         if (online && onClient){
@@ -388,7 +438,7 @@ public class Player implements Serializable
     }
     
     /**
-     * gibt den Vektor der grÃ¶ÃŸe des Bildschirms zurÃ¼ck
+     * gibt den Vektor der Größe des Bildschirms zurÃ¼ck
      */
     public VektorI getScreenSize(){
         return frame.getScreenSize();
@@ -404,12 +454,13 @@ public class Player implements Serializable
     public PlayerC getPlayerC(){
         return playerC;
     }
+    
     public PlayerS getPlayerS(){
         return playerS;
     }
     
     /**
-     * Grafik ausgeben
+     * Zeichnen
      */
     public void paint(Graphics g, VektorI screenSize){
         if (onClient && g!=null){
@@ -425,6 +476,9 @@ public class Player implements Serializable
         if(frame!=null)frame.repaint();
     }
     
+    /**
+     * Synchronisierung mit der zu diesem Spieler gehörigen Kopie am Server
+     */
     public void synchronizeWithServer(){
         if (onClient && online){
             Player pOnServer=(Player) (new Request(id,requestOut,requestIn,"Main.retrievePlayer",Player.class).ret);
@@ -536,14 +590,14 @@ public class Player implements Serializable
     }
     
     /**
-     * Die empfÃ¤ngt eine neue Nachricht vom Server und zeigt sie an
+     * Diese Methode (ein Task) empfängt eine neue Nachricht vom Server und zeigt sie an.
      */
     public void addChatMsg(String msg){
         chatP.add(msg);
     }
     
     /**
-     * gibt den Namen des Spielers zurÃ¼ck
+     * gibt den Namen des Spielers zurück
      */
     public String getName(){
         return name;
@@ -587,7 +641,10 @@ public class Player implements Serializable
         return online;
     }
     
-    public void setOnline(boolean b){ //wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout()
+    /**
+     * Diese Methode wird nur von der Kopie des Players im Server verwendet, der Player im Client macht das in login() und logout().
+     */
+    public void setOnline(boolean b){
         this.online=b;
     }
     

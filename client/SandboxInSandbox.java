@@ -3,11 +3,14 @@ import util.geom.VektorD;
 import util.geom.VektorI;
 import java.io.Serializable;
 /**
- * Enthält den Index einer Sandbox (in der Space.masses-Liste) und die Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
+ * Diese Objekte können zwischen Server und Client hin und her gesendet werden.
  */
 public class SandboxInSandbox implements Serializable
 {
     public static final long serialVersionUID=0L;
+    /**
+     * Index der Sandbox (in der Space.masses-Liste)
+     */
     public int index;
     /**
      * Position der Sandbox (linke obere Ecke) relativ zu einer anderen Sandbox
