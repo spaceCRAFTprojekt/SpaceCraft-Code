@@ -32,7 +32,7 @@ public abstract class Menu extends JFrame {
         this.setSize(size.x, size.y);
     
         this.setTitle(title);
-		this.setSize(size.x,size.y);
+        this.setSize(size.x,size.y);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e){

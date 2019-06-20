@@ -17,9 +17,10 @@ import java.io.IOException;
 
 import client.ClientSettings;
 import client.SandboxInSandbox;
+import client.AbstractMass;
 import blocks.*;
 /**
- * Eine virtuelle Umgebung aus BlÃ¶cken
+ * Eine virtuelle Umgebung aus Blöcken
  * 
  * @Content:
  *  1. Methoden zum Erstellen der Sandbox
@@ -70,10 +71,10 @@ public abstract class Sandbox implements Serializable
     }
 
     protected abstract void spaceTimerSetup();
-    //Nur hier kÃ¶nnen neue TimerTasks hinzugefÃ¼gt werden.
+    //Nur hier können neue TimerTasks hinzugefügt werden.
 
     /**
-     * gibt die Größe der Sandbox zurÃ¼ck
+     * gibt die Größe der Sandbox zurück
      */
     public VektorI getSize(){
         return new VektorI(map.length, map[0].length);
@@ -127,8 +128,9 @@ public abstract class Sandbox implements Serializable
      */
     public void placeBlock(Block block, VektorI pos, int playerID){
         try{
-            if(!((SBlock)block).onPlace(this, main.getSpace().masses.indexOf(getMass()), pos, playerID))return;  // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich plaziert wurde => Abbruch
-        }catch(Exception e){} // => kein SpecialBlock => kann immer plaziert werden
+            if(!((SBlock)block).onPlace(this, main.getSpace().masses.indexOf(getMass()), pos, playerID))return;
+            // ruft onPlace auf, wenn es ein Special Block ist. Wenn es nicht erfolgreich platziert wurde => Abbruch
+        }catch(Exception e){} // => kein SpecialBlock => kann immer platziert werden
         if(!block.placement_prediction)return;
         setBlock(block, pos);
         System.out.println("Block at "+pos.toString()+" placed by Player "+playerID+"!");
@@ -167,7 +169,10 @@ public abstract class Sandbox implements Serializable
      *  * VektorI pos: Position des Blocks
      */
     public void swapBlock(Block block, VektorI pos){
-        map[pos.x][pos.y]= block; 
+        try{
+            map[pos.x][pos.y]= block; 
+        }
+        catch(ArrayIndexOutOfBoundsException e){}
     }
     
     /**
@@ -177,16 +182,19 @@ public abstract class Sandbox implements Serializable
      *  * int playerID
      */
     public void breakBlock(VektorI pos, int playerID){
-        if (map[pos.x][pos.y] == null) return;
         try{
-            if (((SBlock)map[pos.x][pos.y]).onBreak(this, main.getSpace().masses.indexOf(getMass()), pos, playerID)){
+            if (map[pos.x][pos.y] == null) return;
+            try{
+                if (((SBlock)map[pos.x][pos.y]).onBreak(this, main.getSpace().masses.indexOf(getMass()), pos, playerID)){
+                    breakBlock(pos);
+                    System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
+                }
+            }catch(Exception e){
+                if(!getBlock(pos).breakment_prediction)return;
                 breakBlock(pos);
-                System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
             }
-        }catch(Exception e){
-            if(!getBlock(pos).breakment_prediction)return;
-            breakBlock(pos);
         }
+        catch(ArrayIndexOutOfBoundsException e){}
     }
 
     /**
@@ -203,11 +211,14 @@ public abstract class Sandbox implements Serializable
      *  * VektorI pos: Position des Blocks
      */
     public void breakBlock(VektorI pos){
-        map[pos.x][pos.y] = null;
         try{
-            ((SBlock)map[pos.x][pos.y]).onDestruct(this, main.getSpace().masses.indexOf(getMass()), pos);
-        }catch(Exception e){}
-        removeMeta(pos);
+            map[pos.x][pos.y] = null;
+            try{
+                ((SBlock)map[pos.x][pos.y]).onDestruct(this, main.getSpace().masses.indexOf(getMass()), pos);
+            }catch(Exception e){}
+            removeMeta(pos);
+        }
+        catch(ArrayIndexOutOfBoundsException e){}
     }
 
     /**
@@ -225,7 +236,7 @@ public abstract class Sandbox implements Serializable
     public Meta getMeta(VektorI pos){
         try{
             return this.meta[pos.x][pos.y];
-        }catch(Exception e){ return null; }  // AuÃŸerhalb des Map-Arrays
+        }catch(Exception e){ return null; }  // Außerhalb des Map-Arrays
     }
 
     /**
@@ -234,7 +245,27 @@ public abstract class Sandbox implements Serializable
     public void setMeta(VektorI pos, Meta meta){
         try{
             this.meta[pos.x][pos.y] = meta;
-        }catch(Exception e){ return; }  // AuÃŸerhalb des Map-Arrays
+        }catch(Exception e){ return; }  // Außerhalb des Map-Arrays
+    }
+    
+    /**
+     * gibt das Metadatum an dieser Position mit diesem Key zurück
+     */
+    public Object getMeta(VektorI pos, String key){
+        try{
+            return this.meta[pos.x][pos.y].get(key);
+        }catch(Exception e){ return null; }  // Außerhalb des Map-Arrays
+    }
+    
+    /**
+     * setzt das Metadatum an dieser Position mit diesem Key
+     */
+    public void setMeta(VektorI pos, String key, Object o){
+        try{
+            if (this.meta[pos.x][pos.y]==null)
+                this.meta[pos.x][pos.y]=new Meta();
+            this.meta[pos.x][pos.y].put(key,o);
+        }catch(Exception e){ return; }  // Außerhalb des Map-Arrays
     }
 
     /**
@@ -247,7 +278,7 @@ public abstract class Sandbox implements Serializable
     }
 
     /***********************************************************************************************************************************************************
-    /*********3. Methoden fÃ¼r Subsandboxes und Raketenstart*****************************************************************************************************
+    /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
     
     /**
@@ -263,6 +294,55 @@ public abstract class Sandbox implements Serializable
     public void addSandbox(SandboxInSandbox sbNeu){
         subsandboxes.add(sbNeu);
     }
+    
+    /**
+     * Request, um diese Position herum mit der in den (Client-)Settings angegebenen Größe ein Schiff mit eigener Subsandbox zu konstruieren
+     */
+    public void createShip(Integer playerID, Integer sandboxIndex, VektorI pos){
+        VektorI shipSize=ClientSettings.SHIP_SIZE; //kürzerer Name
+        Block[][] shipMap=new Block[shipSize.x][shipSize.y];
+        Meta[][] shipMeta=new Meta[shipSize.x][shipSize.y];
+        double mass=0;
+        for (int x=pos.x-shipSize.x/2;x<=pos.x+shipSize.x/2;x++){
+            for (int y=pos.y-shipSize.y/2;y<=pos.y+shipSize.y/2;y++){
+                try{
+                    Block b=map[x][y];
+                    shipMap[x+shipSize.x/2-pos.x][y+shipSize.y/2-pos.y]=b;
+                    map[x][y]=null;
+                    shipMeta[x+shipSize.x/2-pos.x][y+shipSize.y/2-pos.y]=meta[x][y];
+                    meta[x][y]=null;
+                    if (b!=null)
+                        mass=mass+b.mass;
+                }
+                catch(ArrayIndexOutOfBoundsException e){}
+            }
+        }
+        VektorD posInSpace=pos.toDouble();
+        posInSpace.x=posInSpace.x-map.length/2;
+        posInSpace.y=posInSpace.y-map[0].length/2; //Der Mittelpunkt des Planeten in Craft ist nicht bei (0|0)
+        posInSpace.y=-posInSpace.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
+        posInSpace=posInSpace.add(getMass().getPos());
+        ShipS shipS=new ShipS(main,mass,posInSpace,getMass().getVel(),10,10,null);
+        ShipC shipC=new ShipC(main,shipMap,shipMeta,new ArrayList<SandboxInSandbox>(),null,null);
+        shipS.shipC=shipC;
+        shipC.shipS=shipS;
+        
+        shipS.setSpaceTimer(spaceTimer);
+        shipC.setSpaceTimer(spaceTimer);
+        shipS.setOwner(playerID);
+        shipS.isDrawn=false;
+        ArrayList<AbstractMass> masses=main.getSpace().masses;
+        synchronized(masses){
+            masses.add(shipS);
+            main.getSpace().calcOrbits(ClientSettings.SPACE_CALC_TIME);
+        }
+        addSandbox(shipC,pos.subtract(shipSize.divide(2)).toDouble()); //Der Offset ist die Position der oberen linken Ecke, nicht der Mitte
+        main.getPlayer(playerID).getPlayerS().reachedMassIDs.add(masses.size()-1);
+        
+        if (shipMeta[shipSize.x/2][shipSize.y/2]==null) //an dieser Stelle liegt der rocketController, der dieses Metadatum benötigt
+            shipMeta[shipSize.x/2][shipSize.y/2]=new Meta();
+        shipMeta[shipSize.x/2][shipSize.y/2].put("shipIndex",masses.size()-1);
+    }
 
     /**
      * Entfernt eine Sandbox
@@ -270,22 +350,68 @@ public abstract class Sandbox implements Serializable
     public void removeSandbox(Sandbox sbR){
         if(sbR!=null)subsandboxes.remove(sbR);
     }
+    
+    /**
+     * Index in der Space.masses-Liste
+     */
+    public void removeSandbox(int index){
+        subsandboxes.remove(subsandboxIndex(index));
+    }
 
     public ArrayList<SandboxInSandbox> getAllSubsandboxes(){ //kein Request
         return subsandboxes;
     }
     
-    public boolean isSubsandbox(int sandboxIndex){
+    /**
+     * gibt den Index in der subsandboxen-Liste zurück, falls es eine Subsandbox ist, sonst -1
+     * Der Parameter ist der Index in der Space.masses-Liste
+     */
+    public int subsandboxIndex(int sandboxIndex){
         for (int i=0;i<subsandboxes.size();i++){
             if (subsandboxes.get(i).index==sandboxIndex){
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
     }
     
-    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){ //Request
+    public boolean isSubsandbox(int sandboxIndex){
+        return subsandboxIndex(sandboxIndex)!=-1;
+    }
+    
+    /**
+     * Request
+     */
+    public SandboxInSandbox[] getAllSubsandboxes(Integer playerID, Integer sandboxIndex){
         return subsandboxes.toArray(new SandboxInSandbox[subsandboxes.size()]);
+    }
+    
+    /**
+     * Request
+     * Das Space-Schiff wird erst richtig gestartet (mit Position und Geschwindigkeit), wenn das Craft-Schiff den Planeten erfolgreich verlässt.
+     * (siehe PlanetC.handleShipLeaves)
+     */
+    public void startShip(Integer playerID, Integer sandboxIndex, Integer shipIndex){
+        AbstractMass ship=main.getSpace().masses.get(shipIndex);
+        int i=subsandboxIndex(shipIndex.intValue());
+        if (!(ship instanceof ShipS) || !ship.isControllable(playerID) || i==-1){
+            return;
+        }
+        VektorD posInCraft=subsandboxes.get(i).offset.add(ClientSettings.SHIP_SIZE.divide(2).toDouble());
+        posInCraft.x=posInCraft.x-map.length/2;
+        posInCraft.y=posInCraft.y-map[0].length/2; //Jetzt liegt der Mittelpunkt des Planeten bei (0|0)
+        VektorD velInCraft;
+        if (posInCraft.x>=0 && posInCraft.x>=Math.abs(posInCraft.y)) //erstmal nur senkrecht vom Planeten wegkommen
+            velInCraft=new VektorD(1,0);
+        else if (posInCraft.y>=0 && posInCraft.y>=Math.abs(posInCraft.x))
+            velInCraft=new VektorD(0,1);
+        else if (posInCraft.x<0 && Math.abs(posInCraft.x)>=Math.abs(posInCraft.y))
+            velInCraft=new VektorD(-1,0);
+        else
+            velInCraft=new VektorD(0,-1);
+        velInCraft=velInCraft.multiply(ship.getOutvel()/10); //physikalisch inkorrekt, aber was solls
+        subsandboxes.get(i).vel=velInCraft;
+        main.getSpace().calcOrbits(ClientSettings.SPACE_CALC_TIME);
     }
     
     /**

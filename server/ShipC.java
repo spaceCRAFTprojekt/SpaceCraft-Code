@@ -12,7 +12,7 @@ import blocks.*;
 public class ShipC extends Sandbox implements Serializable
 {
     public static final long serialVersionUID=0L;
-    private ShipS shipS;
+    public ShipS shipS;
 
     public ShipC(Main main, VektorI size, ShipS shipS, Timer spaceTimer)
     {

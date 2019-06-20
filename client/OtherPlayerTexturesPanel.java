@@ -27,7 +27,6 @@ public class OtherPlayerTexturesPanel extends JComponent
     public void resize(VektorI screenSize){
         this.setSize(screenSize.x, screenSize.y);
         this.screenSize = screenSize;
-
     }
     
     public void repaint(Object[] textures){

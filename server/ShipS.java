@@ -20,6 +20,14 @@ public class ShipS extends Mass implements Serializable
      * wenn diese Liste leer ist, dann ist das Schiff öffentlich
      */
     public ArrayList<Integer> ownerIDs=new ArrayList<Integer>();
+    /**
+     * siehe client.AbstractMass.get/setOutvel
+     */
+    private double outvel;
+    /**
+     * siehe client.AbstractMass.getRestMass
+     */
+    private double restMass;
     public ShipC shipC;
     
     /**
@@ -29,10 +37,12 @@ public class ShipS extends Mass implements Serializable
      * - Position
      * - Geschwindigkeit
      */
-    public ShipS(Main main, double m, VektorD pos, VektorD vel, Timer spaceTimer)
+    public ShipS(Main main, double m, VektorD pos, VektorD vel, double outvel, double restMass, Timer spaceTimer)
     {
         super(main,m,pos,vel,spaceTimer);
         shipC=new ShipC(main,new VektorI(20,40),this,spaceTimer);
+        this.outvel=outvel;
+        this.restMass=restMass;
     }
     
     public Object readResolve() throws ObjectStreamException{
@@ -82,14 +92,17 @@ public class ShipS extends Mass implements Serializable
     
     public void setManoeuvres(ArrayList<Manoeuvre> manos){
         //(einfache Checks, ob der Client irgendwelchen Unsinn sendet)
-        double dMassGes=0; //gesamte verlorene Masse, sollte natürlich nicht größer sein als die Masse des Schiffs
+        double dMassGes=0; //gesamte verlorene Masse, sollte natürlich nicht größer als die Restmasse des Schiffs sein
         for (int i=0;i<manos.size();i++){
             if (manos.get(i).outvel>getOutvel()){ //Ausstoßgeschwindigkeit zu groß
                 return;
             }
+            if (manos.get(i).t0<main.getSpace().inGameTime){ //Manöver schon verstrichen
+                return;
+            }
             dMassGes=dMassGes+manos.get(i).dMass;
         }
-        if (-dMassGes>=m){
+        if (getMass()-dMassGes<restMass){ //Massenausstoß zu groß
             return;
         }
         manoeuvres=manos;
@@ -99,6 +112,16 @@ public class ShipS extends Mass implements Serializable
      * Siehe client.ClientMass.getOutvel()
      */
     public double getOutvel(){
-        return 100;
+        return outvel;
+    }
+    public void setOutvel(double ov){
+        outvel=ov;
+    }
+    
+    /**
+     * Siehe client.ClientMass.getRestMass()
+     */
+    public double getRestMass(){
+        return restMass;
     }
 }

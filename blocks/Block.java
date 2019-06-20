@@ -37,6 +37,10 @@ public class Block implements Serializable
      */
     public transient boolean climbable = false;
     /**
+     * Masse des Blocks, um die Masse von Raketen berechnen zu können
+     */
+    public transient double mass = 1;
+    /**
      * falls der Block ein Item hat
      */
     public transient Item item = null;

@@ -21,7 +21,7 @@ public class TaskResolver{
         this.out=p.getTaskOut();
         this.in=p.getTaskIn();
         this.open=true;
-        new Thread("TaskResolverThread-"+p.getID()){
+        new Thread("resolveTasksThread-"+p.getID()){
             public void run(){
                 while(true){
                     if (!open){

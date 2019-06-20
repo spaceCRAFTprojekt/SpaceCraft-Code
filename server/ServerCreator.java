@@ -42,16 +42,15 @@ public class ServerCreator{
                             }
                             ObjectInputStream in=new ObjectInputStream(client.getInputStream());
                             boolean isRequestClient=in.readBoolean(); //sonst: taskClient
+                            int playerID=in.readInt();
                             if (isRequestClient){
-                                new Thread("requestClientThread"){
+                                new Thread("resolveRequestsThread-"+playerID){
                                     long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
-                                    Integer playerID=-1; //wird von den Requests genommen
                                     public void run(){
                                         while(true){
                                             try{
                                                 Request req=(Request) in.readObject();
-                                                playerID=req.playerID;
-                                                if ((playerID.equals(-1) && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
+                                                if ((playerID==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
                                                         || (main.getPlayer(playerID)!=null && (req.todo.equals("Main.login") || main.getPlayer(playerID).isOnline()))){
                                                     if (req.retClass!=null){
                                                         Object ret=resolveRequest(req);
@@ -86,7 +85,7 @@ public class ServerCreator{
                                                 }
                                             }
                                             if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
-                                                if (!playerID.equals(-1)){
+                                                if (playerID!=-1){
                                                     main.getPlayer(playerID).logout();
                                                     main.newTask(playerID,"logoutTask");
                                                 }
@@ -97,7 +96,6 @@ public class ServerCreator{
                                 }.start();
                             }
                             else{
-                                int playerID=in.readInt();
                                 taskOutputStreams.put(playerID,out);
                             }
                         }
@@ -145,7 +143,7 @@ public class ServerCreator{
         }
         else if (className.equals("Sandbox")){
             int sandboxIndex=(int) params[1];
-            Method method=PlanetC.class.getMethod(methodName,parameterTypes);
+            Method method=Sandbox.class.getMethod(methodName,parameterTypes);
             req.ret=method.invoke(main.getSandbox(sandboxIndex),params);
         }
         //hier können auch noch weitere Klassen folgen

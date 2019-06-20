@@ -31,11 +31,14 @@ import java.io.ObjectInputStream;
      * Space.getAllMasses()
      * Space.getAllMassesInaccurate()
      * Space.setTime(long time)
+     * Space.getSupersandboxIndex(int subsandboxIndex)
      * Sandbox.breakBlock(Integer sandboxIndex, VektorI sPos) v0.3.1_AK
      * Sandbox.placeBlock(Integer sandboxIndex, VektorI sPos, Integer blockID) v0.3.1_AK
      * Sandbox.rightclickBlock(Integer sandboxIndex, VektorI sPos)
      * Sandbox.getMapIDs(Integer sandboxIndex, VektorI upperLeftCorner, VektorI bottomRightCorner)
      * Sandbox.getAllSubsandboxes(Integer sandboxIndex)
+     * Sandbox.createShip(VektorI pos, int ownerID)
+     * Sandbox.startShip(int shipIndex, int ownerID)
      * 
      * (die hier angegebenen Argumente sind nur die aus params, alle Funktionen haben als Übergabewert auch noch die ID des players)
      * Bei Sandbox.*-Methoden ist der erste Parameter aus params der currentMassIndex des Players.

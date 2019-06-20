@@ -1,7 +1,5 @@
 package blocks;
 
- 
-
 import server.*;
 import util.geom.*;
 /**
@@ -38,8 +36,8 @@ public abstract class SBlock extends Block
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler gesetzt wird
-     *        gibt true zurÃ¼ck, wenn der Block gesetzt werden soll
-     *        gibt false zurÃ¼ck, wenn der Block nicht gesetzt werden soll
+     *        gibt true zurück, wenn der Block gesetzt werden soll
+     *        gibt false zurück, wenn der Block nicht gesetzt werden soll
      * @param:
      * Sandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
@@ -61,8 +59,8 @@ public abstract class SBlock extends Block
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler abgebaut wird
-     *        gibt true zurÃ¼ck, wenn der Block gesetzt werden soll
-     *        gibt false zurÃ¼ck, wenn der Block nicht gesetzt werden soll
+     *        gibt true zurück, wenn der Block gesetzt werden soll
+     *        gibt false zurück, wenn der Block nicht gesetzt werden soll
      * @param:
      * Sandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks

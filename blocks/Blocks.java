@@ -1,7 +1,4 @@
 package blocks;
-
- 
-
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.awt.image.BufferedImage;
@@ -37,9 +34,10 @@ public abstract class Blocks
         new Blocks_Chest(100);
         new Blocks_Note(104); // id kann noch verÃ¤ndert werden
         new Blocks_Piston(300);
-      
         // piston_on: 301
         // piston_front: 302
+        new Blocks_Rocket_Controller(400);
+        new Blocks_Rocket_Fuel(401);
     }
     /**
      * gibt den Block mit der id zuück

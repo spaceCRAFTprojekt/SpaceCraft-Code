@@ -24,6 +24,13 @@ public abstract class PlayerMenu extends Menu{
         super(title, size);
         this.p = p;
         p.openMenu(this);
+        addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                if (e.getKeyCode()==KeyEvent.VK_ESCAPE){
+                    closeMenu();
+                }
+            }
+        });
     }
 
     public void closeMenu(){

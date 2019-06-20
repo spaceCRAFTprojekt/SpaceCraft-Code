@@ -38,12 +38,4 @@ public abstract class Mass extends AbstractMass implements Serializable
             this.getSandbox().setSpaceTimer(spaceTimer);
         }
     }
-    
-    /**
-     * unnötig
-     */
-    public static Mass sum(Mass m1, Mass m2){
-        double mNew=m1.getMass()+m2.getMass();
-        return new PlanetS(m1.main,mNew, m1.getPos().multiply(m1.getMass()).divide(mNew).add(m2.getPos().multiply(m2.getMass()).divide(mNew)),null,"",0,0,0,null);
-    }
 }

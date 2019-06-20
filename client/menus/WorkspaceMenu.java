@@ -7,7 +7,7 @@ import javax.swing.JTextField;
 import client.Player;
 import client.Manoeuvre;
 public class WorkspaceMenu{
-    //Ja, man kann geschachtelte Klassen so hernehmen. Aber es f√ºhlt sich gewaltt√§tig an. -LG
+    //Ja, man kann geschachtelte Klassen so hernehmen. Aber es f¸hlt sich gewaltt‰tig an. -LG
     public static class Open extends PlayerMenu{
         public Open(Player p){
             super(p,"Arbeitsweltraum erstellen", new VektorI(300,120));
@@ -27,9 +27,9 @@ public class WorkspaceMenu{
     }
     public static class Close extends PlayerMenu{
         public Close(Player p){
-            super(p,"Arbeitsweltraum schlie√üen",new VektorI(300,170));
-            new MenuLabel(this, "Wollen Sie den Arbeitsweltraum schlie√üen", new VektorI(10,10), new VektorI(300,15));
-            new MenuLabel(this, "und die geplanten Man√∂ver anwenden?", new VektorI(10,25), new VektorI(300,15));
+            super(p,"Arbeitsweltraum schlieﬂen",new VektorI(300,170));
+            new MenuLabel(this, "Wollen Sie den Arbeitsweltraum schlieﬂen", new VektorI(10,10), new VektorI(300,15));
+            new MenuLabel(this, "und die geplanten Manˆver anwenden?", new VektorI(10,25), new VektorI(300,15));
             new MenuButton(this, "Ja", new VektorI(10,85), new VektorI(260, 30)){
                 public void onClick(){
                     p.getPlayerS().closeWorkspace(true);

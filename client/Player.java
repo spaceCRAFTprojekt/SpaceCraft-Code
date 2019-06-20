@@ -1,6 +1,5 @@
 package client;
 
-
 import java.util.ArrayList;
 import util.geom.*;
 import menu.*;
@@ -129,6 +128,7 @@ public class Player implements Serializable
             ObjectOutputStream newPlayerOut=new ObjectOutputStream(s.getOutputStream());
             synchronized(newPlayerOut){
                 newPlayerOut.writeBoolean(true); //Request-Client
+                newPlayerOut.writeInt(-1); //eigentlich playerID
                 newPlayerOut.flush();
             }
             ObjectInputStream newPlayerIn=new ObjectInputStream(s.getInputStream());
@@ -194,6 +194,7 @@ public class Player implements Serializable
         this.requestIn=new ObjectInputStream(requestSocket.getInputStream());
         synchronized(requestOut){
             requestOut.writeBoolean(true); //Der Server muss ja wissen, was der Client eigentlich will. True steht für requestClient, false für TaskClient.
+            requestOut.writeInt(id); //zur Identifizierung
             requestOut.flush();
         }
         this.taskSocket=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
@@ -232,10 +233,6 @@ public class Player implements Serializable
                 this.online = true;
                 makeFrame();
                 playerC.timerSetup();
-                
-                
-                
-                
             }
             else{
                 System.out.println("No success when trying to log in");
@@ -365,6 +362,8 @@ public class Player implements Serializable
             new NoteblockMenu(this,(int) menuParams[0], (VektorI) menuParams[1],(String) menuParams[2]);
         }else if(menuName.equals("ChestMenu")){
             new ChestMenu(this,(int) menuParams[0], (VektorI) menuParams[1],(Inv) menuParams[2]);
+        }else if (menuName.equals("RocketControllerMenu")){
+            new RocketControllerMenu(this,(int) menuParams[0], (VektorI) menuParams[1], (int) menuParams[2]);
         }
     }
     
@@ -540,18 +539,17 @@ public class Player implements Serializable
                         }
                         catch(ArrayIndexOutOfBoundsException e){}
                         break;
-                    case "time": //hat Bugs
+                    case "time": //hat vielleicht Bugs
                         try{
                             long time=Long.parseLong(spl[1]);
                             new Request(id,requestOut,requestIn,"Space.setTime",null,time);
                             if (playerS.getWorkspace()!=null){
-                                playerS.getWorkspace().inGameTime=((Long) new Request(id,requestOut,requestIn,"Space.getInGameTime",Long.class).ret).longValue();
+                                playerS.getWorkspace().setTime(((Long) new Request(id,requestOut,requestIn,"Space.getInGameTime",Long.class).ret).longValue());
                             }
                         }
                         catch(Exception e){}
                         break;
-                    /*
-                    case "timeSpeed": //hat Bugs
+                    case "timeSpeed": //hat vielleicht Bugs
                         try{
                             long dtime=Long.parseLong(spl[1]);
                             new Request(id,requestOut,requestIn,"Space.setDTime",null,dtime);
@@ -560,7 +558,7 @@ public class Player implements Serializable
                             }
                         }
                         catch(Exception e){}
-                        break;*/
+                        break;
                     case "teleportS":
                         try{
                             int index=Integer.parseInt(spl[1]);

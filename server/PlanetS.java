@@ -85,4 +85,23 @@ public class PlanetS extends Mass implements Serializable
      * (nötig, da es client.AbstractMass erweitert)
      */
     public void setManoeuvres(ArrayList<Manoeuvre> manos){}
+    
+    /**
+     * (nötig, da es client.AbstractMass erweitert)
+     */
+    public double getOutvel(){
+        return 0;
+    }
+    
+    /**
+     * (nötig, da es client.AbstractMass erweitert)
+     */
+    public void setOutvel(double ov){}
+    
+    /**
+     * (nötig, da es client.AbstractMass erweitert)
+     */
+    public double getRestMass(){
+        return -1;
+    }
 }

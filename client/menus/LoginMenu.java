@@ -29,9 +29,12 @@ public class LoginMenu extends Menu{
                 closeMenu();
                 try{
                     Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+                    //Ein extra Socket nur für diesen Request, da alles andere vermutlich noch
+                    //sinnloser wäre. Er wird nach 10 Sekunden durch den Timeout geschlossen.
                     ObjectOutputStream getPlayerOut=new ObjectOutputStream(s.getOutputStream());
                     synchronized(getPlayerOut){
                         getPlayerOut.writeBoolean(true); //Request-Client
+                        getPlayerOut.writeInt(-1); //eigentlich playerID, hier unwichtig
                         getPlayerOut.flush();
                     }
                     ObjectInputStream getPlayerIn=new ObjectInputStream(s.getInputStream());
@@ -48,8 +51,11 @@ public class LoginMenu extends Menu{
                     if (player!=null){
                         Boolean success=player.login(password);
                         if (!success){
-                            new StartMenu(); //kein erfolgreiches Einloggen (Passwort falsch)
+                            new StartMenu(); //kein erfolgreiches Einloggen (Passwort falsch oder schon online)
                         }
+                    }
+                    else{
+                        new StartMenu(); //kein erfolgreiches Erstellen des Spielers
                     }
                     s.close();
                 }

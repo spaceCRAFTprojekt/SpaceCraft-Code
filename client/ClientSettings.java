@@ -45,6 +45,10 @@ public abstract class ClientSettings{
      */
     public static VektorI PLAYERC_MAPIDCACHE_SIZE = PLAYERC_FIELD_OF_VIEW.multiply(2);
     /**
+     * in Blöcken, so groß können alle Schiffe (maximal) sein
+     */
+    public static VektorI SHIP_SIZE = new VektorI(10,20);
+    /**
      * nur weil es nervig ist, ständig Zeug aus-und einkommentieren zu mÃ¼ssen
      */
     public static boolean PRINT_COMMUNICATION=false;

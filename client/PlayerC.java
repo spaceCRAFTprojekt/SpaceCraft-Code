@@ -102,7 +102,7 @@ public class PlayerC implements Serializable
      */
     public void timerSetup(){
         if (player.onClient()){
-            this.timer=new Timer();
+            this.timer=new Timer("PlayerC-"+player.getID()+"-Timer");
             timer.schedule(new TimerTask(){
                     public void run(){
                         repaint();
@@ -114,7 +114,8 @@ public class PlayerC implements Serializable
                         if (player.isOnline()){ //holt sich einen neuen MapIDCache
                             mapIDCache=(int[][]) (new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getMapIDs",int[][].class,player.currentMassIndex,pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2)),pos.toInt().add(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2))).ret);
                             mapIDCachePos=pos.toInt().subtract(ClientSettings.PLAYERC_MAPIDCACHE_SIZE.divide(2));
-                            Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
+                            //Object[] ret = (Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret);
+                            //It was so nice, unknown did it twice. Zweimal der gleiche Request erscheint mir irgendwie sinnlos. -LG
                             otherPlayerTexturesPanel.repaint((Object[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.getOtherPlayerTextures",Object[].class,pos.toInt().subtract(ClientSettings.PLAYERC_FIELD_OF_VIEW),pos.toInt().add(ClientSettings.PLAYERC_FIELD_OF_VIEW)).ret));  // hier sehen Sie wie man ein Object in ein Object[] casten kann - Argh!
                             subData=(SandboxInSandbox[])(new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.getAllSubsandboxes",SandboxInSandbox[].class,player.currentMassIndex).ret);
                             subMapIDCache=new int[subData.length][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x][ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y];
@@ -321,7 +322,6 @@ public class PlayerC implements Serializable
     public void setPlayerInv(PlayerInv inv){
         this.inv = inv;
         setupHotbar();
-
         hotbar = inv.hotbar;
     }
 
@@ -346,7 +346,7 @@ public class PlayerC implements Serializable
 
     
     /***********************************************************************************************************************************************************
-    /*********3. Methoden fÃ¼r Subsandboxes und Raketenstart*****************************************************************************************************
+    /*********3. Methoden für Subsandboxes und Raketenstart*****************************************************************************************************
     /***********************************************************************************************************************************************************/
 
     /**
@@ -363,22 +363,6 @@ public class PlayerC implements Serializable
                 return i;
         }
         return -1;
-
-        /*
-        //bevorzugt die Hauptsandbox, ist das gut so?
-        VektorI cPos=getPosToCache(player.currentMassIndex,sPos);
-        if (mapIDCache[cPos.x][cPos.y]==-1){
-        return player.currentMassIndex;
-        }
-
-        for (int i=0;i<subData.length;i++){
-        int index=subData[i].index;
-        VektorI cPosSub=getPosToCache(index,sPos);
-        if (subMapIDCache[i][cPosSub.x][cPosSub.y]==-1){
-        return index;
-        }
-        }
-        return -1;*/
     }
 
     /***********************************************************************************************************************************************************
@@ -394,7 +378,7 @@ public class PlayerC implements Serializable
     }
 
     /**
-     * Gibt die obere linken Ecke (int Blöcken) der Spieleransicht an
+     * Gibt die obere linken Ecke (in Blöcken) der Spieleransicht an
      * @param: pos: Position des Spielers relativ zur oberen linken Ecke der Sandbox
      */
     public VektorD getUpperLeftCorner(VektorD pos){
@@ -420,7 +404,7 @@ public class PlayerC implements Serializable
      * 
      * @param: 
      * sandboxIndex: Index der Sandbox, mit der der Spieler interagiert, im Space.masses-Array, im Normalfall player.currentMassIndex
-     * sPos: Position im allgemeinen Map Array (lÃ¤sst sich mit getPosToPlayer() berechnen)
+     * sPos: Position im allgemeinen Map Array (lässt sich mit getPosToPlayer() berechnen)
      */
     public VektorI getPosToCache(int sandboxIndex, VektorD sPos){
         if (sandboxIndex==player.currentMassIndex)
@@ -542,7 +526,7 @@ public class PlayerC implements Serializable
                                         }
                                         else{
                                             Hashtable<String,Object> properties=new Hashtable<String,Object>();
-                                            blockImages.put(smic[x][y],new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties));
+                                            subBlockImages.put(smic[x][y],new BufferedImage(cm,cm.createCompatibleWritableRaster(blockBreite,blockBreite),false,properties));
                                         }
                                     }
                                     catch(ArrayIndexOutOfBoundsException e){}
@@ -566,12 +550,19 @@ public class PlayerC implements Serializable
                                     catch(ArrayIndexOutOfBoundsException e){}
                                 }
                             }
+                            
+                            //Zeichnen dieses Subsandbox-Bilds auf das allgemeine Bild
                             int drawXSub=(int) ((minXSub-posRel.x+((fieldOfView.x)/2))*blockBreite);
                             int drawYSub=(int) ((minYSub-posRel.y+((fieldOfView.y)/2))*blockBreite);
                             int widthSub=(int) (fieldOfView.x*blockBreite);
                             int heightSub=(int) (fieldOfView.y*blockBreite);
                             subImage=subImage.getSubimage(-drawXSub,-drawYSub,widthSub,heightSub);
                             g2.drawImage(subImage,-drawX,-drawY,new Color(255,255,255,0),null); //keine Ahnung warum -drawX, -drawY, aber es geht
+                            
+                            //roter Rahmen um die Subsandbox, damit man ihre Grenzen sehen kann
+                            g2.setColor(Color.RED);
+                            g2.drawRect((int) ((sd.offset.x-minX)*blockBreite),(int) ((sd.offset.y-minY)*blockBreite),sd.size.x*blockBreite,sd.size.y*blockBreite);
+                            g2.setColor(Color.BLACK);
                         }
                     }
                 }

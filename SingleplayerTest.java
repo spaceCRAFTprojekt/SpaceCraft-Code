@@ -1,6 +1,5 @@
 import server.Main;
 import client.Player;
-import client.menus.StartMenu;
 public class SingleplayerTest{
     public Main main;
     public Player player;
@@ -8,7 +7,11 @@ public class SingleplayerTest{
     public SingleplayerTest(){
         main=Main.newMain(false);
         player=Player.newPlayer("Singleplayer","pw1");player.login("pw1");
-        //player2=Player.newPlayer("unknown"); player2.login();
+        /*
+        for (int i=0;i<10;i++){
+            Player p=Player.newPlayer("p"+i,"pw"+i);p.login("pw"+i);
+        }//*/
+        player2=Player.newPlayer("unknown","pw2"); player2.login("pw2");
     }
     
     public void exit(){

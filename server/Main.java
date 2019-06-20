@@ -216,7 +216,7 @@ public class Main implements Serializable
      * Request-Funktion
      */
     public Boolean login(Integer playerID, String password){
-        if (passwords.get(playerID).equals(password)){
+        if (passwords.get(playerID).equals(password) && !players.get(playerID).isOnline()){
             players.get(playerID).setOnline(true); //wirkt auf die Kopie in der Liste, der Player im Client setzt sich selbst online
             return new Boolean(true);
         }
@@ -224,18 +224,18 @@ public class Main implements Serializable
     }
     
     public PlayerInv getPlayerInv(Integer playerID){
-            return players.get(playerID).getPlayerC().getInv(); // Kopie des Spielers am Server
+        return players.get(playerID).getPlayerC().getInv(); // Kopie des Spielers am Server
     }
 
-	/**
+    /**
      * Request-Funktion
      */
     public Boolean logout(Integer playerID, PlayerInv inv){
         Player player = players.get(playerID);
-		player.setOnline(false); //siehe login(Integer playerID)
+        player.setOnline(false); //siehe login(Integer playerID)
         player.getPlayerC().setInv(inv);
         player.setOnline(false); //siehe login(Integer playerID)
-		sc.taskOutputStreams.remove(playerID);
+        sc.taskOutputStreams.remove(playerID);
         return new Boolean(true);
     }
     
@@ -269,7 +269,7 @@ public class Main implements Serializable
     public Sandbox getSandbox(Integer sandboxIndex){ //Ich glaube, dass diese Funktion meistens vergessen wird und die hässliche Schreibweise verwendet wird.
         return ((Mass) space.masses.get(sandboxIndex)).getSandbox();
     }
-
+    
     /**
      * Der Status des Players im Client hat sich verändert, also macht er einen Request, damit der Status der Kopie des Players im Server genauso ist.
      */
@@ -333,6 +333,7 @@ public class Main implements Serializable
     public Integer newPlayer(Integer playerID, String name, String password)
     {
         if (getPlayer(name) != null)return new Integer(-1);
+        if (name.length()==0) return new Integer(-1); //Das Password kann auch einfach nichts sein, wenn das erwünscht ist.
         int id=players.size();
         Player p;
         if (id==0) //der erste Spieler ist automatisch Administrator
@@ -407,20 +408,35 @@ public class Main implements Serializable
     }
 
     /**
-     * Warum kann ich ein scheiß Object[] nicht in ein noch blÃ¶deres OtherPlayerTexture[] casten?!?!?!
-     * Daher wird Ihnen hier ein scheiß Obejct[] zurückgegeben :(  
+     * Warum kann ich ein scheiß Object[] nicht in ein noch blöderes OtherPlayerTexture[] casten?!?!?!
+     * Daher wird Ihnen hier ein scheiß Object[] zurückgegeben :(  
      */
     public Object[] getOtherPlayerTextures(Integer playerID, VektorI upperLeftCorner, VektorI bottomRightCorner){
         if(players.size() < 2)return null; // wenn es nur einen Spieler gibt (Singleplayer), dann null.
         ArrayList<OtherPlayerTexture> ret = new ArrayList<OtherPlayerTexture>();
         int massID = players.get(playerID).getCurrentMassIndex();
         for(int i = 0; i<players.size(); i++){
-            if(playerID != i && players.get(i).isOnline() && players.get(i).getCurrentMassIndex() == massID){  // der Spieler selbst soll natÃ¼rlich nicht im Array zurÃ¼ckgegeben werden
-                PlayerC pC = players.get(i).getPlayerC();
-                VektorI pos = pC.pos.toInt();
-                if(pos.x >= upperLeftCorner.x && pos.y >= upperLeftCorner.y && pos.x <= bottomRightCorner.x && pos.y <= bottomRightCorner.y){
-                    PlayerTexture t = pC.getPlayerTexture();
-                    ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos, players.get(i).getName()));
+            if(playerID != i && players.get(i).isOnline()){ // der Spieler selbst soll natürlich nicht im Array zurückgegeben werden
+                if (players.get(i).getCurrentMassIndex() == massID){
+                    PlayerC pC = players.get(i).getPlayerC();
+                    VektorI pos = pC.pos.toInt();
+                    if(pos.x >= upperLeftCorner.x && pos.y >= upperLeftCorner.y && pos.x <= bottomRightCorner.x && pos.y <= bottomRightCorner.y){
+                        PlayerTexture t = pC.getPlayerTexture();
+                        ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos, players.get(i).getName()));
+                    }
+                }
+                else{
+                    int subsandboxIndex=getSandbox(massID).subsandboxIndex(players.get(i).getCurrentMassIndex());
+                    if (subsandboxIndex!=-1){
+                        //Spieler in Subsandboxen dieser Sandbox
+                        PlayerC pC = players.get(i).getPlayerC();
+                        VektorD offset=getSandbox(massID).subsandboxes.get(subsandboxIndex).offset;
+                        VektorI pos = pC.pos.add(offset).toInt();
+                        if(pos.x >= upperLeftCorner.x && pos.y >= upperLeftCorner.y && pos.x <= bottomRightCorner.x && pos.y <= bottomRightCorner.y){
+                            PlayerTexture t = pC.getPlayerTexture();
+                            ret.add(new OtherPlayerTexture(i, t.mode, t.textureID, pC.pos.add(offset), players.get(i).getName()));
+                        }
+                    }
                 }
             }
         }

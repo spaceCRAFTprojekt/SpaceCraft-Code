@@ -32,7 +32,7 @@ public class ManoeuvreInfo extends PlayerMenu
 
 
     public ManoeuvreInfo(Player p, int massIndex, int manoeuvreIndex){
-        super(p, "Manoeuvre Info", new VektorI(210,260));   // id muss noch gemacht werden
+        super(p, "Manoeuvre Info", new VektorI(230,260));   // id muss noch gemacht werden
         this.massIndex=massIndex;
         this.manoeuvreIndex=manoeuvreIndex;
 
@@ -154,35 +154,68 @@ public class ManoeuvreInfo extends PlayerMenu
 
     public void update(){
         try{
+            ClientSpace workspace=getPlayer().getPlayerS().getWorkspace();
+            AbstractMass rocket=workspace.masses.get(massIndex);
+            int rocketIndex=0; //Index der Raketen, die dieser Spieler kontrollieren kann, nicht in der Space.masses-Liste
+            for (int i=0;i<massIndex;i++){
+                if (workspace.masses.get(i).isControllable(getPlayer().getID()))
+                    rocketIndex++;
+            }
+            rocketIndex++; //die erste Rakete hat den Index 1, nicht den Index 0
+            rocketInfo.setText("Rocket: " + rocketIndex + ";  mass: " + Math.round(rocket.getMass()));
+            
             double angle=Double.parseDouble(angleField.getText())*Math.PI/180; //Eingabe in Grad ist vermutlich schöner
             VektorD dir=new VektorD(Math.cos(angle),Math.sin(angle));
             double dMass=-Double.parseDouble(accField.getText()); //Eingabe: positiver Wert => negative Massenänderung (wirkt vielleicht logischer?)
             long t0=Long.parseLong(((JTextField) table[1][1]).getText());
             long t1=Long.parseLong(((JTextField) table[1][2]).getText());
             boolean isRel=angleToggle.isSelected();
-            ClientSpace workspace=getPlayer().getPlayerS().getWorkspace();
             Manoeuvre mano=new Manoeuvre(dir,isRel,dMass,((ClientMass) workspace.masses.get(massIndex)).getOutvel(),t0,t1);
-            AbstractMass rocket=workspace.masses.get(massIndex);
-            if (manoeuvreIndex>=0 && manoeuvreIndex<rocket.getManoeuvres().size()){ //altes Manöver editieren
-                rocket.getManoeuvres().set(manoeuvreIndex,mano);
+            
+            //einfache Checks, ob das überhaupt geht, ähnlich zu server.ShipS.applyManoeuvres
+            //irgendwas hier ist falsch, aber es ist besser als nichts
+            boolean applicable=true;
+            double dMassGes=0; //gesamte verlorene Masse, sollte natürlich nicht größer als die Restmasse des Schiffs sein
+            for (int i=0;i<rocket.getManoeuvres().size();i++){
+                dMassGes=dMassGes+rocket.getManoeuvres().get(i).dMass;
             }
-            else if (manoeuvreIndex==-1){ //neues Manöver hinzufügen
-                rocket.getManoeuvres().add(mano);
-                manoeuvreIndex=rocket.getManoeuvres().size()-1; 
-                //sollte jetzt natürlich das neue Manöver editieren, nicht bei jedem Update ein neues Manöver hinzufügen
+            dMassGes=dMassGes+dMass;
+            if (rocket.getMass()+dMassGes<rocket.getRestMass()){ //Massenausstoß zu groß
+                applicable=false;
             }
-            else{ //neues Manöver an der gegebenen Stelle hinzufügen
-                rocket.getManoeuvres().add(manoeuvreIndex,mano);
+            if (t0<workspace.inGameTime){ //Manöver schon verstrichen
+                applicable=false;
             }
-            rocketInfo.setText("Rocket: " + "" + ";  mass: " + Math.round(rocket.getMass()));
-            ((JLabel) table[1][3]).setText(Long.toString(t1-t0));
-            workspace.calcOrbits(ClientSettings.SPACE_CALC_TIME);
-            t0=t0>=workspace.inGameTime ? t0 : workspace.inGameTime; //eher unschön, führt zu Veränderungen der Werte im Lauf der Zeit
-            VektorI pos0=workspace.masses.get(massIndex).getOrbit().getPos(t0).toInt();
-            VektorI pos1=workspace.masses.get(massIndex).getOrbit().getPos(t1).toInt();
-            ((JLabel) table[2][1]).setText("("+pos0.x+", "+pos0.y+")");
-            ((JLabel) table[2][2]).setText("("+pos1.x+", "+pos1.y+")");
-            ((JLabel) table[2][3]).setText(Long.toString(Math.round(workspace.masses.get(massIndex).getOrbit().getTravelledDistance(t0,t1))));
+            if (t1<=t0){ //falsche Zeitangaben
+                applicable=false;
+            }
+            if (applicable){
+                if (manoeuvreIndex>=0 && manoeuvreIndex<rocket.getManoeuvres().size()){ //altes Manöver editieren
+                    rocket.getManoeuvres().set(manoeuvreIndex,mano);
+                }
+                else if (manoeuvreIndex==-1){ //neues Manöver hinzufügen
+                    rocket.getManoeuvres().add(mano);
+                    manoeuvreIndex=rocket.getManoeuvres().size()-1; 
+                    //sollte jetzt natürlich das neue Manöver editieren, nicht bei jedem Update ein neues Manöver hinzufügen
+                }
+                else{ //neues Manöver an der gegebenen Stelle hinzufügen
+                    rocket.getManoeuvres().add(manoeuvreIndex,mano);
+                }
+                ((JLabel) table[1][3]).setText(Long.toString(t1-t0));
+                workspace.calcOrbits(ClientSettings.SPACE_CALC_TIME);
+                t0=t0>=workspace.inGameTime ? t0 : workspace.inGameTime; //eher unschön, führt zu Veränderungen der Werte im Lauf der Zeit
+                VektorI pos0=workspace.masses.get(massIndex).getOrbit().getPos(t0).toInt();
+                VektorI pos1=workspace.masses.get(massIndex).getOrbit().getPos(t1).toInt();
+                ((JLabel) table[2][1]).setText("("+pos0.x+", "+pos0.y+")");
+                ((JLabel) table[2][2]).setText("("+pos1.x+", "+pos1.y+")");
+                ((JLabel) table[2][3]).setText(Long.toString(Math.round(workspace.masses.get(massIndex).getOrbit().getTravelledDistance(t0,t1))));
+            }
+            else{
+                ((JLabel) table[1][3]).setText("<html><font color='red'>Bad Input</font></html>");
+                ((JLabel) table[2][1]).setText("<html><font color='red'>Bad Input</font></html>");
+                ((JLabel) table[2][2]).setText("<html><font color='red'>Bad Input</font></html>");
+                ((JLabel) table[2][3]).setText("<html><font color='red'>Bad Input</font></html>");
+            }
         }
         catch(Exception e){}
     }

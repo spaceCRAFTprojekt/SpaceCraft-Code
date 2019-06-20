@@ -13,6 +13,7 @@ public class LineCounter{
         try{
             int ret=getLines(".");
             System.out.println("Lines: "+ret);
+            return ret;
         }catch(Exception e){e.printStackTrace();}
         return 0;
     }
@@ -33,6 +34,7 @@ public class LineCounter{
                     re=fi.read();
                 }
                 num=num+1; //erste bzw. letzte Zeile
+                //System.out.println(pathname+" "+num);
                 fi.close();
             }
             catch(IOException e){}

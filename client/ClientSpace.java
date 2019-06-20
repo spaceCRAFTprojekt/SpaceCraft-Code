@@ -10,7 +10,7 @@ import util.geom.*;
 public class ClientSpace implements Serializable
 {
     public static final long serialVersionUID=0L;
-    public ArrayList<AbstractMass>masses;
+    public volatile ArrayList<AbstractMass>masses;
     public long inGameTime;
     public long inGameDTime;
     public transient Timer timer;
@@ -48,7 +48,7 @@ public class ClientSpace implements Serializable
     }
     
     public void timerSetup(){
-        timer=new Timer();
+        timer=new Timer("SpaceTimer");
         timer.schedule(new TimerTask(){
             public void run(){
                 inGameTime=inGameTime+inGameDTime;
@@ -120,10 +120,11 @@ public class ClientSpace implements Serializable
      * Berechnet die (Nicht-Kepler-)Orbits aller Objekte in diesem Space ab dem Aufruf dieser Methode für (dtime) Sekunden
      */
     public void calcOrbits(long dtime){
-        ArrayList<VektorD>[] poss=new ArrayList[masses.size()]; //Positionslisten
-        ArrayList<VektorD>[] vels=new ArrayList[masses.size()]; //Geschwindigkeitslisten
-        ArrayList<Double>[]masss=new ArrayList[masses.size()]; //Massenlisten
-        for (int i=0;i<masses.size();i++){
+        int numMasses=masses.size(); //sonst gibt es ab und zu asynchrone Fehler, wenn jedes Mal masses.size() aufgerufen wird
+        ArrayList<VektorD>[] poss=new ArrayList[numMasses]; //Positionslisten
+        ArrayList<VektorD>[] vels=new ArrayList[numMasses]; //Geschwindigkeitslisten
+        ArrayList<Double>[] masss=new ArrayList[numMasses]; //Massenlisten
+        for (int i=0;i<numMasses;i++){
             poss[i]=new ArrayList<VektorD>();
             poss[i].add(masses.get(i).getPos()); //erste Position, Zeit 0
             vels[i]=new ArrayList<VektorD>();
@@ -134,12 +135,12 @@ public class ClientSpace implements Serializable
         for (double t=0;t<dtime;t=t+ClientSettings.SPACE_CALC_PERIOD_INGAME){
             int k=(int) Math.round(t/ClientSettings.SPACE_CALC_PERIOD_INGAME); //zeitlicher Index in poss und vels
             //k sollte immer kleiner als Double.MAX_VALUE sein
-            for (int i=0;i<masses.size();i++){ //Masse, deren Orbit berechnet wird
+            for (int i=0;i<numMasses;i++){ //Masse, deren Orbit berechnet wird
                 double m2=masss[i].get(k);
                 VektorD pos2=poss[i].get(k);
                 if (pos2!=null){
                     VektorD F=new VektorD(0,0); //wirkende Kraft durch Gravitation und OrbitChanges
-                    for (int j=0;j<masses.size();j++){
+                    for (int j=0;j<numMasses;j++){
                         double m1=masss[j].get(k);
                         VektorD pos1=poss[j].get(k);
                         if (pos1.x!=pos2.x || pos1.y!=pos2.y){
@@ -178,7 +179,7 @@ public class ClientSpace implements Serializable
                     dx=dx.add(vels[i].get(k).multiply(ClientSettings.SPACE_CALC_PERIOD_INGAME));
                     boolean hasCrash=false;
                     
-                    for (int m=0;m<masses.size();m++){
+                    for (int m=0;m<numMasses;m++){
                         if (m!=i){ //kein Zusammenstoß mit sich selbst
                             /*Intersektion eines Kreises mit einer Linie:
                             K: (x-mx)^2 + (y-my)^2 <= r^2
@@ -234,7 +235,7 @@ public class ClientSpace implements Serializable
                 }
             }
         }
-        for (int i=0;i<masses.size();i++){
+        for (int i=0;i<numMasses;i++){
             Orbit o=new Orbit(poss[i],masss[i],inGameTime,inGameTime+dtime,ClientSettings.SPACE_CALC_PERIOD_INGAME);
             masses.get(i).setOrbit(o);
         }
@@ -309,4 +310,27 @@ public class ClientSpace implements Serializable
      * (gedacht, um durch server.Space überschrieben zu werden)
      */
     public void handleCollisions(long dtime){}
+    
+    public void setTime(long time){
+        if (time>inGameTime && time<inGameTime+ClientSettings.SPACE_CALC_TIME){
+            handleCollisions(time-inGameTime); //muss zuerst kommen, da es berechnet, ob eine Kollision geschehen ist, nicht, ob eine geschehen wird
+            inGameTime=time;
+            for (int i=0;i<masses.size();i++){
+                Orbit o=masses.get(i).getOrbit();
+                if (o.getPos(inGameTime)!=null){
+                    masses.get(i).setPos(o.getPos(inGameTime));
+                }
+                if (o.getVel(inGameTime)!=null){
+                    masses.get(i).setVel(o.getVel(inGameTime));
+                }
+                if (o.getMass(inGameTime)!=-1){
+                    masses.get(i).setMass(o.getMass(inGameTime));
+                }
+            }
+            calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
+        }
+        //eigentlich könnte man auch noch, wenn time größer als inGameTime+Settings.SPACE_CALC_TIME ist,
+        //einfach die Orbits noch für längere Zeit berechnen, aber das Problem damit ist, dass dann bei
+        //sehr großen Werten der Server Probleme bekommen könnte
+        }
 }

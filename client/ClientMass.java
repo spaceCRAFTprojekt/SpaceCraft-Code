@@ -9,14 +9,19 @@ public class ClientMass extends AbstractMass{
     private boolean isControllable;
     private ArrayList<Manoeuvre> manoeuvres;
     private int radius;
-    public ClientMass(double m, boolean isControllable, VektorD pos, VektorD vel, int radius, ArrayList<Manoeuvre> manos){
+    private double outvel;
+    private double restMass;
+    public ClientMass(double m, boolean isControllable, VektorD pos, VektorD vel, int radius, double outvel, double restMass, ArrayList<Manoeuvre> manos){
         super(m,pos,vel);
         this.isControllable=isControllable;
         this.manoeuvres=manos;
         this.radius=radius;
+        this.outvel=outvel;
+        this.restMass=restMass;
     }
     public ClientMass(AbstractMass m, int playerID){
-        this(m.m,m.isControllable(playerID),m.pos,m.vel,m.getRadius(),m.getManoeuvres());
+        this(m.m,m.isControllable(playerID),m.pos,m.vel,m.getRadius(),m.getOutvel(),m.getRestMass(),m.getManoeuvres());
+        this.isDrawn=m.isDrawn;
     }
     public boolean isControllable(int playerID){
         return isControllable;
@@ -32,12 +37,14 @@ public class ClientMass extends AbstractMass{
         manoeuvres=manos;
     }
     
-    /**
-     * Gibt die Auswurfgeschwindigkeit von Masse dieses Schiffes zurück 
-     * (=> je größer, desto mehr beschleunigt das Schiff mit dem gleichen Massenauswurf)
-     * (Wenn es kein Schiff ist, ist diese Funktion egal)
-     */
     public double getOutvel(){
-        return 100;
+        return outvel;
+    }
+    public void setOutvel(double ov){
+        outvel=ov;
+    }
+    
+    public double getRestMass(){
+        return restMass;
     }
 }

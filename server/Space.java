@@ -31,14 +31,14 @@ public class Space extends ClientSpace implements Serializable
         masses.add(erde);
         PlanetS mond=new PlanetS(main,2000000L,new VektorD(-5000,0),new VektorD(10,5),"Mond",20,10,0,timer);
         masses.add(mond);
-        ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),timer);
+        ShipS schiff=new ShipS(main,20L,new VektorD(2000,0),new VektorD(0,10),100,2,timer);
         masses.add(schiff);
         calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
     }
     
     public Object readResolve() throws ObjectStreamException{
         timerSetup();
-        calcOrbits(inGameDTime*20+1);
+        calcOrbits(ClientSettings.SPACE_CALC_TIME);
         return this;
     }
     
@@ -84,54 +84,52 @@ public class Space extends ClientSpace implements Serializable
      */
     @Override
     public void handleCollisions(long dtime){
-        for (int i=0;i<masses.size();i++){
+        int numMasses=masses.size(); //Wenn jedes Mal masses.size() aufgerufen wird, kann es asynchrone Fehler geben.
+        for (int i=0;i<numMasses;i++){
             if (masses.get(i) instanceof ShipS){
                 ShipS ship=(ShipS) masses.get(i);
-                for (int j=0;j<masses.size();j++){
+                for (int j=0;j<numMasses;j++){
                     if (masses.get(j) instanceof PlanetS){
                         PlanetS planet=(PlanetS) masses.get(j);
                         for (double t=inGameTime;t<inGameTime+dtime;t=t+ship.getOrbit().dtime){
                             //ob irgendwann in der Vergangenheit (denn diese Methode wird vor dem Erhöhen 
                             //von inGameTime aufgerufen) ein Zusammenstoß stattgefunden hat
-                            VektorD dPos=ship.getOrbit().getPos((long) t).subtract(planet.getOrbit().getPos((long) t)); //Positionsunterschied
-                            if (!((Mass) masses.get(j)).getSandbox().isSubsandbox(i) && dPos.getLength()<=planet.getRadius()+100){
-                                //Hinzufügen der Subsandbox natürlich nur ein mal
-                                //mehr als der Radius, da die Schiffe ja auf der Oberfläche anhalten (liegt in calcOrbits)
-                                //bisher haben die Planeten noch keine Drehung
-                                dPos.y=-dPos.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
-                                dPos.x=dPos.x+planet.getSandbox().map.length/2;
-                                dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten in Craft ist nicht bei (0|0)
-                                VektorD vel=ship.getOrbit().getVel(t-ship.getOrbit().dtime*2); //das Schiff hält direkt bei t ja an
-                                if (vel==null)
-                                    vel=ship.getVel(); //wenn der Crash direkt am Anfang stattfindet
-                                double angle=Math.acos((dPos.x*vel.x+dPos.y*vel.y)/(dPos.getLength()*vel.getLength())); //Winkel zwischen vel und dPos, berechnet durch das Skalarprodukt
-                                if (Math.abs(angle)>=Math.PI/2) //komischer Space-Berechnungsfehler
-                                    vel=dPos.multiply(-1);
-                                vel.y=-vel.y; //invertiert...
-                                //Eigentlich muss vel sich ja erhöhen, das ist derzeit nicht der Fall
-                                vel=vel.multiply(1/vel.getLength()); //"Abbremsen über dem Planeten", so kann man sie fallen sehen
-                                SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel,ship.getSandbox().getSize());
-                                planet.getSandbox().addSandbox(sbisb);
-                                if (ship.ownerIDs.size()>0){
-                                    for (int k=0;k<ship.ownerIDs.size();k++){
-                                        int ownerID=ship.ownerIDs.get(k);
-                                        if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
-                                            main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                            try{
+                                VektorD dPos=ship.getOrbit().getPos((long) t).subtract(planet.getOrbit().getPos((long) t)); //Positionsunterschied
+                                if (((Mass) masses.get(j)).getSandbox().subsandboxIndex(i)==-1 && dPos.getLength()<=planet.getRadius()+50){
+                                    //Hinzufügen der Subsandbox natürlich nur ein mal
+                                    //mehr als der Radius, da die Schiffe ja auf der Oberfläche anhalten (liegt in calcOrbits)
+                                    //bisher haben die Planeten noch keine Drehung
+                                    dPos.y=-dPos.y; //Space verwendet ein "normales" mathematisches Koordinatensystem, Craft das Java-y-invertierte
+                                    //einfach ein direktes Stürzen auf den Planeten, natürlich nicht ganz richtig so
+                                    VektorD vel=dPos.multiply(-1/dPos.getLength());
+                                    dPos.x=dPos.x+planet.getSandbox().map.length/2;
+                                    dPos.y=dPos.y+planet.getSandbox().map[0].length/2; //Der Mittelpunkt des Planeten in Craft ist nicht bei (0|0)
+                                    SandboxInSandbox sbisb=new SandboxInSandbox(i,dPos,vel,ship.getSandbox().getSize());
+                                    planet.getSandbox().addSandbox(sbisb);
+                                    if (ship.ownerIDs.size()>0){
+                                        for (int k=0;k<ship.ownerIDs.size();k++){
+                                            int ownerID=ship.ownerIDs.get(k);
+                                            if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
+                                                main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                                            }
+                                            if (main.getPlayer(ownerID).isOnline())
+                                                main.newTask(ownerID,"Player.addChatMsg","Eines deiner Schiffe landete auf dem Planet "+planet.name+" an der Stelle ("+((int) dPos.x)+"|"+((int) dPos.y)+").");
                                         }
-                                        if (main.getPlayer(ownerID).isOnline())
-                                            main.newTask(ownerID,"Player.addChatMsg","Eines deiner Schiffe landete auf dem Planet "+j+" an der Stelle ("+((int) dPos.x)+"|"+((int) dPos.y)+").");
                                     }
-                                }
-                                else{ //allgemeines Schiff ohne Besitzer
-                                    for (int ownerID=0;ownerID<main.getPlayerNumber();ownerID++){
-                                        if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
-                                            main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                                    else{ //allgemeines Schiff ohne Besitzer
+                                        for (int ownerID=0;ownerID<main.getPlayerNumber();ownerID++){
+                                            if (main.getPlayer(ownerID).getPlayerS().reachedMassIDs.indexOf(j)==-1){
+                                                main.getPlayer(ownerID).getPlayerS().reachedMassIDs.add(j);
+                                            }
+                                            if (main.getPlayer(ownerID).isOnline())
+                                                main.newTask(ownerID,"Player.addChatMsg","Ein offenes Schiff landete auf dem Planet "+planet.name+" an der Stelle "+dPos.toInt()+".");
                                         }
-                                        if (main.getPlayer(ownerID).isOnline())
-                                            main.newTask(ownerID,"Player.addChatMsg","Ein offenes Schiff landete auf dem Planet "+j+" an der Stelle "+dPos.toInt()+".");
                                     }
+                                    ship.isDrawn=false;
                                 }
                             }
+                            catch(NullPointerException e){} //manchmal, wenn irgendwas Asynchrones passiert
                         }
                     }
                 }
@@ -141,30 +139,11 @@ public class Space extends ClientSpace implements Serializable
     
     /**
      * Request
-     * Vorwärts immer, rückwärts nimmer (und auch nur begrenzt vorwärts)
+     * Siehe ClientSpace.setTime(long time)
      */
     public void setTime(Integer playerID, Long time){
         if (main.getPlayer(playerID).isAdmin()){
-            if (time>inGameTime && time<inGameTime+ClientSettings.SPACE_CALC_TIME){
-                handleCollisions(time-inGameTime); //muss zuerst kommen, da es berechnet, ob eine Kollision geschehen ist, nicht, ob eine geschehen wird
-                inGameTime=time.longValue();
-                for (int i=0;i<masses.size();i++){
-                    Orbit o=masses.get(i).getOrbit();
-                    if (o.getPos(inGameTime)!=null){
-                        masses.get(i).setPos(o.getPos(inGameTime));
-                    }
-                    if (o.getVel(inGameTime)!=null){
-                        masses.get(i).setVel(o.getVel(inGameTime));
-                    }
-                    if (o.getMass(inGameTime)!=-1){
-                        masses.get(i).setMass(o.getMass(inGameTime));
-                    }
-                }
-                calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht. Verwendet wird davon nur der geringste Teil.
-            }
-            //eigentlich könnte man auch noch, wenn time größer als inGameTime+Settings.SPACE_CALC_TIME ist,
-            //einfach die Orbits noch für längere Zeit berechnen, aber das Problem damit ist, dass dann bei
-            //sehr großen Werten der Server Probleme bekommen könnte
+            super.setTime(time.longValue());
         }
         else{
             main.noAdminMsg(playerID);
@@ -195,5 +174,17 @@ public class Space extends ClientSpace implements Serializable
      */
     public long getInGameDTime(Integer playerID){
         return inGameDTime;
+    }
+    
+    /**
+     * Request, gibt den Index der Sandbox zurück, in der die Sandbox mit dem angegebenen Index Subsandbox ist, oder -1,
+     * wenn die Sandbox mit dem angegebenen Index nirgendwo Subsandbox ist.
+     */
+    public Integer getSupersandboxIndex(Integer playerID, Integer subsandboxIndex){
+        for (int i=0;i<masses.size();i++){
+            if (((Mass) masses.get(i)).getSandbox().isSubsandbox(subsandboxIndex.intValue()))
+                return i;
+        }
+        return -1;
     }
 }
