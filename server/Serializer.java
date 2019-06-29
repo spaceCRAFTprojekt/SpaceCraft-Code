@@ -21,7 +21,7 @@ public class Serializer{
     public static void serialize(Main main){
         new File(Settings.GAMESAVE_FOLDER).mkdirs();
         try{
-            FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+"main.ser");
+            FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+main.name+".ser");
             //nur eine (fast) leere Datei wird dorthin geschrieben, lässt sich das nicht vermeiden?
             ObjectOutputStream oos=new ObjectOutputStream(fos);
             oos.writeObject(main);
@@ -31,8 +31,8 @@ public class Serializer{
         }
     }
     
-    public static Main deserialize() throws IOException,ClassNotFoundException{
-        FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+"main.ser");
+    public static Main deserialize(String name) throws IOException,ClassNotFoundException{
+        FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+name+".ser");
         ObjectInputStream ois=new ObjectInputStream(fis);
         Main main = (Main) ois.readObject();
         return main;

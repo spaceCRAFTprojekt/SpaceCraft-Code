@@ -1,6 +1,5 @@
 package blocks;
 
-import server.*;
 import util.geom.*;
 /**
  * für alle Blöcke, die mehr als eine dekorative Funktion haben
@@ -27,67 +26,67 @@ public abstract class SBlock extends Block
     /**
      * EVENT: wird aufgerufen, wenn ein Block gerechtsklickt wird
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      * int playerID: ID des Spielers
      */
-    public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){};
+    public void onRightclick(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){};
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler gesetzt wird
      *        gibt true zurück, wenn der Block gesetzt werden soll
      *        gibt false zurück, wenn der Block nicht gesetzt werden soll
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      * int playerID: ID des Spielers
      */
-    public boolean onPlace(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public boolean onPlace(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         return placement_prediction;
     }
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block gesetzt wird (nicht zwingend von einem Spieler)
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      */
-    public void onConstruct(Sandbox sb, int sandboxIndex, VektorI pos){}
+    public void onConstruct(BlocksSandbox sb, int sandboxIndex, VektorI pos){}
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block von einem Spieler abgebaut wird
      *        gibt true zurück, wenn der Block gesetzt werden soll
      *        gibt false zurück, wenn der Block nicht gesetzt werden soll
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      * int playerID: ID des Spielers
      */
-    public boolean onBreak(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public boolean onBreak(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         return breakment_prediction;
     }
     
     /**
      * EVENT: wird aufgerufen, wenn ein Block entfernt wird (nicht zwingend von einem Spieler)
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      */
-    public void onDestruct(Sandbox sb, int sandboxIndex, VektorI pos){}
+    public void onDestruct(BlocksSandbox sb, int sandboxIndex, VektorI pos){}
     
     /** 
      * !!!!!NOCH NICHT IMPLEMENTIERT!!!!
      * EVENT: wird bei jedem Craft-Tick aufgerufen
      * @param:
-     * Sandbox sb: Sandbox, in der der Block ist
+     * BlocksSandbox sb: Sandbox, in der der Block ist
      * int sandboxIndex: Index der Sandbox, für eventuelle Tasks
      * VektorI pos: Position des Blocks in dieser Sandbox
      */
-    public void onTimer(Sandbox sb, int sandboxIndex, VektorI pos){
+    public void onTimer(BlocksSandbox sb, int sandboxIndex, VektorI pos){
     }
 }

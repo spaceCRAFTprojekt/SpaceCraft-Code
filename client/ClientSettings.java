@@ -53,6 +53,10 @@ public abstract class ClientSettings{
      */
     public static boolean PRINT_COMMUNICATION=false;
     /**
+     * In dieser Datei steht die Liste aller Server. Die Endung ist .txt.
+     */
+    public static String SERVERLIST_FILENAME="serverlist";
+    /**
      * IP-Adresse des Servers, mit dem sich der Client verbindet
      */
     public static String SERVER_ADDRESS="localhost";

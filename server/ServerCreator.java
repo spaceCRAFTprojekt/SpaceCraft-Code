@@ -26,89 +26,84 @@ import java.io.EOFException;
 public class ServerCreator{
     Main main;
     Hashtable<Integer,ObjectOutputStream> taskOutputStreams;
-    public ServerCreator(Main main){
+    public ServerCreator(Main main) throws Exception{
         this.main=main;
         this.taskOutputStreams=new Hashtable<Integer,ObjectOutputStream>();
-        try{
-            new Thread("ClientConnectionThread"){
-                public ServerSocket server=new ServerSocket(Settings.SERVER_PORT);
-                public void run(){
-                    while(true){
-                        try{
-                            Socket client=server.accept();
-                            ObjectOutputStream out=new ObjectOutputStream(client.getOutputStream());
-                            synchronized(out){
-                                out.flush();
-                            }
-                            ObjectInputStream in=new ObjectInputStream(client.getInputStream());
-                            boolean isRequestClient=in.readBoolean(); //sonst: taskClient
-                            int playerID=in.readInt();
-                            if (isRequestClient){
-                                new Thread("resolveRequestsThread-"+playerID){
-                                    long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
-                                    public void run(){
-                                        while(true){
-                                            try{
-                                                Request req=(Request) in.readObject();
-                                                if ((playerID==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
-                                                        || (main.getPlayer(playerID)!=null && (req.todo.equals("Main.login") || main.getPlayer(playerID).isOnline()))){
-                                                    if (req.retClass!=null){
-                                                        Object ret=resolveRequest(req);
-                                                        synchronized(out){
-                                                            //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
-                                                            out.reset();
-                                                            out.writeObject(ret);
-                                                            out.flush();
-                                                        }
+        new Thread("ClientConnectionThread"){
+            public ServerSocket server=new ServerSocket(Settings.SERVER_PORT);
+            public void run(){
+                while(true){
+                    try{
+                        Socket client=server.accept();
+                        ObjectOutputStream out=new ObjectOutputStream(client.getOutputStream());
+                        synchronized(out){
+                            out.flush();
+                        }
+                        ObjectInputStream in=new ObjectInputStream(client.getInputStream());
+                        boolean isRequestClient=in.readBoolean(); //sonst: taskClient
+                        int playerID=in.readInt();
+                        if (isRequestClient){
+                            new Thread("resolveRequestsThread-"+playerID){
+                                long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
+                                public void run(){
+                                    while(true){
+                                        try{
+                                            Request req=(Request) in.readObject();
+                                            if ((playerID==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
+                                                    || (main.getPlayer(playerID)!=null && (req.todo.equals("Main.login") || main.getPlayer(playerID).isOnline()))){
+                                                if (req.retClass!=null){
+                                                    Object ret=resolveRequest(req);
+                                                    synchronized(out){
+                                                        //das reset() ist notwendig, da sonst eine Referenz geschrieben wird => Übertragung falscher (zu alter) Attribute
+                                                        out.reset();
+                                                        out.writeObject(ret);
+                                                        out.flush();
                                                     }
-                                                    else{
-                                                        resolveRequest(req);
-                                                    }
-                                                    timeOfLastAction=System.currentTimeMillis();
-                                                }
-                                                else{ //Jemand versucht, zu betrügen, hier am Server kann nämlich ein Player nur isOnline()=true zurückgeben, 
-                                                      //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
-                                                      //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Menü statt)
-                                                    System.out.println("Sehr Witzig du Betrüger "+req);
-                                                    client.close();
-                                                    return;
-                                                }
-                                            }
-                                            catch(Exception e){
-                                                if (e instanceof EOFException){}
-                                                else if (e instanceof InvocationTargetException){
-                                                    System.out.println("InvocationTargetException when resolving request: "+e.getCause());
-                                                    e.printStackTrace();
                                                 }
                                                 else{
-                                                    System.out.println("Exception when resolving request: "+e);
+                                                    resolveRequest(req);
                                                 }
+                                                timeOfLastAction=System.currentTimeMillis();
                                             }
-                                            if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
-                                                if (playerID!=-1){
-                                                    main.getPlayer(playerID).logout();
-                                                    main.newTask(playerID,"logoutTask");
-                                                }
+                                            else{ //Jemand versucht, zu betrügen, hier am Server kann nämlich ein Player nur isOnline()=true zurückgeben, 
+                                                  //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
+                                                  //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Menü statt)
+                                                System.out.println("Sehr Witzig du Betrüger "+req);
+                                                client.close();
                                                 return;
                                             }
                                         }
+                                        catch(Exception e){
+                                            if (e instanceof EOFException){}
+                                            else if (e instanceof InvocationTargetException){
+                                                System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                                                e.printStackTrace();
+                                            }
+                                            else{
+                                                System.out.println("Exception when resolving request: "+e);
+                                            }
+                                        }
+                                        if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
+                                            if (playerID!=-1){
+                                                main.getPlayer(playerID).logout();
+                                                main.newTask(playerID,"logoutTask");
+                                            }
+                                            return;
+                                        }
                                     }
-                                }.start();
-                            }
-                            else{
-                                taskOutputStreams.put(playerID,out);
-                            }
+                                }
+                            }.start();
                         }
-                        catch(Exception e){
-                            System.out.println("Exception when waiting for clients: "+e);
+                        else{
+                            taskOutputStreams.put(playerID,out);
                         }
                     }
+                    catch(Exception e){
+                        System.out.println("Exception when waiting for clients: "+e);
+                    }
                 }
-            }.start();
-        }
-        catch(Exception e){
-            System.out.println("Exception when creating ServerSocket: "+e);
-        }
+            }
+        }.start();
     }
     
     /**

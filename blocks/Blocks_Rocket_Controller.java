@@ -1,6 +1,5 @@
 package blocks;
 import util.geom.VektorI;
-import server.Sandbox;
 /**
  * Das Platzieren dieses Blocks erzeugt die Schiffs-Subsandbox.
  * Dieser Block benötigt ein Metadatum "ownerID"
@@ -15,7 +14,7 @@ public class Blocks_Rocket_Controller extends SBlock{
     }
     
     @Override
-    public boolean onPlace(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public boolean onPlace(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         sb.swapBlock(this,pos);
         sb.setMeta(pos,"ownerID",playerID);
         sb.setMeta(pos,"shipIndex",-1);
@@ -24,11 +23,11 @@ public class Blocks_Rocket_Controller extends SBlock{
     }
     
     @Override
-    public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public void onRightclick(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         int ownerID=(int) sb.getMeta(pos,"ownerID");
         int shipIndex=(int) sb.getMeta(pos,"shipIndex");
         Object[] menuParams={sandboxIndex,pos,shipIndex};
         if (ownerID==playerID)
-            sb.getMain().newTask(playerID,"Player.showMenu","RocketControllerMenu",menuParams);
+            sb.newTask(playerID,"Player.showMenu","RocketControllerMenu",menuParams);
     }
 }

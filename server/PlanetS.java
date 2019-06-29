@@ -37,11 +37,6 @@ public class PlanetS extends Mass implements Serializable
         planetC = new PlanetC(main,new VektorI((radius*2)+100, (radius*2)+100), this, spaceTimer);
     }
     
-    public Object readResolve() throws ObjectStreamException{
-        this.planetC.setSpaceTimer(spaceTimer);
-        return this;
-    }
-    
     @Override 
     public Sandbox getSandbox()
     {

@@ -20,7 +20,6 @@ public class ClientSpace implements Serializable
         this.inGameTime=inGameTime;
         this.inGameDTime=inGameDTime;
         calcOrbits(ClientSettings.SPACE_CALC_TIME); //so lange Zeit, damit man es gut sieht
-        timerSetup();
     }
 
     /**

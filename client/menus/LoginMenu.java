@@ -66,8 +66,11 @@ public class LoginMenu extends Menu{
         back = new MenuButton(this, "Zurück", new VektorI(230,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 closeMenu();
-                new StartMenu();
+                try{
+                    new StartMenu();
+                }
+                catch(Exception e){}
             }};
-
+        repaint();
     }
 } 

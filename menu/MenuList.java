@@ -14,11 +14,11 @@ public class MenuList extends JList{
         this.m = m;
         setBounds(pos.x, pos.y,size.x, size.y);  // Position und Größe
         setBackground(Color.WHITE);
-	setForeground(new Color(0,0,0));
-	setEnabled(true);
-	if (fontSize == -1)fontSize = MenuSettings.MENU_FONT_SIZE;
-	setFont(new Font("sansserif",0,fontSize));
-	setVisible(true);
-	m.contentPane.add(this); // und fügt es zur Pane hinzu
+    	setForeground(new Color(0,0,0));
+    	setEnabled(true);
+    	if (fontSize == -1)fontSize = MenuSettings.MENU_FONT_SIZE;
+    	setFont(new Font("sansserif",0,fontSize));
+    	setVisible(true);
+    	m.contentPane.add(this); // und fügt es zur Pane hinzu
     }
 }

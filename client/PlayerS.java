@@ -331,6 +331,7 @@ public class PlayerS implements Serializable
             abstractMasses.add(cm);
         }
         workspace=new ClientSpace(abstractMasses,inGameTime.longValue(),1);
+        workspace.timerSetup();
     }
     
     /**

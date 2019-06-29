@@ -45,11 +45,6 @@ public class ShipS extends Mass implements Serializable
         this.restMass=restMass;
     }
     
-    public Object readResolve() throws ObjectStreamException{
-        this.shipC.setSpaceTimer(spaceTimer);
-        return this;
-    }
-    
     @Override
     public void setSpaceTimer(Timer t){
         super.setSpaceTimer(t);

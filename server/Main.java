@@ -32,14 +32,12 @@ import blocks.*;
  */
 public class Main implements Serializable
 {
-    /**
-     * Nur ein Main pro Kopie des Spiels. (Es sind ja sowieso alle Mains (bisher) am selben Port und werden
-     * in der selben Datei gespeichert, also ist das vielleicht gar nicht so blöd, wie es aussieht. Vielleicht.
-     */
-    //eigentlich nicht nötig
-    public static Main main;
     public static final long serialVersionUID=0L;
     
+    /**
+     * Name dieses Servers und der Datei, in der er gespeichert wird
+     */
+    public String name;
     /**
      * Liste aller Spieler (Kopien), wird mit dem Client synchronisiert.
      */
@@ -60,21 +58,15 @@ public class Main implements Serializable
      * @param:
      * boolean useOldData: true = "alten" Spielstand laden
      *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
+     * Der Server läuft jetzt noch nicht, sondern muss erst noch mit start() gestartet werden!
      */
-    public static Main newMain(boolean useOldData){
+    public static Main newMain(String name, boolean useOldData) throws Exception{
         String folder=Settings.GAMESAVE_FOLDER;
-        if (useOldData && new File(folder+File.separator+"main.ser").exists()){
-            try{
-                return Serializer.deserialize();
-            }
-            catch(Exception e){}
+        if (useOldData && new File(folder+File.separator+name+".ser").exists()){
+            return Serializer.deserialize(name);
         }
-        try{
-            for(File file: new File(folder).listFiles()) //aus https://stackoverflow.com/questions/13195797/delete-all-files-in-directory-but-not-directory-one-liner-solution (18.4.2019)
-                file.delete();
-        }catch(Exception e){}
-        Main m = new Main();    
-        main=m;
+        new File(folder+File.separator+name+".ser").delete();
+        Main m = new Main(name);    
         return m;
     }
 
@@ -83,10 +75,9 @@ public class Main implements Serializable
      * erstellt ein neues Spiel und keinen neuen Spieler
      * Privat, da newMain verwendet werden sollte.
      */
-    private Main()
+    private Main(String name)
     {
-        System.out.println("\n==================\nSpaceCraft startet\n==================\n");
-        serverCreatorSetup();
+        this.name=name;
         space = new Space(this,1); //keine Beschleunigung im Space
     }
 
@@ -98,21 +89,39 @@ public class Main implements Serializable
      * LG
      */
     public Object readResolve() throws ObjectStreamException{
-        serverCreatorSetup();
-        String folder=Settings.GAMESAVE_FOLDER;
-        if (!new File(folder).isDirectory()){
-            System.out.println("Folder "+folder+" does not exist.");
-            return null;
-        }
         this.chat=new ArrayList<String>();
-        main=this;
         return this;
+    }
+    
+    /**
+     * Startet den Server
+     */
+    public void start() throws Exception{
+        serverCreatorSetup();
+        space.timerSetup();
+        System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+    }
+    
+    /**
+     * Schließt den Server UND speichert den Spielstand!!!
+     */
+    public void exit(){
+        System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
+        for (int i=0;i<players.size();i++){
+            if (players.get(i).isOnline()){
+                players.get(i).logout(); //Server-Kopie des Players
+                newTask(i,"Player.logoutTask"); //Player im Client
+                sc.taskOutputStreams.remove(i);
+            }
+        }
+        Serializer.serialize(this);
+        System.exit(0);
     }
 
     /**
      * Der ServerCreator organisiert den Server. Diese Funktion ist wichtig. ~Schnux Sonst wÃ¤r sie wahrscheinlich nicht da ~unknown
      */
-    public void serverCreatorSetup(){
+    public void serverCreatorSetup() throws Exception{
         this.sc=new ServerCreator(this);
     }
 
@@ -161,24 +170,7 @@ public class Main implements Serializable
         }
         exit(); // sonst Spiel beenden
     }
-
-    /**
-     * Schließt das Spiel UND speichert den Spielstand!!!
-     */
-    public void exit(){
-        System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
-        for (int i=0;i<players.size();i++){
-            if (players.get(i).isOnline()){
-                players.get(i).logout(); //Server-Kopie des Players
-                newTask(i,"Player.logoutTask"); //Player im Client
-                sc.taskOutputStreams.remove(i);
-            }
-        }
-        Serializer.serialize(this);
-        main=null;
-        System.exit(0);
-    }
-
+    
     public ServerCreator getServerCreator(){
         return sc;
     }

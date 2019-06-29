@@ -1,9 +1,6 @@
 package blocks;
 
- 
-
 import client.*;
-import server.*;
 import util.geom.*;
 import items.*;  // eig alles xD
 
@@ -20,16 +17,16 @@ public class Blocks_Chest extends SBlock
     }
 
     @Override
-    public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public void onRightclick(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         Meta meta = sb.getMeta(pos);
         Object[] menuParams={sandboxIndex,pos,meta.get("inv_main")};
-        Main.main.newTask(playerID,"Player.showMenu","ChestMenu",menuParams);
+        sb.newTask(playerID,"Player.showMenu","ChestMenu",menuParams);
     }
     
     /**
      * Erstellt ein neues Metaobjekt mit dem Inventar in diesem Metaobjekt
      */
-    @Override public void onConstruct(Sandbox sb, int sandboxIndex, VektorI pos){
+    @Override public void onConstruct(BlocksSandbox sb, int sandboxIndex, VektorI pos){
         Meta meta = new Meta();
         meta.put("inv_main", new Inv(size));
         sb.setMeta(pos, meta);

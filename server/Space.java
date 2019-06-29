@@ -37,7 +37,6 @@ public class Space extends ClientSpace implements Serializable
     }
     
     public Object readResolve() throws ObjectStreamException{
-        timerSetup();
         calcOrbits(ClientSettings.SPACE_CALC_TIME);
         return this;
     }
@@ -56,6 +55,9 @@ public class Space extends ClientSpace implements Serializable
                 }
             }
         },0,ClientSettings.SPACE_TIMER_PERIOD);
+        for (int i=0;i<masses.size();i++){
+            masses.get(i).setSpaceTimer(timer);
+        }
     }
 
     /**

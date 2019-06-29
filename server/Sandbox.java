@@ -28,7 +28,7 @@ import blocks.*;
  *  3. Methoden für Subsandboxes und Raketenstart
  *  4. Methoden für Ansicht und Grafikausgabe
  */
-public abstract class Sandbox implements Serializable
+public abstract class Sandbox implements Serializable, BlocksSandbox
 {
     public static final long serialVersionUID=0L;
     protected Main main;
@@ -52,7 +52,6 @@ public abstract class Sandbox implements Serializable
         map = new Block[size.x][size.y];
         meta = new Meta[size.x][size.y];
         this.spaceTimer=spaceTimer;
-        this.spaceTimerSetup();
         this.main=main;
     }
 
@@ -61,7 +60,6 @@ public abstract class Sandbox implements Serializable
         this.meta=meta;
         this.subsandboxes=subsandboxes;
         this.spaceTimer=spaceTimer;
-        this.spaceTimerSetup();
         this.main=main;
     }
 
@@ -480,5 +478,9 @@ public abstract class Sandbox implements Serializable
     
     public Main getMain(){
         return main;
+    }
+    
+    public void newTask(int playerID, String todo, Object... params){
+        main.newTask(playerID,todo,params);
     }
 }

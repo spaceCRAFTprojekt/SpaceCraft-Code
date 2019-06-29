@@ -1,5 +1,4 @@
 package blocks;
-import server.Sandbox;
 import util.geom.VektorI;
 /**
  * An Positionen, an denen ein solcher Block liegt, muss ein Metadatum "full" vorhanden sein.
@@ -14,7 +13,7 @@ public class Blocks_Rocket_Fuel extends SBlock{
         super(id,"fuel","blocks_rocket_fuel",true);
     }
     @Override
-    public void onConstruct(Sandbox sb, int sandboxIndex, VektorI pos){
+    public void onConstruct(BlocksSandbox sb, int sandboxIndex, VektorI pos){
         Meta meta = new Meta();
         meta.put("full",1);
         sb.setMeta(pos,meta);

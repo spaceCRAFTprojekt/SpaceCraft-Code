@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 
-import server.Sandbox;
-import server.Settings;
-
 /*
  *       0       ist ein Platzhalter für getDir()
  * 
@@ -21,11 +18,11 @@ public class Blocks_Piston extends SBlock
     }
 
     @Override
-    public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+    public void onRightclick(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
         switchOn(sb, pos);
     }
     
-    public void switchOn(Sandbox sb, VektorI pos){
+    public void switchOn(BlocksSandbox sb, VektorI pos){
         ArrayList<VektorI> connectedBlocks = getConnectedBlocks(sb, pos);
         if (connectedBlocks == null)return;
         VektorI dir = new VektorI(     0     ).multiply(-1);
@@ -40,23 +37,23 @@ public class Blocks_Piston extends SBlock
         sb.swapBlock(pistonFront, pos2);
     }
     
-    public static VektorI getPos2(Sandbox sb, VektorI pos){
+    public static VektorI getPos2(BlocksSandbox sb, VektorI pos){
         return pos.add(new VektorI(      0      ).multiply(-1));
     }
     
-    public static ArrayList<VektorI> getConnectedBlocks(Sandbox sb, VektorI pos){
+    public static ArrayList<VektorI> getConnectedBlocks(BlocksSandbox sb, VektorI pos){
         try{
             Meta meta = sb.getMeta(pos);
             VektorI dir = new VektorI(    0    ).multiply(-1);
             VektorI posNew = pos.add(dir);
             if(sb.getBlock(posNew) == null)return new ArrayList<VektorI>();
-            ArrayList<VektorI> blocks = getConnectedBlocks(sb, posNew, dir, Settings.CRAFT_PISTON_PUSH_LIMIT+1);
-            if(blocks.size() > Settings.CRAFT_PISTON_PUSH_LIMIT)return null;
+            ArrayList<VektorI> blocks = getConnectedBlocks(sb, posNew, dir, BlocksSettings.CRAFT_PISTON_PUSH_LIMIT+1);
+            if(blocks.size() > BlocksSettings.CRAFT_PISTON_PUSH_LIMIT)return null;
             else return blocks;
         }catch(Exception e){return null;}
     }
     
-    public static ArrayList<VektorI> getConnectedBlocks(Sandbox sb, VektorI posOld, VektorI dir, int max){
+    public static ArrayList<VektorI> getConnectedBlocks(BlocksSandbox sb, VektorI posOld, VektorI dir, int max){
         ArrayList<VektorI> blocks = new ArrayList<VektorI>();
         blocks.add(posOld);
         VektorI posNew = posOld.add(dir);
@@ -67,21 +64,21 @@ public class Blocks_Piston extends SBlock
     
     SBlock pistonOn = new SBlock(301, "piston_on", "blocks_piston_on", false){
             @Override
-            public boolean onBreak(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+            public boolean onBreak(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
                 if(sb.getBlock(pos2).getName() == "piston_front")sb.breakBlock(pos2);
                 return true;
             }
 
             @Override
-            public void onRightclick(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){
+            public void onRightclick(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){
                 VektorI pos2 = getPos2(sb, pos);
                 if(sb.getBlock(pos2).getName() == "piston_front")sb.breakBlock(pos2);
                 sb.swapBlock(Blocks.get(300), pos);  // Piston_off wieder setzten
             }
             
             @Override
-            public boolean onPlace(Sandbox sb, int sandboxIndex, VektorI pos, int playerID){return false;}
+            public boolean onPlace(BlocksSandbox sb, int sandboxIndex, VektorI pos, int playerID){return false;}
         };
         
     Block pistonFront = new Block(302, "piston_front", "blocks_piston_front", false){ 
