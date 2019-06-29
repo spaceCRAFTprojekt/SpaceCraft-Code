@@ -1,6 +1,7 @@
 package items;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
+import util.*;
 
 /**
  * 
@@ -33,6 +34,14 @@ public abstract class Item implements Serializable
     
     public BufferedImage getInventoryImage(){
         return inventoryImage;
+    }
+    
+    public void setInventoryImage(String imgS){
+        inventoryImage = ImageTools.get('C',imgS);
+    }
+    
+    public void setInventoryImage(BufferedImage img){
+        inventoryImage = img;
     }
     
     public boolean equals(Item item){

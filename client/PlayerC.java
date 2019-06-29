@@ -30,6 +30,9 @@ import java.io.ObjectStreamException;
 /**
  * der Craft-Teil eines Spielers
  * alle Variablen, die synchronisiert werden, m�ssen public sein
+ * 
+ * @History:
+ * v0.5.2_AK
  */
 public class PlayerC implements Serializable
 {
@@ -235,11 +238,21 @@ public class PlayerC implements Serializable
             else
                 interactMapCache=subMapIDCache[sbIndex];
             if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
+                    /** 
+                     * ABBAUEN
+                     */
                 Block block=Blocks.get(interactMapCache[cPos.x][cPos.y]);
                 if (block==null) return; // wenn da kein block ist => nichts machen
                 if(block.breakment_prediction){
                     interactMapCache[cPos.x][cPos.y] = -1;
-                    if(block.drop_prediction && block.item != null)getInv().addStack(new Stack(block.item, 1));
+                    
+                    if(block.drop_prediction && block.item != null){
+                        if(block.drop == -1)getInv().addStack(new Stack(block.item, 1));
+                        else{
+                            Item dropItem = Items.get(block.drop);
+                            if(dropItem != null)getInv().addStack(new Stack(dropItem, 1));
+                        }
+                    }
                 }
                 // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
                 // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
@@ -249,7 +262,10 @@ public class PlayerC implements Serializable
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
             }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
                 if(interactMapCache[cPos.x][cPos.y] == -1){
-                    //platzieren
+                    /** 
+                     * PLATZIEREN
+                     */
+                  
                     //System.out.println("Tried to place block at "+sPos.toString());
                     Stack hotStack = inv.getHotStack();
                     if(hotStack == null || hotStack.count < 1)return;

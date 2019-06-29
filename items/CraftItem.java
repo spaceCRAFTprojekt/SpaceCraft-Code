@@ -11,6 +11,7 @@ public class CraftItem extends Item implements Serializable
     private transient String name;
     public CraftItem(int id, String name, BufferedImage inventoryImage, int maxStack){
         super(id, inventoryImage, maxStack);
+        this.name=name;
     }
     public CraftItem(int id, String name, BufferedImage inventoryImage){
         this(id, name, inventoryImage, 99);

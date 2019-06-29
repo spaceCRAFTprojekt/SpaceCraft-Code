@@ -56,6 +56,12 @@ public class Block implements Serializable
      * ob der Block das zugehörige Item droppt
      */
     public transient boolean drop_prediction = true;
+    /**
+     * -1: wenn das entsprechende Item (gleiche ID) oder nichts gedroppt werden soll
+     * id: wenn ein anderes Item gedroppt werden soll 
+     */
+    public transient int drop = -1; 
+    
     // ich hab das jetzt man alles public gemacht, weil man sonst so viele getter braucht. Natürlich kann man dann die Wert später verändern, aber wer macht das schon... ~AK
     public Block(int id, String name, String imageString, boolean hasItem)
     {

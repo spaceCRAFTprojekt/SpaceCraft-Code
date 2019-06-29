@@ -19,25 +19,35 @@ public abstract class Blocks
     static{
         //System.out.println("static");
         
-        new Block(000, "grass", "blocks_grass", true);
-        new Block(001, "dirt", "blocks_dirt", true); 
-        new Block(002, "stone", "blocks_stone", true);
-        new Block(003, "silver", "blocks_silver_ore", true);
-        new Block(004, "gold", "blocks_gold_ore", true);
-        new Block(005, "copper", "blocks_copper_ore", true);
-        new Block(010, "tree", "blocks_tree", true);
-        new Block(011, "tree1", "blocks_tree1", true);
-        new Block(013, "leaves", "blocks_leaves", true);
+        new Block(0, "grass", "blocks_grass", true);
+        new Block(1, "dirt", "blocks_dirt", true); 
+        new Block(2, "stone", "blocks_stone", true);
+        new Block(3, "silver", "blocks_silver_ore", true);
+        new Block(4, "gold", "blocks_gold_ore", true);
+        new Block(5, "copper", "blocks_copper_ore", true);
+        new Block(10, "tree", "blocks_tree", true);  // auf keinen Fall ändern !!!
+        new Block(11, "leaves", "blocks_leaves", true);
+        new Blocks_Sapling(12);
+        new Block(13, "wooden_planks", "blocks_wooden_planks", true);
          
         
-        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(2,2,2,2, -1, 2,2,2,2, 100, 2));
+        
         new Blocks_Chest(100);
-        new Blocks_Note(104); // id kann noch verÃ¤ndert werden
+        new Blocks_Note(104); 
+        new Block(110, "sand", "blocks_sand", true);
+        new Block(111, "glass", "blocks_glass", true);
+       
+        new Block(141, "roof_tile", "blocks_roof_tile", true);
+        new Block(142, "table", "blocks_table", true);
+        new Blocks_Door(120);  
+        // door_open_top: 121
+        // door_close_bottom: 122
+        // door_close_top: 123
         new Blocks_Piston(300);
         // piston_on: 301
         // piston_front: 302
-        new Blocks_Rocket_Controller(400);
-        new Blocks_Rocket_Fuel(401);
+        new Blocks_Rocket_Controller(400);  // "rocketController"
+        new Blocks_Rocket_Fuel(401);        // "fuel"
     }
     /**
      * gibt den Block mit der id zuück
