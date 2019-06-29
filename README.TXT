@@ -86,6 +86,8 @@ History:
  06.06.2019 v0.4.6_LG  * Dokumentation
  07.06.2019 v0.5.0_AK  * Merge mit v0.4.6_AK (Inventar fertig) => abgegebene Version
  20.06.2019 v0.5.1_LG  * tatsächlicher Raketenstart möglich
+ 28.06.2019 v0.5.2_AK  * mehr Blöcke und Items (planks, sticks, glass, roof-tiles); Setzlinge und Bäume (mit LG); Doors;  Änderungen in 
+                         client.PlayerC. ; Craftingrezepte; neue Texturen (V, MH, AK)
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

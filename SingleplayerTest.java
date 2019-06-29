@@ -12,7 +12,7 @@ public class SingleplayerTest{
         for (int i=0;i<10;i++){
             Player p=Player.newPlayer("p"+i,"pw"+i);p.login("pw"+i);
         }//*/
-        player2=Player.newPlayer("unknown","pw2"); player2.login("pw2");
+        //player2=Player.newPlayer("unknown","pw2"); player2.login("pw2");
     }
     
     public void exit(){

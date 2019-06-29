@@ -538,6 +538,7 @@ public class Player implements Serializable
                             }
                         }
                         catch(ArrayIndexOutOfBoundsException e){}
+                        catch(NullPointerException e){}
                         break;
                     case "time": //hat vielleicht Bugs
                         try{

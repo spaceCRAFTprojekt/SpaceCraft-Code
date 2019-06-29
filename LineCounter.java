@@ -19,7 +19,7 @@ public class LineCounter{
     }
     
     /**
-     * rekursiv
+     * rekursiv 
      */
     public static int getLines(String pathname){
         if (!new File(pathname).isDirectory() && pathname.substring(pathname.length()>=5 ? pathname.length()-5: 0).equals(".java")){

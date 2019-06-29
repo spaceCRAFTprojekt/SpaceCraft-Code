@@ -154,7 +154,9 @@ public abstract class Sandbox implements Serializable, BlocksSandbox
         removeMeta(pos);
         try{
             ((SBlock)block).onConstruct(this, main.getSpace().masses.indexOf(getMass()), pos);  // ruft onConstruct auf, wenn es ein Special Block ist. 
-        }catch(Exception e){} // => kein SpecialBlock
+        }catch(Exception e){ // => kein SpecialBlock
+            //System.out.println(e);
+        }
     }
 
     /**
