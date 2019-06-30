@@ -1,7 +1,15 @@
 package client.menus;
 
 import util.geom.*;
-import javax.swing.*;
+import javax.swing.GroupLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JPanel;
+import javax.swing.JComponent;
+import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+
 import menu.*;
 import client.*;
 import java.awt.Color;

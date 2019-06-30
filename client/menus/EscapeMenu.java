@@ -1,5 +1,4 @@
 package client.menus;
-import javax.swing.*;
 import util.geom.VektorI;
 import menu.*;
 import client.Player;
@@ -8,10 +7,10 @@ import client.Player;
  * Gibt die Möglichkeit das Spiel zu beenden oder weiterzuspielen
  */
 public class EscapeMenu extends PlayerMenu {
-    private JLabel pause;
-    private JButton restart;
-    private JButton logout;
-    private JButton exit;
+    private MenuLabel pause;
+    private MenuButton restart;
+    private MenuButton logout;
+    private MenuButton exit;
     //Constructor 
     public EscapeMenu(Player p){
         super(p,"Pause", new VektorI(225, 320));
@@ -35,15 +34,12 @@ public class EscapeMenu extends PlayerMenu {
 
     public void logout(){
         getPlayer().logout();
-        try{
-            new StartMenu();
-        }
-        catch(Exception e){}
-        dispose();
+        closeMenu();
+        new StartMenu();
     }
     
     public void exit(){
         getPlayer().exit();
-        dispose();
+        new StartMenu();
     }
 }

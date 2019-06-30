@@ -2,4 +2,3 @@
 //Zeilen, die mit // beginnen, sind Kommentare.
 //v0.5.2_LG
 
-testserver localhost:30000

@@ -5,7 +5,7 @@ public class SingleplayerTest{
     public Player player;
     public Player player2;
     public SingleplayerTest() throws Exception{
-        main=Main.newMain("main1",false);
+        main=Main.newMain("main1",true,false);
         main.start();
         player=Player.newPlayer("Singleplayer","pw1");player.login("pw1");
         /*

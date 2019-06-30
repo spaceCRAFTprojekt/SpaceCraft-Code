@@ -1,5 +1,4 @@
 package client.menus;
-import javax.swing.*;
 import util.geom.VektorI;
 import menu.*;
 import client.Player;
@@ -12,11 +11,10 @@ import java.io.ObjectInputStream;
  * Login-Menü
  */
 public class LoginMenu extends Menu{
-    private JButton login;
-    public Player player;
-    private JTextField name;
-    private JPasswordField pw;
-    private JButton back;
+    public MenuButton login;
+    public MenuTextField name;
+    public MenuPasswordField pw;
+    public MenuButton back;
     public LoginMenu(){
         super("Login", new VektorI(380, 180));
         new MenuLabel(this, "Benutzername", new VektorI(10,20), new VektorI(80,20));
@@ -66,10 +64,7 @@ public class LoginMenu extends Menu{
         back = new MenuButton(this, "Zurück", new VektorI(230,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 closeMenu();
-                try{
-                    new StartMenu();
-                }
-                catch(Exception e){}
+                new StartMenu();
             }};
         repaint();
     }

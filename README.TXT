@@ -4,6 +4,7 @@ SpaceCraft
 DoTo:
 > Caching von Planetenbahnen
 > Mehr Blöcke
+> Schöneres Startmenü
 
 Regeln:
 * Alle Klassen und Methoden werden (auf Deutsch) genau beschrieben (Getter und Setter nicht zwingend)
@@ -88,6 +89,7 @@ History:
  20.06.2019 v0.5.1_LG  * tatsächlicher Raketenstart möglich
  28.06.2019 v0.5.2_AK  * mehr Blöcke und Items (planks, sticks, glass, roof-tiles); Setzlinge und Bäume (mit LG); Doors;  Änderungen in 
                          client.PlayerC. ; Craftingrezepte; neue Texturen (V, MH, AK)
+ 29.06.2019 v0.5.3_LG  * Startmenü jetzt mit Serverkontrolle, aber zugegebenermaßen sehr hässlich
  
  // Bitte alle Änderungen hier mit Versionsnummer, Person und Beschreibung notieren.
  

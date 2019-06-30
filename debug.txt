@@ -1,0 +1,40 @@
+
+==================
+SpaceCraft startet
+==================
+
+Exception when resolving task: java.net.SocketException: Socket closed
+Exception when resolving task: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+
+===================
+SpaceCraft schließt
+===================
+
+Exception when waiting for clients: java.net.SocketException: socket closed
+
+==================
+SpaceCraft startet
+==================
+
+Item at pos VektorI[1;0] dragged.
+InvMenu.MouseReleased
+Item at pos VektorI[0;0] dragged.
+InvMenu.MouseReleased
+
+===================
+SpaceCraft schließt
+===================
+
+Exception when waiting for clients: java.net.SocketException: socket closed
+
+==================
+SpaceCraft startet
+==================
+
+Exception when resolving task: java.net.SocketException: Socket closed
+
+===================
+SpaceCraft schließt
+===================
+
+Exception when waiting for clients: java.net.SocketException: socket closed

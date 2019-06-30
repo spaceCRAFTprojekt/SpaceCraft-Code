@@ -1,6 +1,5 @@
 package client.menus;
 
-
 import client.*;
 import menu.*;
 import util.geom.*;

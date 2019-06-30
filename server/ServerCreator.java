@@ -3,6 +3,7 @@ import client.Request;
 import client.Task;
 import client.ClientSettings;
 import java.util.Hashtable;
+import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
@@ -25,14 +26,17 @@ import java.io.EOFException;
  */
 public class ServerCreator{
     Main main;
+    ServerSocket server;
     Hashtable<Integer,ObjectOutputStream> taskOutputStreams;
+    ArrayList<StoppableThread> threads;
     public ServerCreator(Main main) throws Exception{
         this.main=main;
+        this.server=new ServerSocket(Settings.SERVER_PORT);
         this.taskOutputStreams=new Hashtable<Integer,ObjectOutputStream>();
-        new Thread("ClientConnectionThread"){
-            public ServerSocket server=new ServerSocket(Settings.SERVER_PORT);
+        this.threads=new ArrayList<StoppableThread>();
+        StoppableThread clientConnectionThread=new StoppableThread("ClientConnectionThread"){
             public void run(){
-                while(true){
+                while(!shouldStop){
                     try{
                         Socket client=server.accept();
                         ObjectOutputStream out=new ObjectOutputStream(client.getOutputStream());
@@ -43,10 +47,10 @@ public class ServerCreator{
                         boolean isRequestClient=in.readBoolean(); //sonst: taskClient
                         int playerID=in.readInt();
                         if (isRequestClient){
-                            new Thread("resolveRequestsThread-"+playerID){
+                            StoppableThread t=new StoppableThread("resolveRequestsThread-"+playerID){
                                 long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
                                 public void run(){
-                                    while(true){
+                                    while(!shouldStop){
                                         try{
                                             Request req=(Request) in.readObject();
                                             if ((playerID==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
@@ -92,7 +96,9 @@ public class ServerCreator{
                                         }
                                     }
                                 }
-                            }.start();
+                            };
+                            t.start();
+                            threads.add(t);
                         }
                         else{
                             taskOutputStreams.put(playerID,out);
@@ -103,7 +109,9 @@ public class ServerCreator{
                     }
                 }
             }
-        }.start();
+        };
+        clientConnectionThread.start();
+        threads.add(clientConnectionThread);
     }
     
     /**
@@ -164,6 +172,13 @@ public class ServerCreator{
             catch(Exception e){
                 System.out.println("Exception when sending Task: "+e);
             }
+        }
+    }
+    
+    public static class StoppableThread extends Thread{
+        boolean shouldStop=false;
+        public StoppableThread(String name){
+            super(name);
         }
     }
 }

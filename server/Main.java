@@ -6,6 +6,7 @@ import client.Request;
 import client.OtherPlayerTexture;
 import client.PlayerTexture;
 import client.Task;
+import client.menus.StartMenu;
 import util.geom.VektorI;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -39,6 +40,10 @@ public class Main implements Serializable
      */
     public String name;
     /**
+     * true: Ausloggen führt zu exit()
+     */
+    public boolean singleplayer;
+    /**
      * Liste aller Spieler (Kopien), wird mit dem Client synchronisiert.
      */
     private ArrayList<Player> players = new ArrayList<Player>();
@@ -60,13 +65,13 @@ public class Main implements Serializable
      *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
      * Der Server läuft jetzt noch nicht, sondern muss erst noch mit start() gestartet werden!
      */
-    public static Main newMain(String name, boolean useOldData) throws Exception{
+    public static Main newMain(String name, boolean singleplayer, boolean useOldData) throws Exception{
         String folder=Settings.GAMESAVE_FOLDER;
         if (useOldData && new File(folder+File.separator+name+".ser").exists()){
             return Serializer.deserialize(name);
         }
         new File(folder+File.separator+name+".ser").delete();
-        Main m = new Main(name);    
+        Main m = new Main(name,singleplayer);
         return m;
     }
 
@@ -75,10 +80,12 @@ public class Main implements Serializable
      * erstellt ein neues Spiel und keinen neuen Spieler
      * Privat, da newMain verwendet werden sollte.
      */
-    private Main(String name)
+    private Main(String name, boolean singleplayer)
     {
         this.name=name;
+        this.singleplayer=singleplayer;
         space = new Space(this,1); //keine Beschleunigung im Space
+        Serializer.serialize(this); //ein erstes Speichern
     }
 
     /**
@@ -97,25 +104,38 @@ public class Main implements Serializable
      * Startet den Server
      */
     public void start() throws Exception{
-        serverCreatorSetup();
-        space.timerSetup();
-        System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+        if (sc==null){ //hat noch nicht gestartet
+            serverCreatorSetup();
+            space.timerSetup();
+            StartMenu.currentMain=this;
+            System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+        }
     }
     
     /**
      * Schließt den Server UND speichert den Spielstand!!!
      */
     public void exit(){
-        System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
-        for (int i=0;i<players.size();i++){
-            if (players.get(i).isOnline()){
-                players.get(i).logout(); //Server-Kopie des Players
-                newTask(i,"Player.logoutTask"); //Player im Client
-                sc.taskOutputStreams.remove(i);
+        if (sc!=null){ //hat schon gestartet
+            System.out.println("\n===================\nSpaceCraft schließt\n===================\n");
+            for (int i=0;i<players.size();i++){
+                if (players.get(i).isOnline()){
+                    players.get(i).logout(); //Server-Kopie des Players
+                    newTask(i,"Player.logoutTask"); //Player im Client
+                    sc.taskOutputStreams.remove(i);
+                }
             }
+            Serializer.serialize(this);
+            StartMenu.currentMain=null;
+            for (int i=0;i<sc.threads.size();i++){
+                sc.threads.get(i).shouldStop=true;
+            }
+            try{
+                sc.server.close();
+            }
+            catch(IOException e){}
+            space.timer.cancel();
         }
-        Serializer.serialize(this);
-        System.exit(0);
     }
 
     /**
@@ -226,8 +246,9 @@ public class Main implements Serializable
         Player player = players.get(playerID);
         player.setOnline(false); //siehe login(Integer playerID)
         player.getPlayerC().setInv(inv);
-        player.setOnline(false); //siehe login(Integer playerID)
         sc.taskOutputStreams.remove(playerID);
+        if (singleplayer)
+            exit();
         return new Boolean(true);
     }
     
