@@ -9,9 +9,6 @@ public class KomplettTest{
             System.setErr(new PrintStream("debug.txt"));
         }
         catch(FileNotFoundException e){}
-        try{
-            new StartMenu();
-        }
-        catch(IOException e){e.printStackTrace();}
+        new StartMenu();
     }
 }
