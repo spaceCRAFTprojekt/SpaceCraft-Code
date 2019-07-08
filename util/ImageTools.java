@@ -23,9 +23,8 @@ public abstract class ImageTools
         try{
             BufferedImage img=ImageIO.read(new File("textures"+Character.toUpperCase(type)+"/"+name+".png"));
             return img;
-        }catch(IOException e){
-            return null;
         }
+        catch(IOException e){return null;}
     }
 	public static BufferedImage resize(BufferedImage img, VektorI size){
         BufferedImage imgNew = new BufferedImage(size.x, size.y, BufferedImage.TYPE_4BYTE_ABGR);

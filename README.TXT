@@ -66,27 +66,35 @@ History:
  22.05.2019 v0.3.7_LG  * kleine Änderungen: Items, massChanges (ungetestet)
                          Craft: Fließkommakoordinaten-Darstellung (noch nicht wirklich getestet)
                          Subsandbox-Zeichnen (noch ohne Interaktionen!)
- 23.05.2019 v0.3.8_AK  * Chest; Änderungen in Main
+ 23.05.2019 v0.3.8.0_AK  * Chest; Änderungen in Main
+ 23.05.2019 v0.3.8.1_BB * getPosToCache mit Double hinzugef�gt und grobe Kollision hinzugef�gt(wird verfeinert)
  24.05.2019 v0.3.9_LG  * Merge mit v0.3.8_LG/ ShipsC und PlanetCs wieder entfernt (=> nur noch masses)
  24.05.2019 v0.3.10_AK * Hotbar Anfang; Änderungen im Inv und im PlayerC mouseEvent
- 24.05.2019 v0.3.8_LG  * Arbeitsweltraum
+ 24.05.2019 v0.3.8.0_LG  * Arbeitsweltraum
+ 24.05.2019 v0.3.8.1_BB * Creative hinzugef�gt Kollision ist feiner, getFoot
  26.05.2019 v0.3.9_LG  * Manöver im Arbeitsweltraum, Anwenden dieser Manöver dann im richtigen Weltraum
  26.05.2019 v0.3.11_LG * Merge mit v0.3.10_AK (eigentlich andersherum)
  27.05.2019 v0.3.12_LG * Noch ein Merge, warum auch immer
  28.05.2019 v0.3.13_MH * Chat und Data Panels, Chatcommands
  29.05.2019 v0.3.14_LG * Sehr unsichere Passwörter, in Space Umstieg auf Manöver (vorher: Orbit- und MassChanges)
  29.05.2019 v0.3.15_AK * ManoeuvreInfo Menu
- 31.05.2019 v0.3.16_LG * Anwendung der Manos, unfertig (was noch fehlt: dMass, fuelcost,rel?), generell recht unschÃ²Â®â‚¬â‚¬
+ 31.05.2019 v0.3.16.0_LG * Anwendung der Manos, unfertig (was noch fehlt: dMass, fuelcost,rel?), generell recht unschÃ²Â®â‚¬â‚¬
+ 31.05.2019 v0.3.16.1_BB * timersetup Gravitiation (kollission nach unten ist wieder ungenau)
  01.06.2019 v0.3.17_AK * Das blöde Inventar drop and drag [sic]. Uhrzeit: 00:42; Laune: schlechter als Benni
  02.06.2019 v0.4.0_AK  * Offset Problem (#26) gelöst (Juhu); Inventar verbessert; DraggedItemImage hinzugefügt
  02.06.2019 v0.4.1_AK  * Kleine Verbesserungen Drop and Drag; CraftingRecipes implementiert; DataPanel nicht mehr enabled
  02.06.2019 v0.4.2_LG  * Große Teile von Space und Mass in den Client verlagert (vermeidet Redundanz)
+ 03.06.2019 v0.3.17_BB * kollission genau
+ 04.06.2019 v0.3.18_BB * Springen limitiert
+ 04.06.2019 v0.3.19_BB * mapDir, getSector(),getPlayerHitsDiagonal(),getNewMapDir() hinzugef�gt
  04.06.2019 v0.4.3_MH  * Mapgen überarbeitet und Erze hinzugefügt
  04.06.2019 v0.4.4_LG  * schlechte Landung auf Planeten, ein bisschen Subsandbox-Zeug
  05.06.2019 v0.4.5_LG  * Abbauen und Platzieren in Subsandboxen
  06.06.2019 v0.4.6_LG  * Dokumentation
  07.06.2019 v0.5.0_AK  * Merge mit v0.4.6_AK (Inventar fertig) => abgegebene Version
- 20.06.2019 v0.5.1_LG  * tatsächlicher Raketenstart möglich
+ 20.06.2019 v0.5.1.0_LG  * tatsächlicher Raketenstart möglich
+ 24.06.2019 v0.5.1.1_BB  * Merge Bug moveleft moveright
+ 28.06.2019 v0.5.1.2_BB  *Bug moveleft moveright behoben, collide hinzugef�gt
  28.06.2019 v0.5.2_AK  * mehr Blöcke und Items (planks, sticks, glass, roof-tiles); Setzlinge und Bäume (mit LG); Doors;  Änderungen in 
                          client.PlayerC. ; Craftingrezepte; neue Texturen (V, MH, AK)
  29.06.2019 v0.5.3_LG  * Startmen� jetzt mit Serverkontrolle, aber zugegebenerma�en sehr h�sslich

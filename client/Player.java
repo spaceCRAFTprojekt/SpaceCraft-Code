@@ -91,7 +91,10 @@ public class Player implements Serializable
      * Dieses Attribut ist nur für die Kopie des Spielers am Server relevant, am Client nicht.
      */
     private boolean isAdmin;
-    
+    /**
+     * ob Spieler durch Blöcke gehen kann
+     */
+    private boolean creative;
     /**
      * Erstellt neuen Spieler in einem Weltraum
      * 
@@ -654,5 +657,13 @@ public class Player implements Serializable
     
     public boolean isAdmin(){
         return isAdmin;
+    }
+    
+    public boolean getCreative(){
+        return creative;
+    }
+    
+    public void setCreative(boolean b){
+        this.creative=b;
     }
 }

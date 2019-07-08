@@ -14,19 +14,24 @@ public class NewServerMenu extends Menu{
         new MenuButton(this, "Erstellen", new VektorI(10,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){
             public void onClick(){
                 String n=name.getText();
-                for (File f: new File(Settings.GAMESAVE_FOLDER).listFiles()){
-                    if (f.getName().equals(n+".ser")){
-                        System.out.println("Ein Server des Names "+n+" existiert bereits.");
-                        closeMenu();
-                        return;
+                if (n.length()>0){
+                    if (!new File(Settings.GAMESAVE_FOLDER).exists()){
+                        new File(Settings.GAMESAVE_FOLDER).mkdirs();
                     }
+                    for (File f: new File(Settings.GAMESAVE_FOLDER).listFiles()){
+                        if (f.getName().equals(n+".ser")){
+                            System.out.println("Ein Server des Names "+n+" existiert bereits.");
+                            closeMenu();
+                            return;
+                        }
+                    }
+                    try{
+                        Main.newMain(n,!hostbox.isSelected(),false);
+                    }
+                    catch(Exception e){e.printStackTrace();}
+                    startmenu.updateLocalWorldlist();
+                    closeMenu();
                 }
-                try{
-                    Main.newMain(n,!hostbox.isSelected(),false);
-                }
-                catch(Exception e){e.printStackTrace();}
-                startmenu.updateLocalWorldlist();
-                closeMenu();
             }
         };
         new MenuButton(this, "Schlieﬂen", new VektorI(230,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){

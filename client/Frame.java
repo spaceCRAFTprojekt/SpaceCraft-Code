@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.Dimension;
+import java.io.IOException;
 import util.geom.*;
 import java.util.ArrayList;
 import util.ImageTools;

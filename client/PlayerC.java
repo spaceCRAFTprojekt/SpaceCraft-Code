@@ -76,7 +76,7 @@ public class PlayerC implements Serializable
     public transient DataPanel dataP;
     private PlayerInv inv;
     public transient Hotbar hotbar;
-
+    public int mapDir;
     public PlayerC(Player player, VektorD pos)
     {
         this.player = player;
@@ -94,7 +94,33 @@ public class PlayerC implements Serializable
         //PlayerTexture
         playerTexture = new PlayerTexture(0);
     }
-
+    
+    /**public int getSector(){
+        if(getPosToCache(pos).toInt().x<ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x/2 && getPosToCache(pos).toInt().y<ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y/2){return 1;}
+        else if(getPosToCache(pos).toInt().x>ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x/2 && getPosToCache(pos).toInt().y<ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y/2){return 2;}
+        else if(getPosToCache(pos).toInt().x>ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x/2 && getPosToCache(pos).toInt().y>ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y/2){return 3;}
+        else if(getPosToCache(pos).toInt().x<ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x/2 && getPosToCache(pos).toInt().y>ClientSettings.PLAYERC_MAPIDCACHE_SIZE.y/2){return 4;}
+        else{return -1;}
+    }
+    public int getPlayerHitsDiagonal(){
+        if(getSector()==1 && getPosToCache(pos).toInt().x== getPosToCache(pos).toInt().y){return 1;}
+        else if(getSector()==3 && getPosToCache(pos).toInt().x== getPosToCache(pos).toInt().y){return 3;}
+        else if(getSector()==2 && ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x-getPosToCache(pos).toInt().x == getPosToCache(pos).toInt().y){return 2;}
+        else if(getSector()==4 && ClientSettings.PLAYERC_MAPIDCACHE_SIZE.x-getPosToCache(pos).toInt().x == getPosToCache(pos).toInt().y){return 4;}
+        else{return -1;}
+    }
+    public int getNewMapDir(){
+        if(getPlayerHitsDiagonal()==1 && mapDir==1){return 4;}
+        else if(getPlayerHitsDiagonal()==2 && mapDir==1){return 2;}
+        else if(getPlayerHitsDiagonal()==2 && mapDir==2){return 1;}
+        else if(getPlayerHitsDiagonal()==3 && mapDir==2){return 3;}
+        else if(getPlayerHitsDiagonal()==3 && mapDir==3){return 2;}
+        else if(getPlayerHitsDiagonal()==4 && mapDir==3){return 4;}
+        else if(getPlayerHitsDiagonal()==4 && mapDir==4){return 3;}
+        else if(getPlayerHitsDiagonal()==1 && mapDir==4){return 1;}
+        else {return -1;}
+    }**/
+    
     private void makeTexture(){
 
     }
@@ -109,8 +135,24 @@ public class PlayerC implements Serializable
             timer.schedule(new TimerTask(){
                     public void run(){
                         repaint();
+                        if(pos.toIntCeil().x!=pos.x){/**keine ganze Zahl*/
+                            if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x, getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                                [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
+                                pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+                                    System.out.println(pos.toString());
+                            }
+                        }
+                        else{
+                            if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
+                                pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+                                    System.out.println(pos.toString());
+                            }
+                        }
+                        
+                        //mapDir=getNewMapDir();
                     }
-                },0,ClientSettings.PLAYERC_TIMER_PERIOD);
+                },500,ClientSettings.PLAYERC_TIMER_PERIOD);
             timer.schedule(new TimerTask(){
                     public void run(){
                         player.synchronizeWithServer(); //Variablen des Spielers
@@ -181,7 +223,20 @@ public class PlayerC implements Serializable
             new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
         }
     }
-
+    
+    public boolean collideMapIDCache(VektorI v){
+        if(mapIDCache[v.x][v.y]==-1){return false;}
+        else{return true;}
+    }
+    
+    /**public boolean collideSubMapIDCache(VektorI v){
+        for(int x=0;subMapIDCache[x][0][0]!=null;x++){
+        if(subMapIDCache[x][v.x][v.y]==-1){return false;}
+        else{return true;}
+        }
+    }
+    **/
+    
     /**
      * Tastatur event
      * @param:
@@ -191,26 +246,68 @@ public class PlayerC implements Serializable
      */
     public void keyEvent(KeyEvent e, char type) {
         if (type == 'p'){
-            //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
-            //braucht eigentlich noch einen posInsideOfBounds request o.Ä.
-            switch(e.getKeyCode()){
-                case Shortcuts.move_up: pos.y=pos.y - 0.5;
+                    //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
+                    //braucht eigentlich noch einen posInsideOfBounds request o.�.
+                 
+                    switch(e.getKeyCode()){
+                      
+                        case Shortcuts.move_up:if(player.getCreative()==true){pos.y=pos.y - 0.5;}
+                        else if(pos.toIntCeil().x!=pos.x){/** keine ganze Zahl*/
+                            if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1 &&
+                            mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1 &&
+                            mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1 ){
+                                pos.y=pos.y - 1.5;
+                            }
+                        }
+                        else{
+                            if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1
+                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1){
+                                pos.y=pos.y - 1.5;
+                            }
+                        }
                 break;
-                case Shortcuts.move_down: pos.y=pos.y + 0.5;
+                case Shortcuts.move_down:if(player.getCreative()==true){pos.y=pos.y + 0.5;} 
                 break;
-                case Shortcuts.move_left: pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();
+                case Shortcuts.move_left:if(player.getCreative()==true){ pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
+                else if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
+                     && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
+                { pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
                 break;
-                case Shortcuts.move_right: pos.x=pos.x + 0.5;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
+                case Shortcuts.move_right:if(player.getCreative()==true){ pos.x=pos.x + 0.5;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();}
+                else if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
+                     && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
+                     { pos.x=pos.x + 0.5;
+                playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
+              }
                 break;
                 case Shortcuts.open_inventory: openInventory();
                 break;
-            }
+              }
             if (player.isOnline() && player.onClient())
                 new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
             //System.out.println(pos.toString());
         }
     }
-
+    
+    public VektorD getFootR(){
+         VektorD nPos=pos;
+         nPos.add(new VektorD(0.5,0.5));
+         return nPos;
+    }
+    
+    public VektorD getFootL(){
+         VektorD nPos=pos;
+         nPos.add(new VektorD(-0.5,0.5));
+         return nPos;
+    }
+    
     /**
      * Maus Event
      * @param:
@@ -503,7 +600,7 @@ public class PlayerC implements Serializable
                         catch(ArrayIndexOutOfBoundsException e){}
                     }
                 }
-
+                
                 Graphics2D g2=image.createGraphics();
                 //Zeichnen von Subsandboxen, recht ähnlich zu dem Zeichnen der Sandbox oberhalb
                 if (subData!=null && subMapIDCache!=null && subMapIDCachePos!=null){

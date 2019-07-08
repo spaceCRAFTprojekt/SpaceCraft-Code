@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
 import java.io.Serializable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.AbstractMap.SimpleEntry;
 import util.ImageTools;
