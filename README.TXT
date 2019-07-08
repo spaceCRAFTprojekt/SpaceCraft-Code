@@ -99,6 +99,7 @@ History:
                          client.PlayerC. ; Craftingrezepte; neue Texturen (V, MH, AK)
  29.06.2019 v0.5.3_LG  * Startmenü jetzt mit Serverkontrolle, aber zugegebenermaßen sehr hässlich
  08.07.2019 v0.5.4_BB  * Eine unausgereifte Kollision und Gravitation (wie Linus... Alles muss ich (AK) machen :( ) 
+ 08.07.2019 v0.5.5_AK  * neue Blöcke und Texturen (mit V)
  
  // Einige Versionen sind manuell ohne VersionsberÃ¼cksichtigung gemergt und deswegen nicht hier aufgelistet.
  // Bitte alle Ã„nderungen hier mit Versionsnummer, Person und Beschreibung notieren.

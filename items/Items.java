@@ -14,6 +14,9 @@ public abstract class Items
     static{
         registerItem(new CraftItem(10001,"stick",ImageTools.get('C',"items_stick")));
         registerItem(new CraftItem(10004,"paper",ImageTools.get('C',"items_paper")));
+        registerItem(new CraftItem(10010,"iron",ImageTools.get('C',"items_iron")));
+        registerItem(new CraftItem(10011,"gold",ImageTools.get('C',"items_gold")));
+        registerItem(new CraftItem(10020, "hammer",ImageTools.get('C', "items_hammer")));
     }
     
     public static void registerItem(Item item){

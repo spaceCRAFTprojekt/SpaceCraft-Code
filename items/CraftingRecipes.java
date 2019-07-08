@@ -23,9 +23,16 @@ public abstract class CraftingRecipes
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(11,11,11,11,11,11,-1,10001,-1,12,2)); // Sapling
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(13,13,-1, 13, 13, -1, 13, 13, -1, 120, 1));  // Tür
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(13,13,13,10001, -1, 10001, 10001, -1, 10001, 142, 1));  // Table
-        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(13,13,13, 2, 10001, 2, 2, 10001, 2, 300, 1));  // Piston
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(3, -1,-1,-1,-1,-1,-1,-1,-1, 10010, 1));  // iron
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(-1, -1,-1,-1,3,-1,-1,-1,-1, 10010, 1));  // iron mitte
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(4, -1,-1,-1,-1,-1,-1,-1,-1, 10011, 1));  // gold
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(-1, -1,-1,-1,4,-1,-1,-1,-1, 10011, 1));  // gold mitte
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(13,13,13, 10010, 10001, 10010, 10010, 10001, 10010, 300, 1));  // Piston
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(13,13,13, 13, 10004, 13,13,13,13, 104, 1));  // Noteblock
         CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(2,13,-1, 13, 2, 13,-1,13,2, 141, 4));  // roof_tile
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(10010,10010,10010,10010,10011,10010,10010,10010,10010, 400, 1));  // rocketController
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(10010,10010,10010,10010,-1,10010,10010,10010,10010, 400, 1));  // rocketFuel
+        CraftingRecipes.registerCraftingRecipe(new CraftingRecipe(10010,10010,10010,10010,10010,10010,-1,10001,-1, 10020, 1));  // Hammer
     }
 
     public static void registerCraftingRecipe(CraftingRecipe cp){

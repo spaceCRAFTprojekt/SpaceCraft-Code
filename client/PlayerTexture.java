@@ -26,6 +26,9 @@ public class PlayerTexture implements Serializable
         textures.put(0,new SimpleEntry("default",getPlayerTexture("default")));
         textures.put(1,new SimpleEntry("Schnux",getPlayerTexture("schnux")));
         textures.put(2,new SimpleEntry("Känguru",getPlayerTexture("känguru")));
+        textures.put(3,new SimpleEntry("unknown",getPlayerTexture("unknown")));
+        textures.put(4,new SimpleEntry("benni",getPlayerTexture("benni")));
+        textures.put(5,new SimpleEntry("creeper",getPlayerTexture("creeper")));
     }
 
     public static BufferedImage getTexture(int id){

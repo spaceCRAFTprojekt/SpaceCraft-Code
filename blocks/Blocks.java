@@ -22,7 +22,7 @@ public abstract class Blocks
         new Block(0, "grass", "blocks_grass", true);
         new Block(1, "dirt", "blocks_dirt", true); 
         new Block(2, "stone", "blocks_stone", true);
-        new Block(3, "silver", "blocks_silver_ore", true);
+        new Block(3, "iron", "blocks_iron_ore", true);
         new Block(4, "gold", "blocks_gold_ore", true);
         new Block(5, "copper", "blocks_copper_ore", true);
         new Block(10, "tree", "blocks_tree", true);  // auf keinen Fall ändern !!!

@@ -11,7 +11,7 @@ public class Blocks_Sapling extends SBlock
     public static final long serialVersionUID=0L;
     public Blocks_Sapling(int id)
     {
-        super(id, "sapling", "blocks_tree1", true);
+        super(id, "sapling", "blocks_sapling", true);
     }
     
     @Override
