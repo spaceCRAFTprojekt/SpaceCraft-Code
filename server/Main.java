@@ -34,7 +34,6 @@ import blocks.*;
 public class Main implements Serializable
 {
     public static final long serialVersionUID=0L;
-    
     /**
      * Name dieses Servers und der Datei, in der er gespeichert wird
      */
@@ -72,6 +71,7 @@ public class Main implements Serializable
         }
         new File(folder+File.separator+name+".ser").delete();
         Main m = new Main(name,singleplayer);
+        System.out.println("[Server]: Neuer Server: "+m);
         return m;
     }
 
@@ -108,16 +108,29 @@ public class Main implements Serializable
             serverCreatorSetup();
             space.timerSetup();
             StartMenu.currentMain=this;
-            System.out.println("\n==================\nSpaceCraft startet\n==================\n");
+            Runtime.getRuntime().addShutdownHook(new Thread(){
+                //automatisches Herunterfahren des Servers, wenn die Virtual Machine geschlossen wird => etwas sicherer
+                //Herunterfahren ohne Speichern!
+                public void run(){
+                    try{
+                        System.out.println("[Server]: Shutdown-Hook l‰uft");
+                    }
+                    catch(Exception e){} //schon geschlossen?
+                    Main.this.exit(false);
+                }
+            });
+            System.out.println("\n=================[Server]: Start\n=================\n");
         }
     }
     
     /**
-     * Schlieﬂt den Server UND speichert den Spielstand!!!
+     * Schlieﬂt den Server.
+     * @param: boolean saveData: ob gespeichert wird oder nicht (sollte nur
+     * false sein, wenn die Virtual Machine beendet wird, siehe den ShutdownHook in start())
      */
-    public void exit(){
+    public void exit(boolean saveData){
         if (sc!=null){ //hat schon gestartet
-            System.out.println("\n===================\nSpaceCraft schlieﬂt\n===================\n");
+            System.out.println("\n================\n[Server]: Exit\n=================\n");
             for (int i=0;i<players.size();i++){
                 if (players.get(i).isOnline()){
                     players.get(i).logout(); //Server-Kopie des Players
@@ -125,7 +138,9 @@ public class Main implements Serializable
                     sc.taskOutputStreams.remove(i);
                 }
             }
-            Serializer.serialize(this);
+            if (saveData){
+                Serializer.serialize(this);
+            }
             StartMenu.currentMain=null;
             for (int i=0;i<sc.threads.size();i++){
                 sc.threads.get(i).shouldStop=true;
@@ -135,6 +150,7 @@ public class Main implements Serializable
             }
             catch(IOException e){}
             space.timer.cancel();
+            sc=null;
         }
     }
 
@@ -188,7 +204,7 @@ public class Main implements Serializable
         for(int i = 0; i<players.size();i++){
             if(players.get(i).isOnline())return; // wenn ein Spieler online ist abbrechen
         }
-        exit(); // sonst Spiel beenden
+        exit(true); // sonst Spiel beenden
     }
     
     public ServerCreator getServerCreator(){
@@ -209,7 +225,7 @@ public class Main implements Serializable
      */
     public void exit(Integer playerID){
         if (players.get(playerID).isAdmin())
-            exit();
+            exit(true);
         else
             noAdminMsg(playerID);
     }
@@ -242,14 +258,17 @@ public class Main implements Serializable
     /**
      * Request-Funktion
      */
-    public Boolean logout(Integer playerID, PlayerInv inv){
+    public void logout(Integer playerID, PlayerInv inv){
         Player player = players.get(playerID);
         player.setOnline(false); //siehe login(Integer playerID)
         player.getPlayerC().setInv(inv);
+        try{
+            sc.taskOutputStreams.get(playerID).close();
+        }
+        catch(IOException e){}
         sc.taskOutputStreams.remove(playerID);
         if (singleplayer)
-            exit();
-        return new Boolean(true);
+            exit(true);
     }
     
     /**
@@ -275,7 +294,7 @@ public class Main implements Serializable
                     return new Boolean(true);
                 }
             }
-        }catch(Exception e){System.out.println("Exception in server.Main.returnFromMenu(): "+ e);}
+        }catch(Exception e){System.out.println("[Server]: Exception in server.Main.returnFromMenu(): "+ e);}
         return new Boolean(false);
     }
     
@@ -456,11 +475,27 @@ public class Main implements Serializable
         return (ret.toArray());
     }
     
+    public String[] getOnlinePlayerNames(Integer playerID){
+        ArrayList<String> names=new ArrayList<String>();
+        for (int i=0;i<players.size();i++){
+            if (players.get(i).isOnline())
+                names.add(players.get(i).getName());
+        }
+        String[] ret=new String[names.size()];
+        ret=names.toArray(ret);
+        return ret;
+    }
+    
     /**
      * etwas bequemer
      */
     public void noAdminMsg(int playerID){
         newTask(playerID,"Player.addChatMsg","Du bist kein Administrator.");
+    }
+    
+    @Override
+    public String toString(){
+        return "Main: name = "+name+", singleplayer = "+singleplayer+", Spieleranzahl = "+players.size();
     }
 }
 // Hallo ~unknown

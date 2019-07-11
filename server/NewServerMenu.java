@@ -1,5 +1,6 @@
 package server;
 import java.io.File;
+import java.awt.Cursor;
 import util.geom.VektorI;
 import client.menus.StartMenu;
 import menu.*;
@@ -26,7 +27,12 @@ public class NewServerMenu extends Menu{
                         }
                     }
                     try{
-                        Main.newMain(n,!hostbox.isSelected(),false);
+                        NewServerMenu.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                        Main main=Main.newMain(n,!hostbox.isSelected(),false);
+                        if (hostbox.isSelected()){
+                            main.start();
+                        }
+                        NewServerMenu.this.setCursor(Cursor.getDefaultCursor());
                     }
                     catch(Exception e){e.printStackTrace();}
                     startmenu.updateLocalWorldlist();

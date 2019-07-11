@@ -142,7 +142,7 @@ public class PlayerS implements Serializable
                     focussedMassIndexNew=workspace.getFocussedMassIndex(pos,getPosToNull(),player.getScreenSize(),scale);
                 // das hab ich eingefügt (Alex)
                 if (focussedMassIndexNew != -1)focussedMassIndex = focussedMassIndexNew;
-                System.out.println("new focussedMass:" + focussedMassIndex);
+                //System.out.println("new focussedMass:" + focussedMassIndex);
                 if (player.onClient())
                     new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerSVariable",null,"focussedMassIndex",Integer.class,focussedMassIndex);
                 // und das ist auch eine schöne idee: den focussedMassIndex am Server brechnen, zum Client schicken und dann den Client nochmal

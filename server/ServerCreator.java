@@ -72,7 +72,7 @@ public class ServerCreator{
                                             else{ //Jemand versucht, zu betrügen, hier am Server kann nämlich ein Player nur isOnline()=true zurückgeben, 
                                                   //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
                                                   //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Menü statt)
-                                                System.out.println("Sehr Witzig du Betrüger "+req);
+                                                System.out.println("[Server]: Sehr Witzig du Betrüger "+req);
                                                 client.close();
                                                 return;
                                             }
@@ -80,11 +80,11 @@ public class ServerCreator{
                                         catch(Exception e){
                                             if (e instanceof EOFException){}
                                             else if (e instanceof InvocationTargetException){
-                                                System.out.println("InvocationTargetException when resolving request: "+e.getCause());
+                                                System.out.println("[Server]: InvocationTargetException when resolving request: "+e.getCause());
                                                 e.printStackTrace();
                                             }
                                             else{
-                                                System.out.println("Exception when resolving request: "+e);
+                                                System.out.println("[Server]: Exception when resolving request: "+e);
                                             }
                                         }
                                         if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
@@ -105,7 +105,7 @@ public class ServerCreator{
                         }
                     }
                     catch(Exception e){
-                        System.out.println("Exception when waiting for clients: "+e);
+                        System.out.println("[Server]: Exception when waiting for clients: "+e);
                     }
                 }
             }
@@ -119,7 +119,7 @@ public class ServerCreator{
      */
     public Object resolveRequest(Request req) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         if (ClientSettings.PRINT_COMMUNICATION){
-            System.out.println("Resolving Request "+req);
+            System.out.println("[Server]: Resolving Request "+req);
         }
         String className=req.todo.substring(0,req.todo.indexOf("."));
         String methodName=req.todo.substring(req.todo.indexOf(".")+1);
@@ -170,7 +170,7 @@ public class ServerCreator{
                 }
             }
             catch(Exception e){
-                System.out.println("Exception when sending Task: "+e);
+                System.out.println("[Server]: Exception when sending Task: "+e);
             }
         }
     }

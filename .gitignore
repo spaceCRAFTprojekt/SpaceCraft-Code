@@ -25,3 +25,6 @@ hs_err_pid*
 # Weird other files (seem to be unnecessary)
 *.java~
 *.TXT~
+
+debug.txt
+*.ser

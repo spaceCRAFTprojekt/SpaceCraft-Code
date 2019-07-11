@@ -16,7 +16,6 @@ public class SingleplayerTest{
     }
     
     public void exit(){
-        main.exit();
+        main.exit(true);
     }
-    public static void main(String[] args){try{new SingleplayerTest();}catch(Exception e){}}
 }

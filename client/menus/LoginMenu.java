@@ -58,7 +58,7 @@ public class LoginMenu extends Menu{
                     s.close();
                 }
                 catch(Exception e){
-                    System.out.println("Exception when creating socket: "+e);
+                    System.out.println("[Client]: Exception when creating socket: "+e);
                 }
             }};
         back = new MenuButton(this, "Zurück", new VektorI(230,80) , new VektorI(120,40), MenuSettings.MENU_BIG_FONT){

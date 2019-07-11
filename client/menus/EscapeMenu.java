@@ -35,11 +35,10 @@ public class EscapeMenu extends PlayerMenu {
     public void logout(){
         getPlayer().logout();
         closeMenu();
-        new StartMenu();
     }
     
     public void exit(){
         getPlayer().exit();
-        new StartMenu();
+        closeMenu();
     }
 }

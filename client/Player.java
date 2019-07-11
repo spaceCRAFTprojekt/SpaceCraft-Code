@@ -143,7 +143,7 @@ public class Player implements Serializable
             s.close();
         }
         catch(Exception e){
-            System.out.println("Exception when creating socket: "+e);
+            System.out.println("[Client]: Exception when creating socket: "+e);
         }
         return null;
     }
@@ -180,7 +180,7 @@ public class Player implements Serializable
                 this.socketSetup();
             }
             catch(Exception e){
-                System.out.println("Exception when creating socket: "+e);
+                System.out.println("[Client]: Exception when creating socket: "+e);
             }
             if (online)
                 this.makeFrame();
@@ -225,11 +225,12 @@ public class Player implements Serializable
     public boolean login(String password){
         if(online)return false;
         if (onClient){
+            System.out.println("[Client]: Login (Adresse = "+ClientSettings.SERVER_ADDRESS+", Port = "+ClientSettings.SERVER_PORT+")");
             try{
                 socketSetup();
             }
             catch(Exception e){
-                System.out.println("Exception when creating socket: "+e);
+                System.out.println("[Client]: Exception when creating socket: "+e);
             }
             Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.login",Boolean.class,password).ret);
             if (success){
@@ -238,40 +239,45 @@ public class Player implements Serializable
                 playerC.timerSetup();
             }
             else{
-                System.out.println("No success when trying to log in");
+                System.out.println("[Client]: Kein Erfolg beim Einloggen");
+                return false;
             }
+            Runtime.getRuntime().addShutdownHook(new Thread(){ 
+                //automatisches Ausloggen, wenn die Virtual Machine beendet wird => ist etwas sicherer
+                public void run(){
+                    try{
+                        System.out.println("[Client]: Player-Shutdown-Hook läuft");
+                    }
+                    catch(Exception e){} //System.out schon geschlossen?
+                }
+            });
             return success;
         }
         return false;
     }
     
     public void logout(){
-        if(!online)return;
-        if (onClient){
-            Boolean success=(Boolean) (new Request(id,requestOut,requestIn,"Main.logout",Boolean.class, playerC.getInv()).ret);
-            if (success){
-                this.online = false;
-                try{
-                    socketClose();
-                }
-                catch(Exception e){}
-                playerC.timer.cancel();
-                playerS.closeWorkspace(false);
-                closeMenu();
-                disposeFrame();
-                //new Request(id,"Main.exitIfNoPlayers",null);
-            }
-            else{
-                System.out.println("No success when trying to log out");
-            }
+        if(!online || !onClient)return;
+        System.out.println("[Client]: Logout");
+        new Request(id,requestOut,requestIn,"Main.logout",null, playerC.getInv());
+        this.online = false;
+        try{
+            socketClose();
         }
+        catch(Exception e){}
+        playerC.timer.cancel();
+        playerS.closeWorkspace(false);
+        closeMenu();
+        disposeFrame();
+        new StartMenu();
     }
     
     /**
      * Wenn Main exited, dann werden alle Player rausgeschmissen (Es werden keine Requests mehr gestellt im Vergleich zu logout()).
      */
     public void logoutTask(){
-        if (!online)return;
+        if (!online || !onClient)return;
+        System.out.println("[Client]: Logout-Task");
         this.online=false;
         try{
             socketClose();
@@ -281,6 +287,7 @@ public class Player implements Serializable
         playerS.closeWorkspace(false);
         closeMenu();
         disposeFrame();
+        new StartMenu();
     }
     
     /**
@@ -537,7 +544,7 @@ public class Player implements Serializable
                             Stack s = new Stack(Items.get(name),amount);
                             if (s.getItem()!=null){
                                 playerC.getInv().addStack(s);
-                                addChatMsg("Du hast " + amount+" " + name + " bekommen");
+                                addChatMsg("Du hast " + amount+" " + name + " bekommen.");
                             }
                         }
                         catch(ArrayIndexOutOfBoundsException e){}
@@ -569,7 +576,7 @@ public class Player implements Serializable
                             if (playerS.reachedMassIDs.indexOf(index)!=-1){
                                 currentMassIndex=index;
                                 new Request(id,requestOut,requestIn,"Main.synchronizePlayerVariable",null,"currentMassIndex",Integer.class,currentMassIndex);
-                                addChatMsg("Teleported to Mass "+index+".");
+                                addChatMsg("Teleport auf die Masse "+index+".");
                             }
                         }
                         catch(Exception e){}
@@ -580,9 +587,18 @@ public class Player implements Serializable
                             double y=Double.parseDouble(spl[2]);
                             playerC.pos=new VektorD(x,y);
                             new Request(id,requestOut,requestIn,"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,playerC.pos);
-                            addChatMsg("Teleported to ("+x+"|"+y+")");
+                            addChatMsg("Teleport an die Stelle ("+x+"|"+y+")");
                         }
                         catch(Exception e){}
+                        break;
+                    case "players":
+                        String[] names=(String[]) new Request(id,requestOut,requestIn,"Main.getOnlinePlayerNames",String[].class).ret;
+                        String str="Spieler auf dem Server: ";
+                        for (int i=0;i<names.length;i++){
+                            str=str+names[i]+", ";
+                        }
+                        str=str.substring(0,str.length()-2); //letztes Komma
+                        addChatMsg(str);
                         break;
                     default:
                         addChatMsg("Unbekannter Command...");

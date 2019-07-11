@@ -6,13 +6,10 @@ import java.io.IOException;
  * Sehr dumm. -LG
  */
 public class LineCounter{
-    public LineCounter(){
-        count();
-    }
     public static int count(){
         try{
             int ret=getLines(".");
-            System.out.println("Lines: "+ret);
+            System.out.println("[LineCounter]: Zeilenanzahl: "+ret);
             return ret;
         }catch(Exception e){e.printStackTrace();}
         return 0;

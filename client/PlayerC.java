@@ -135,20 +135,23 @@ public class PlayerC implements Serializable
             timer.schedule(new TimerTask(){
                     public void run(){
                         repaint();
-                        if(pos.toIntCeil().x!=pos.x){/**keine ganze Zahl*/
-                            if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x, getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
-                                [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
-                                pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
-                                    System.out.println(pos.toString());
+                        try{
+                            if(pos.toIntCeil().x!=pos.x){/**keine ganze Zahl*/
+                                if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x, getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                                    [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
+                                    pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+                                        //System.out.println(pos.toString());
+                                }
+                            }
+                            else{
+                                if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
+                                    pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
+                                        //System.out.println(pos.toString());
+                                }
                             }
                         }
-                        else{
-                            if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]==-1){
-                                pos.y=pos.y + 0.05;new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
-                                    System.out.println(pos.toString());
-                            }
-                        }
+                        catch(ArrayIndexOutOfBoundsException e){}
                         
                         //mapDir=getNewMapDir();
                     }
@@ -225,15 +228,21 @@ public class PlayerC implements Serializable
     }
     
     public boolean collideMapIDCache(VektorI v){
-        if(mapIDCache[v.x][v.y]==-1){return false;}
-        else{return true;}
+        try{
+            if(mapIDCache[v.x][v.y]==-1){return false;}
+            else{return true;}
+        }
+        catch(ArrayIndexOutOfBoundsException e){return false;}
     }
     
     /**public boolean collideSubMapIDCache(VektorI v){
+        try{
         for(int x=0;subMapIDCache[x][0][0]!=null;x++){
         if(subMapIDCache[x][v.x][v.y]==-1){return false;}
         else{return true;}
         }
+        }
+        catch(ArrayIndexOutOfBoundsException e){return false;}
     }
     **/
     
@@ -249,47 +258,65 @@ public class PlayerC implements Serializable
                     //System.out.println("KeyEvent in PlayerC: "+e.getKeyChar()+type);
                     //braucht eigentlich noch einen posInsideOfBounds request o.�.
                  
-                    switch(e.getKeyCode()){
-                      
-                        case Shortcuts.move_up:if(player.getCreative()==true){pos.y=pos.y - 0.5;}
-                        else if(pos.toIntCeil().x!=pos.x){/** keine ganze Zahl*/
-                            if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
-                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1 &&
-                            mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
-                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1 &&
-                            mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
-                            [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1 ){
-                                pos.y=pos.y - 1.5;
+            switch(e.getKeyCode()){
+                case Shortcuts.move_up:
+                    if(player.getCreative()==true){pos.y=pos.y - 0.5;}
+                    else{
+                        try{
+                            if(pos.toIntCeil().x!=pos.x){/** keine ganze Zahl*/
+                                if(mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                                [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1 &&
+                                mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                                [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1 &&
+                                mapIDCache[new VektorD(getPosToCache(player.currentMassIndex,pos).x,getPosToCache(player.currentMassIndex,pos).y).toIntFloor().x-1]
+                                [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1 ){
+                                    pos.y=pos.y - 1.5;
+                                }
+                            }
+                            else{
+                                if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1
+                                && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1){
+                                    pos.y=pos.y - 1.5;
+                                }
                             }
                         }
-                        else{
-                            if(mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-4]==-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y-3]==-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x]  [new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1
-                            && mapIDCache[(int)getPosToCache(player.currentMassIndex,pos).x-1][new VektorI((int) Math.round(pos.x),(int) Math.round(getPosToCache(player.currentMassIndex,pos).y)).y]!=-1){
-                                pos.y=pos.y - 1.5;
+                        catch(ArrayIndexOutOfBoundsException exc){}
+                    }
+                    break;
+                case Shortcuts.move_down:
+                    if(player.getCreative()==true){pos.y=pos.y + 0.5;} 
+                    break;
+                case Shortcuts.move_left:
+                    if(player.getCreative()==true){ pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
+                    else{
+                        try{
+                            if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
+                                 && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
+                            { pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
+                        }
+                        catch(ArrayIndexOutOfBoundsException exc){}
+                    }
+                    break;
+                case Shortcuts.move_right:
+                    if(player.getCreative()==true){ pos.x=pos.x + 0.5;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();}
+                    else{
+                        try{
+                            if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
+                                 && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
+                                 { pos.x=pos.x + 0.5; playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
                             }
                         }
-                break;
-                case Shortcuts.move_down:if(player.getCreative()==true){pos.y=pos.y + 0.5;} 
-                break;
-                case Shortcuts.move_left:if(player.getCreative()==true){ pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
-                else if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
-                     && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(-1.5,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
-                { pos.x=pos.x - 0.5;  playerTexture.setMode(PlayerTexture.LEFT); synchronizePlayerTexture();}
-                break;
-                case Shortcuts.move_right:if(player.getCreative()==true){ pos.x=pos.x + 0.5;  playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();}
-                else if(mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-2.5)).y]==-1
-                     && mapIDCache[getPosToCache(player.currentMassIndex,pos.add(new VektorD(0,0))).x][new VektorI(0,(int) Math.round(getPosToCache(player.currentMassIndex,pos).y-1.5)).y]==-1)
-                     { pos.x=pos.x + 0.5;
-                playerTexture.setMode(PlayerTexture.RIGHT); synchronizePlayerTexture();
-              }
-                break;
-                case Shortcuts.open_inventory: openInventory();
-                break;
-              }
+                        catch(ArrayIndexOutOfBoundsException exc){}
+                    }
+                  break;
+                case Shortcuts.open_inventory:
+                    openInventory();
+                    break;
+            }
             if (player.isOnline() && player.onClient())
                 new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Main.synchronizePlayerCVariable",null,"pos",VektorD.class,pos);
             //System.out.println(pos.toString());
@@ -334,65 +361,68 @@ public class PlayerC implements Serializable
                 interactMapCache=mapIDCache;
             else
                 interactMapCache=subMapIDCache[sbIndex];
-            if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
-                    /** 
-                     * ABBAUEN
-                     */
-                Block block=Blocks.get(interactMapCache[cPos.x][cPos.y]);
-                if (block==null) return; // wenn da kein block ist => nichts machen
-                if(block.breakment_prediction){
-                    interactMapCache[cPos.x][cPos.y] = -1;
-                    
-                    if(block.drop_prediction && block.item != null){
-                        if(block.drop == -1)getInv().addStack(new Stack(block.item, 1));
-                        else{
-                            Item dropItem = Items.get(block.drop);
-                            if(dropItem != null)getInv().addStack(new Stack(dropItem, 1));
+            try{
+                if (e.getButton() == e.BUTTON1){   // linksclick => abbauen
+                        /** 
+                         * ABBAUEN
+                         */
+                    Block block=Blocks.get(interactMapCache[cPos.x][cPos.y]);
+                    if (block==null) return; // wenn da kein block ist => nichts machen
+                    if(block.breakment_prediction){
+                        interactMapCache[cPos.x][cPos.y] = -1;
+                        
+                        if(block.drop_prediction && block.item != null){
+                            if(block.drop == -1)getInv().addStack(new Stack(block.item, 1));
+                            else{
+                                Item dropItem = Items.get(block.drop);
+                                if(dropItem != null)getInv().addStack(new Stack(dropItem, 1));
+                            }
+                        }
+                    }
+                    // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
+                    // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
+                    if (sbIndex==-1)
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,player.currentMassIndex,sPos.toInt());
+                    else
+                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
+                }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
+                    if(interactMapCache[cPos.x][cPos.y] == -1){
+                        /** 
+                         * PLATZIEREN
+                         */
+                      
+                        //System.out.println("Tried to place block at "+sPos.toString());
+                        Stack hotStack = inv.getHotStack();
+                        if(hotStack == null || hotStack.count < 1)return;
+                        int blockID;
+                        try{ 
+                            blockID = ((BlockItem)(hotStack.getItem())).id; 
+                        }
+                        catch(Exception e1){return;}// => Craftitem
+                        if(blockID == -1 || Blocks.get(blockID) == null) return;
+                        if(Blocks.get(blockID).placement_prediction){
+                            interactMapCache[cPos.x][cPos.y] = blockID;  
+                            // wenn der Block wahrscheinlich platziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
+                            // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder entfernt
+                            hotStack.setCount(hotStack.getCount() -1);
+                            hotbar.updateSlots();
+                        }
+                        if (sbIndex==-1)
+                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos.toInt(), blockID);
+                        else
+                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt(), blockID);
+                    }else{
+                        Block block = Blocks.get(interactMapCache[cPos.x][cPos.y]);
+                        if(block instanceof SBlock){
+                            if (sbIndex==-1)
+                                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos.toInt());
+                            else
+                                new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
                         }
                     }
                 }
-                // wenn der Block wahrscheinlich zerstört werden kann wird er im cache entfernt. An den Server wird eine Anfrage gestellt, ob das geht, und 
-                // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder hergestellt
-                if (sbIndex==-1)
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,player.currentMassIndex,sPos.toInt());
-                else
-                    new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.breakBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
-            }else if (e.getButton() == e.BUTTON3){  // rechtsklick => platzieren oder rechtsklick
-                if(interactMapCache[cPos.x][cPos.y] == -1){
-                    /** 
-                     * PLATZIEREN
-                     */
-                  
-                    //System.out.println("Tried to place block at "+sPos.toString());
-                    Stack hotStack = inv.getHotStack();
-                    if(hotStack == null || hotStack.count < 1)return;
-                    int blockID;
-                    try{ 
-                        blockID = ((BlockItem)(hotStack.getItem())).id; 
-                    }
-                    catch(Exception e1){return;}// => Craftitem
-                    if(blockID == -1 || Blocks.get(blockID) == null) return;
-                    if(Blocks.get(blockID).placement_prediction){
-                        interactMapCache[cPos.x][cPos.y] = blockID;  
-                        // wenn der Block wahrscheinlich platziert werden kann wird er im cache gesetzt. An den Server wird eine Anfrage gestellt, ob das geht, und 
-                        // für den Fall, dass es nicht geht, wird der Block bei der nächsten synchronisierung wieder entfernt
-                        hotStack.setCount(hotStack.getCount() -1);
-                        hotbar.updateSlots();
-                    }
-                    if (sbIndex==-1)
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,player.getCurrentMassIndex(),sPos.toInt(), blockID);
-                    else
-                        new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.placeBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt(), blockID);
-                }else{
-                    Block block = Blocks.get(interactMapCache[cPos.x][cPos.y]);
-                    if(block instanceof SBlock){
-                        if (sbIndex==-1)
-                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,player.getCurrentMassIndex(),sPos.toInt());
-                        else
-                            new Request(player.getID(),player.getRequestOut(),player.getRequestIn(),"Sandbox.rightclickBlock",null,subData[sbIndex].index,sPos.subtract(subData[sbIndex].offset).toInt());
-                    }
-                }
             }
+            catch(ArrayIndexOutOfBoundsException exc){}
         }
     }
 

@@ -25,6 +25,8 @@ public class Serializer{
             //nur eine (fast) leere Datei wird dorthin geschrieben, lässt sich das nicht vermeiden?
             ObjectOutputStream oos=new ObjectOutputStream(fos);
             oos.writeObject(main);
+            oos.close();
+            fos.close();
         }
         catch(Exception e){
             System.out.println("Exception when serializing: "+e);
@@ -35,6 +37,8 @@ public class Serializer{
         FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+name+".ser");
         ObjectInputStream ois=new ObjectInputStream(fis);
         Main main = (Main) ois.readObject();
+        ois.close();
+        fis.close();
         return main;
     }
 }

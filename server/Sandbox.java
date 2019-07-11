@@ -110,7 +110,7 @@ public abstract class Sandbox implements Serializable, BlocksSandbox
                 //placeBlock(Blocks.blocks.get(104), pos, playerID);
             }else{
                 ((SBlock)map[pos.x][pos.y]).onRightclick(this, main.getSpace().masses.indexOf(getMass()), pos, playerID);
-                System.out.println("Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");
+                System.out.println("[Server]: Block at "+pos.toString()+" rightclicked by Player "+playerID+"!");
             }
         }catch(Exception e){ //block außerhalb der Map oder kein Special Block => kein rightclick möglich
         }
@@ -131,7 +131,7 @@ public abstract class Sandbox implements Serializable, BlocksSandbox
         }catch(Exception e){} // => kein SpecialBlock => kann immer platziert werden
         if(!block.placement_prediction)return;
         setBlock(block, pos);
-        System.out.println("Block at "+pos.toString()+" placed by Player "+playerID+"!");
+        System.out.println("[Server]: Block at "+pos.toString()+" placed by Player "+playerID+"!");
     }
     
     /**
@@ -187,7 +187,7 @@ public abstract class Sandbox implements Serializable, BlocksSandbox
             try{
                 if (((SBlock)map[pos.x][pos.y]).onBreak(this, main.getSpace().masses.indexOf(getMass()), pos, playerID)){
                     breakBlock(pos);
-                    System.out.println("Block at "+pos.toString()+" breaked by Player "+playerID+"!");
+                    System.out.println("[Server]: Block at "+pos.toString()+" breaked by Player "+playerID+"!");
                 }
             }catch(Exception e){
                 if(!getBlock(pos).breakment_prediction)return;

@@ -76,7 +76,7 @@ public class Space extends ClientSpace implements Serializable
         try{
             return (Mass) masses.get(i);
         }catch(Exception e){
-            System.out.println("at Space.getMass(" + i + "): Schwarzes Loch? Jemand hat versucht einen nicht mehr vorhanden Planeten zu finden");
+            System.out.println("[Server]: at Space.getMass(" + i + "): Schwarzes Loch? Jemand hat versucht einen nicht mehr vorhanden Planeten zu finden");
             return null;
         }
     }

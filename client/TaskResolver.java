@@ -35,12 +35,12 @@ public class TaskResolver{
                         catch(Exception e){
                             if (e instanceof EOFException){}
                             else if (e instanceof InvocationTargetException){
-                                System.out.println("InvocationTargetException when resolving task: "+e.getCause());
+                                System.out.println("[Client]: InvocationTargetException when resolving task: "+e.getCause());
                             }
                             else{
                                 //beim Schließen gibt es aus irgendeinem Grund SocketExceptions (Socket geschlossen), obwohl eigentlich 
                                 //erst der TaskResolver geschlossen wird, dann der Socket (das macht aber nicht viel).
-                                System.out.println("Exception when resolving task: "+e);
+                                System.out.println("[Client]: Exception when resolving task: "+e);
                             }
                         }
                     }
@@ -51,7 +51,7 @@ public class TaskResolver{
     
     public void resolveTask(Task task) throws NoSuchMethodException,IllegalAccessException,InvocationTargetException,IllegalArgumentException{
         if (ClientSettings.PRINT_COMMUNICATION){
-            System.out.println("Resolving Task "+task.todo);
+            System.out.println("[Client]: Resolving Task "+task.todo);
         }
         String className=task.todo.substring(0,task.todo.indexOf("."));
         String methodName=task.todo.substring(task.todo.indexOf(".")+1);
