@@ -1,7 +1,7 @@
 package util;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.net.URL;
 import util.geom.VektorI;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -21,7 +21,9 @@ public abstract class ImageTools
     public static BufferedImage get(char type, String name)
     {
         try{
-            BufferedImage img=ImageIO.read(new File("textures"+Character.toUpperCase(type)+"/"+name+".png"));
+            URL res=ImageTools.class.getResource("/textures"+Character.toUpperCase(type)+"/"+name+".png");
+            if (res==null)return null;
+            BufferedImage img=ImageIO.read(res);
             return img;
         }
         catch(IOException e){return null;}

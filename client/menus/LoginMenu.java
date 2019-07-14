@@ -26,7 +26,15 @@ public class LoginMenu extends Menu{
             public void onClick(){
                 closeMenu();
                 try{
-                    Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+                    //Kein Einloggen während eines Serialisierungs-Vorgangs
+                    Class serializerC=Class.forName("server.Serializer");
+                    while((boolean) serializerC.getField("currentlyWorking").get(null)){
+                        Thread.sleep(1);
+                    }
+                }
+                catch(Exception exc){exc.printStackTrace();}
+                
+                try(Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT)){
                     //Ein extra Socket nur für diesen Request, da alles andere vermutlich noch
                     //sinnloser wäre. Er wird nach 10 Sekunden durch den Timeout geschlossen.
                     ObjectOutputStream getPlayerOut=new ObjectOutputStream(s.getOutputStream());
@@ -55,7 +63,6 @@ public class LoginMenu extends Menu{
                     else{
                         new StartMenu(); //kein erfolgreiches Erstellen des Spielers
                     }
-                    s.close();
                 }
                 catch(Exception e){
                     System.out.println("[Client]: Exception when creating socket: "+e);

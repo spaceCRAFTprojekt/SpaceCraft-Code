@@ -18,27 +18,39 @@ import java.io.IOException;
  * Diese Klasse speichert den Spielstand in der Datei gamesaves/main.ser.
  */
 public class Serializer{
+    /**
+     * (De-)Serialisierungsvorg‰nge sollten nicht unterbrochen werden, also gibt es diesen boolean,
+     * auf den getestet werden sollte.
+     * (Es sollten eigentlich nie zwei (De-)Serialisierungsvorg‰nge gleichzeitig stattfinden,
+     * also reicht ein statisches Feld.)
+     */
+    public static volatile boolean currentlyWorking=false;
+    
     public static void serialize(Main main){
+        currentlyWorking=true;
+        System.out.println("[Server]: Serialisieren einer Welt. Das kann eine Weile dauern...");
         new File(Settings.GAMESAVE_FOLDER).mkdirs();
-        try{
-            FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+main.name+".ser");
-            //nur eine (fast) leere Datei wird dorthin geschrieben, l√§sst sich das nicht vermeiden?
-            ObjectOutputStream oos=new ObjectOutputStream(fos);
+        try(FileOutputStream fos=new FileOutputStream(Settings.GAMESAVE_FOLDER+File.separator+main.name+".ser");
+                ObjectOutputStream oos=new ObjectOutputStream(fos)){
             oos.writeObject(main);
-            oos.close();
-            fos.close();
+            System.out.println("[Server]: Serialisierung abgeschlossen");
         }
         catch(Exception e){
             System.out.println("Exception when serializing: "+e);
         }
+        currentlyWorking=false;
     }
     
     public static Main deserialize(String name) throws IOException,ClassNotFoundException{
-        FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+name+".ser");
-        ObjectInputStream ois=new ObjectInputStream(fis);
-        Main main = (Main) ois.readObject();
-        ois.close();
-        fis.close();
+        currentlyWorking=true;
+        System.out.println("[Server]: Deserialisieren einer Welt. Das kann eine Weile dauern...");
+        Main main;
+        try(FileInputStream fis=new FileInputStream(Settings.GAMESAVE_FOLDER+File.separator+name+".ser");
+                ObjectInputStream ois=new ObjectInputStream(fis)){
+            main = (Main) ois.readObject();
+        }
+        System.out.println("[Server]: Deserialisierung abgeschlossen");
+        currentlyWorking=false;
         return main;
     }
 }

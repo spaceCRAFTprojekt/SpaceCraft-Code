@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.EOFException;
+import java.io.IOException;
 /**
  * Diese Klasse erledigt die ganzen Formalia, die mit dem Server zu tun haben:
  * * erstellt einen ServerSocket, der auf Clients wartet, die dann in Request- und Task-Clients eingeteilt werden,
@@ -19,10 +20,11 @@ import java.io.EOFException;
  * * Der outputStream eines Task-Clients wird in taskOutputStreams mit dem Index der ID des Players geschrieben, 
  *   so dass mit Main.newTask (das intern ServerCreator.sendTask aufruft) Tasks an den Client geschickt werden kˆnnen.
  *   F¸r eine vermutlich nicht vollst‰ndige Liste aller Tasks siehe client.Task
- * * (ein deutlich wichtigerer) Request-Client bekommt einen eigenen Thread, der nur auf Requests wartet und diese dann ausf¸hrt.
+ * * (Ein deutlich wichtigerer) Request-Client bekommt einen eigenen Thread, der nur auf Requests wartet und diese dann ausf¸hrt.
  *   Das ist vermutlich grˆﬂtenteils ziemlich unsicher.
  *   Sollte ein Request-Client lange keinen Request schreiben (das ist der Fall f¸r 2 Request-Clients, die f¸r Player.login und Player.newPlayer
- *   benˆtigt werden, wird dieser Socket und der dazugehˆrige Thread geschlossen.
+ *   benˆtigt werden), wird dieser Socket und der dazugehˆrige Thread geschlossen.
+ *   F¸r eine vermutlich nicht vollst‰ndige Liste aller Requests siehe client.Request
  */
 public class ServerCreator{
     Main main;
@@ -48,13 +50,14 @@ public class ServerCreator{
                         int playerID=in.readInt();
                         if (isRequestClient){
                             StoppableThread t=new StoppableThread("resolveRequestsThread-"+playerID){
+                                {id=playerID;} //funktioniert das? Es lebe die Java-Syntax! -LG
                                 long timeOfLastAction=System.currentTimeMillis(); //Wenn das zu lange her ist, dann wird der Thread geschlossen
                                 public void run(){
                                     while(!shouldStop){
                                         try{
                                             Request req=(Request) in.readObject();
-                                            if ((playerID==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
-                                                    || (main.getPlayer(playerID)!=null && (req.todo.equals("Main.login") || main.getPlayer(playerID).isOnline()))){
+                                            if ((id==-1 && (req.todo.equals("Main.newPlayer") || req.todo.equals("Main.getPlayer")))
+                                                    || (main.getPlayer(id)!=null && (req.todo.equals("Main.login") || main.getPlayer(id).isOnline()))){
                                                 if (req.retClass!=null){
                                                     Object ret=resolveRequest(req);
                                                     synchronized(out){
@@ -71,8 +74,8 @@ public class ServerCreator{
                                             }
                                             else{ //Jemand versucht, zu betr¸gen, hier am Server kann n‰mlich ein Player nur isOnline()=true zur¸ckgeben, 
                                                   //wenn er sich vorher erfolgreich (mit dem richtigen Passwort) eingeloggt hat
-                                                  //Ausnahmen sind login und mit playerID -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Men¸ statt)
-                                                System.out.println("[Server]: Sehr Witzig du Betr¸ger "+req);
+                                                  //Ausnahmen sind login und mit id -1 Main.newPlayer und Main.getPlayer-Requests (die finden bereits im Login-Men¸ statt)
+                                                System.out.println("[Server]: Sehr witzig du Betr¸ger "+req);
                                                 client.close();
                                                 return;
                                             }
@@ -88,9 +91,9 @@ public class ServerCreator{
                                             }
                                         }
                                         if (System.currentTimeMillis()-timeOfLastAction>Settings.REQUEST_THREAD_TIMEOUT){
-                                            if (playerID!=-1){
-                                                main.getPlayer(playerID).logout();
-                                                main.newTask(playerID,"logoutTask");
+                                            if (id!=-1){
+                                                main.getPlayer(id).logout();
+                                                main.newTask(id,"logoutTask");
                                             }
                                             return;
                                         }
@@ -106,6 +109,10 @@ public class ServerCreator{
                     }
                     catch(Exception e){
                         System.out.println("[Server]: Exception when waiting for clients: "+e);
+                        try{
+                            server.close();
+                        }
+                        catch(IOException exc){}
                     }
                 }
             }
@@ -177,6 +184,11 @@ public class ServerCreator{
     
     public static class StoppableThread extends Thread{
         boolean shouldStop=false;
+        /**
+         * ID des Players. Nicht im Konstruktor enthalten, da sich sonst faszinierende Bugs ergeben.
+         * Nicht immer ein sinnvoller Wert, nur, damit die Main-Klasse in logout() den Thread schlieﬂen kann
+         */
+        int id=-1;
         public StoppableThread(String name){
             super(name);
         }

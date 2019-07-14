@@ -8,6 +8,7 @@ public class KomplettTest{
             System.setErr(new PrintStream("debug.txt"));
         }
         catch(FileNotFoundException e){}
+        System.out.println("SpaceCraft");
         
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void run(){

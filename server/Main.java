@@ -64,10 +64,15 @@ public class Main implements Serializable
      *                     false = neues Spiel beginnen  !überschreibt "alten" Spielstand!
      * Der Server läuft jetzt noch nicht, sondern muss erst noch mit start() gestartet werden!
      */
-    public static Main newMain(String name, boolean singleplayer, boolean useOldData) throws Exception{
+    public static Main newMain(String name, boolean singleplayer, boolean useOldData){
         String folder=Settings.GAMESAVE_FOLDER;
         if (useOldData && new File(folder+File.separator+name+".ser").exists()){
-            return Serializer.deserialize(name);
+            try{
+                return Serializer.deserialize(name);
+            }
+            catch(Exception e){
+                return null;
+            }
         }
         new File(folder+File.separator+name+".ser").delete();
         Main m = new Main(name,singleplayer);
@@ -125,6 +130,8 @@ public class Main implements Serializable
     
     /**
      * Schließt den Server.
+     * Führt nicht zu System.exit, sondern ist die Methode, die von System.exit aufgerufen werden sollte
+     * (siehe den Shutdown-Hook in start()).
      * @param: boolean saveData: ob gespeichert wird oder nicht (sollte nur
      * false sein, wenn die Virtual Machine beendet wird, siehe den ShutdownHook in start())
      */
@@ -267,6 +274,10 @@ public class Main implements Serializable
         }
         catch(IOException e){}
         sc.taskOutputStreams.remove(playerID);
+        for (int i=0;i<sc.threads.size();i++){
+            if (sc.threads.get(i).id==playerID.intValue())
+                sc.threads.remove(i);
+        }
         if (singleplayer)
             exit(true);
     }

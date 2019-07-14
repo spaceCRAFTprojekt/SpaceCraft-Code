@@ -126,8 +126,7 @@ public class Player implements Serializable
      * (und macht einen Request, dass das auch am Server geschieht).
      */
     public static Player newPlayer(String name, String password){
-        try{
-            Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT);
+        try(Socket s=new Socket(ClientSettings.SERVER_ADDRESS,ClientSettings.SERVER_PORT)){
             ObjectOutputStream newPlayerOut=new ObjectOutputStream(s.getOutputStream());
             synchronized(newPlayerOut){
                 newPlayerOut.writeBoolean(true); //Request-Client
@@ -172,20 +171,6 @@ public class Player implements Serializable
         if (frame == null)return;
         this.frame.dispose();
         frame = null;
-    }
-    
-    public Object readResolve() throws ObjectStreamException{
-        if (onClient){
-            try{
-                this.socketSetup();
-            }
-            catch(Exception e){
-                System.out.println("[Client]: Exception when creating socket: "+e);
-            }
-            if (online)
-                this.makeFrame();
-        }
-        return this;
     }
     
     /**
@@ -249,6 +234,7 @@ public class Player implements Serializable
                         System.out.println("[Client]: Player-Shutdown-Hook läuft");
                     }
                     catch(Exception e){} //System.out schon geschlossen?
+                    Player.this.logout();
                 }
             });
             return success;
@@ -379,6 +365,7 @@ public class Player implements Serializable
     
     /**
      * schließt das gesamte Spiel (also auch den Server), falls möglich
+     * System.exit wird allerdings nicht aufgerufen (das muss einzeln z.B. im Escape-Menü geschehen).
      */
     public void exit(){
         if (online && onClient){

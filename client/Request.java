@@ -70,7 +70,7 @@ public class Request implements Serializable{
      */
     public Request(int playerID, ObjectOutputStream socketOut, ObjectInputStream socketIn, String todo, Class retClass, Object... params){
         if (ClientSettings.PRINT_COMMUNICATION)
-            System.out.println("[Client]: new Request: "+todo);
+            System.out.println("[Client]: new "+this);
         if (socketOut!=null && socketIn!=null){
             this.playerID=playerID;
             this.todo=todo;
@@ -88,7 +88,7 @@ public class Request implements Serializable{
                     }
                 }
                 catch(Exception e){
-                    System.out.println("[Client]: Exception when creating request ("+todo+"): "+e);
+                    System.out.println("[Client]: Exception when creating request ("+this+"): "+e);
                 }
             }
             else{ //wartet nicht
@@ -100,13 +100,13 @@ public class Request implements Serializable{
                     }
                 }
                 catch(Exception e){
-                    System.out.println("[Client]: Exception when creating request ("+todo+"): "+e);
+                    System.out.println("[Client]: Exception when creating request ("+this+"): "+e);
                 }
             }
         }
     }
     
     public String toString(){
-        return todo;
+        return "Request: playerID = "+playerID+", todo = "+todo+", retClass = "+retClass+", ret = "+ret;
     }
 }
